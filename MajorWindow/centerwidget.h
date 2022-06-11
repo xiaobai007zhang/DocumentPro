@@ -8,7 +8,7 @@
 namespace Ui {
 class CenterWidget;
 }
-
+//test
 class CenterWidget : public QWidget
 {
     Q_OBJECT
