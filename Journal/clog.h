@@ -6,25 +6,19 @@
 #include "plugin.h"
 #include "Journal_global.h"
 
-class JOURNAL_EXPORT CLog:public Plugin
+class JOURNAL_EXPORT CLog:public QObject,public Plugin
 {
-
-    Q_PLUGIN_METADATA(IID PluginInfo)
+    Q_OBJECT
     Q_INTERFACES(Plugin)
-    Q_CLASSINFO("Flag",2)
+    Q_PLUGIN_METADATA(IID Info)
+
 
 public:
     CLog();
 
 public:
     void PrintLog(const QString & log) override;
-
-
-//!普通成员变量
-private:
-    //记录当前日志的时间
-    QString m_curDateTime;
-
+    void errorLog(const QString & log) override;
 };
 
 #endif // CLOG_H

@@ -1,0 +1,10 @@
+release/centerwidget.o
+release/cfind.o
+release/ctable.o
+release/myhighlighter.o
+release/main.o
+release/cmajor.o
+release/moc_centerwidget.o
+release/moc_cfind.o
+release/moc_ctable.o
+release/moc_cmajor.o

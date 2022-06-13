@@ -9,8 +9,7 @@ MyHighLighter::MyHighLighter(QTextDocument *parent,QString findText):QSyntaxHigh
 
 void MyHighLighter::highlightBlock(const QString &text)
 {
-    qDebug()<<text<<"111111111";
-    qDebug()<<m_findText;
+
     QTextCharFormat myClassFormat;
     myClassFormat.setFontWeight(QFont::Bold);
     myClassFormat.setForeground(Qt::blue);

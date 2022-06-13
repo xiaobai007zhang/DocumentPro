@@ -9,6 +9,7 @@
 #include "cfind.h"
 #include "centerwidget.h"
 #include "myhighlighter.h"
+#include "ctable.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class CMajor; }
@@ -38,6 +39,8 @@ private:
     void initConnection();
 
     void initFindWidget();
+
+    void initTableWidget();
 
 //!普通成员函数
 private:
@@ -109,7 +112,7 @@ private slots:
 
     void slot_findBtnClicked(QString);
 
-
+    void slot_color();
 
 //!其他槽函数
 private slots:
@@ -118,6 +121,10 @@ private slots:
 
     //如果改动了当前的文件，那么就会加上一个*号
     void slot_textChanged();
+
+    void slot_tableRowColumn(QString,QString);
+
+    void slot_menuBarFont();
 
 //!成员变量
 private:
@@ -147,12 +154,14 @@ private:
 
     CFind *m_findWid;
 
+    CTable *m_table;
+
     MyHighLighter *myhighlighter;
 
 //!插件变量
 private:
     //插件抽象类对象
-    Plugin *log;
+    Plugin *logFile;
 
 private:
     Ui::CMajor *ui;

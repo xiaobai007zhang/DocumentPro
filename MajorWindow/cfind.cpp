@@ -12,6 +12,7 @@ CFind::CFind(QWidget *parent) :
 
     initFindWidget();
     initConnection();
+
 }
 
 CFind::~CFind()

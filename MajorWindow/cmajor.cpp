@@ -16,7 +16,9 @@
 #include <QMessageBox>
 #include <QFileDialog>
 #include <QFontDialog>
-
+#include <QTextTable>
+#include <QPrinter>
+#include <QColorDialog>
 
 
 enum enum_num{
@@ -35,6 +37,7 @@ CMajor::CMajor(QWidget *parent)
     initToolBar();
     initCenterWidget();
     initFindWidget();
+    initTableWidget();
 
     initConnection();
 
@@ -76,6 +79,7 @@ void CMajor::initMenuBar()
     QMenu *edit = new QMenu("编辑");
     QMenu *search = new QMenu("查看");
     QMenu *insert = new QMenu("插入");
+    QMenu *setting = new QMenu("设置");
 
     //! 文件功能 动作
     QAction *newCreat = new QAction("新建");
@@ -83,7 +87,7 @@ void CMajor::initMenuBar()
     QAction *open = new QAction("打开");
     QAction *save = new QAction("保存");
     QAction *otherSave = new QAction("另存为");
-    QAction *printFile = new QAction("打印");
+    //QAction *printFile = new QAction("打印");
     QAction *exitDocument = new QAction("退出");
 
 
@@ -92,15 +96,15 @@ void CMajor::initMenuBar()
     newCreat->setShortcut(QKeySequence::New);
     open->setShortcut(QKeySequence::Open);
     otherSave->setShortcut(QKeySequence::SaveAs);
-    printFile->setShortcut(QKeySequence::Print);
-    printFile->setShortcut(QKeySequence::Quit);
+    //printFile->setShortcut(QKeySequence::Print);
+    //printFile->setShortcut(QKeySequence::Quit);
 
     file->addAction(newCreat);
     file->addAction(newWindow);
     file->addAction(open);
     file->addAction(save);
     file->addAction(otherSave);
-    file->addAction(printFile);
+    //file->addAction(printFile);
     file->addAction(exitDocument);
 
     connect(newCreat,SIGNAL(triggered()),this,SLOT(slot_creatDocument()));
@@ -108,7 +112,7 @@ void CMajor::initMenuBar()
     connect(open,SIGNAL(triggered()),this,SLOT(slot_openFile()));
     connect(save,SIGNAL(triggered()),this,SLOT(slot_save()));
     connect(otherSave,SIGNAL(triggered()),this,SLOT(slot_otherSave()));
-    connect(printFile,SIGNAL(triggered()),this,SLOT(slot_printFile()));
+    //connect(printFile,SIGNAL(triggered()),this,SLOT(slot_printFile()));
     connect(exitDocument,SIGNAL(triggered()),this,SLOT(slot_exitDocument()));
 
 
@@ -120,6 +124,8 @@ void CMajor::initMenuBar()
     QAction *remove = new QAction("删除");
     QAction *find = new QAction("查找");
     QAction *typeface = new QAction("字体");
+    QAction *color = new QAction("颜色");
+
     edit->addAction(revoke);
     edit->addAction(shear);
     edit->addAction(copy);
@@ -127,6 +133,8 @@ void CMajor::initMenuBar()
     edit->addAction(remove);
     edit->addAction(find);
     edit->addAction(typeface);
+    edit->addAction(color);
+
 
     connect(revoke,SIGNAL(triggered()),this,SLOT(slot_revoke()));
     connect(shear,SIGNAL(triggered()),this,SLOT(slot_shear()));
@@ -135,7 +143,7 @@ void CMajor::initMenuBar()
     connect(remove,SIGNAL(triggered()),this,SLOT(slot_remove()));
     connect(find,SIGNAL(triggered()),this,SLOT(slot_search()));
     connect(typeface,SIGNAL(triggered()),this,SLOT(slot_typeface()));
-
+    connect(color,SIGNAL(triggered()),this,SLOT(slot_color()));
 
 
     //! 查看
@@ -152,6 +160,7 @@ void CMajor::initMenuBar()
     connect(zoomOut,SIGNAL(triggered()),this,SLOT(slot_zoomOut()));
     connect(defaulted,SIGNAL(triggered()),this,SLOT(slot_defaulted()));
 
+
     //! 插入
     QAction *insertImage = new QAction("插入图片");
     QAction *insertForm = new QAction("插入表格");
@@ -162,10 +171,17 @@ void CMajor::initMenuBar()
     connect(insertForm,SIGNAL(triggered()),this,SLOT(slot_insertForm()));
 
 
+    //!设置
+    QAction *size = new QAction("任务栏字体");
+    setting->addAction(size);
+    connect(size,SIGNAL(triggered()),this,SLOT(slot_menuBarFont()));
+
+
     ui->menubar->addMenu(file);
     ui->menubar->addMenu(edit);
     ui->menubar->addMenu(search);
     ui->menubar->addMenu(insert);
+    ui->menubar->addMenu(setting);
 
 }
 
@@ -214,11 +230,18 @@ void CMajor::initConnection()
 
     connect(m_findWid,SIGNAL(sig_findText(QString)),this,SLOT(slot_findBtnClicked(QString)));
 
+    connect(m_table,SIGNAL(sig_tableRowColumn(QString,QString)),this,SLOT(slot_tableRowColumn(QString,QString)));
+
 }
 
 void CMajor::initFindWidget()
 {
     m_findWid = new CFind;
+}
+
+void CMajor::initTableWidget()
+{
+    m_table = new CTable;
 }
 
 //!实时更新状态栏的 光标 行列数
@@ -264,12 +287,13 @@ void CMajor::setFilePathAName(QString path)
 void CMajor::resizeEvent(QResizeEvent *event)
 {
     Q_UNUSED(event)
-    m_wid->resize(width(),height());
+    m_wid->resize(width(),height()-30);
     m_wid->resizeWidget();
 
     //qDebug()<<QString("CMajor 宽：%1，高：%2").arg(width()).arg(height());
     //qDebug()<<"触发resizeEvent";
     QWidget::resizeEvent(event);
+
 }
 
 
@@ -322,7 +346,6 @@ void CMajor::closeEvent(QCloseEvent *event)
     }
 
     m_wid->close();
-    delete m_wid;
     m_curFileName = "";
     m_curFilePath = "";
 
@@ -381,7 +404,6 @@ void CMajor::slot_creatDocument()
 
 
     m_wid->close();
-    delete m_wid;
 
     //新的文档名称
     setWinTitle("新建文件");
@@ -394,7 +416,8 @@ void CMajor::slot_creatDocument()
 
 bool CMajor::slot_creatDocumentWindow()
 {
-    qDebug()<<"slot_creatDocumentWindow";
+    CMajor* major = new CMajor;
+    major->show();
     return true;
 }
 
@@ -422,7 +445,7 @@ bool CMajor::slot_openFile()
     setWindowTitle(m_curFileName);
 
     //记录日志
-    log->PrintLog(QString("打开文件:{文件名:%1,文件路径:%2").arg(m_curFileName).arg(m_curFilePath));
+    logFile->PrintLog(QString("打开文件:{文件名:%1,文件路径:%2").arg(m_curFileName).arg(m_curFilePath));
 
     return true;
 
@@ -449,7 +472,7 @@ bool CMajor::slot_otherSave()
     setWindowTitle(m_curFileName);
 
     //记录日志
-    log->PrintLog(QString("另存为:{文件名:%1,文件路径:%2").arg(m_curFileName).arg(m_curFilePath));
+    logFile->PrintLog(QString("另存为:{文件名:%1,文件路径:%2").arg(m_curFileName).arg(m_curFilePath));
 
     return true;
 
@@ -473,7 +496,7 @@ void CMajor::slot_exitDocument()
             //处理保存逻辑
 
             QFile file(m_curFilePath);
-            qDebug()<<m_curFilePath<<"***"<<m_curFileName;
+            //qDebug()<<m_curFilePath<<"***"<<m_curFileName;
 
             //判断是否存在，如果不存在那么就另存为后关闭
             if(!file.exists()){
@@ -512,6 +535,9 @@ void CMajor::slot_exitDocument()
     m_curFilePath = "";
 
     qApp->closeAllWindows();
+    m_findWid->close();
+    m_table->close();
+
     qApp->quit();
 
 }
@@ -549,30 +575,38 @@ void CMajor::slot_search()
 
 void CMajor::slot_insertImage()
 {
-    qDebug()<<"slot_insertImage";
+    QString imageName = QFileDialog::getOpenFileName(nullptr,"Tips","./","*.png;;*.jpg;;*.gif");
+    QTextCursor cursor = m_wid->m_textEdit->textCursor();
+    QTextImageFormat imageFormat;
+    imageFormat.setName(imageName);
+    imageFormat.setWidth(100);
+    imageFormat.setHeight(100);
+
+    cursor.insertImage(imageFormat);
+
 }
 
 void CMajor::slot_insertForm()
 {
-    qDebug()<<"slot_insertForm";
+    m_table->show();
 }
 
 void CMajor::slot_typeface()
 {
     bool ok;
     QFont font = QFontDialog::getFont(&ok);
-    //光标选中的文字为空
+    //设置全部字体
     if(m_wid->m_textEdit->textCursor().selectedText().isNull() || m_wid->m_textEdit->textCursor().selectedText().isEmpty()){
 
         m_wid->m_textEdit->setFont(font);
 
     }else{
-    //光标选中的文字不为空
-            QTextCharFormat fmt;//文本字符格式
-            fmt.setFont(font);//字体
-            QTextCursor cursor = m_wid->m_textEdit->textCursor();//获取文本光标
-            //cursor.mergeCharFormat(fmt);//光标后的文字就用该格式显示
-            cursor.setCharFormat(fmt);
+    //只设置选中的字体
+        QTextCharFormat fmt;//文本字符格式
+        fmt.setFont(font);//字体
+        QTextCursor cursor = m_wid->m_textEdit->textCursor();//获取文本光标
+        //cursor.mergeCharFormat(fmt);//光标后的文字就用该格式显示
+        cursor.setCharFormat(fmt);
     }
 }
 
@@ -626,6 +660,29 @@ void CMajor::slot_findBtnClicked(QString findText)
     myhighlighter = new MyHighLighter(m_wid->m_textEdit->document(),findText);
 }
 
+void CMajor::slot_color()
+{
+    QColor color = QColorDialog::getColor();
+    QString flags = m_wid->m_textEdit->textCursor().selectedText();
+
+    //如果没有选中的，那么就会全部变颜色
+    if(flags.isNull()||flags.isEmpty()){
+
+    m_wid->m_textEdit->setTextColor(color);
+
+    }else{
+    //只改变选中的部分
+
+    QTextCharFormat format;
+    format.setForeground(color);
+    QTextCursor cursor = m_wid->m_textEdit->textCursor();
+    cursor.setCharFormat(format);
+
+    }
+
+
+}
+
 void CMajor::slot_timeOut()
 {
     updateStatusBar();
@@ -640,39 +697,50 @@ void CMajor::slot_textChanged()
     setWindowTitle(documentName+"*");
 }
 
+void CMajor::slot_tableRowColumn(QString row,QString column)
+{
+    QTextCursor cursor = m_wid->m_textEdit->textCursor();
+
+
+    QTextTable *table = cursor.insertTable(row.toInt(),column.toInt());
+    QTextTableFormat format = table->format();
+    format.setWidth(200);
+    format.setBorder(1);
+    format.setBorderCollapse(1);
+
+    //format.setBorderStyle(QTextFrameFormat::BorderStyle_Solid);
+    //format.setBorderBrush(Qt::black);
+
+    table->setFormat(format);
+}
+
+void CMajor::slot_menuBarFont()
+{
+    bool ok;
+    QFont font = QFontDialog::getFont(&ok);
+    ui->menubar->setFont(font);
+
+}
+
 
 bool CMajor::loadPlugin()
 {
     QDir curPath("../bin");
 
     for (const QString& fileName : curPath.entryList(QDir::Files)) {
+
         QPluginLoader loader(curPath.absoluteFilePath(fileName));
         QObject* obj = loader.instance();
+
         if(obj){
-            log = qobject_cast<Plugin*>(obj);
-                if(log){
-                    qDebug()<<"log 插件加载成功！";
+            logFile = qobject_cast<Plugin*>(obj);
+                if(logFile){
+
+                    return true;
                 }
-            //const QMetaObject *metaObj = obj->metaObject();
-
-            //QString num = metaObj->classInfo(0).value();
-
-//            switch (num.toInt()) {
-
-//            case JOURNAL:{
-//                log = qobject_cast<Plugin*>(obj);
-//                if(log)
-//                    qDebug()<<"log 插件加载成功！";
-//                break;
-//            }
-
-//            default: return true;
-//            }
-
         }
-    }
 
+    }
     return false;
 
 }
-
