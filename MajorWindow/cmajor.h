@@ -1,4 +1,4 @@
-#ifndef CMAJOR_H
+﻿#ifndef CMAJOR_H
 #define CMAJOR_H
 
 #include <QMainWindow>

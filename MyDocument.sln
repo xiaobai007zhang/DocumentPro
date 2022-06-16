@@ -1,0 +1,41 @@
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.31402.337
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Journal", "Journal\Journal.vcxproj", "{B9572513-5751-3EAC-831B-AF96D42BC66A}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MajorWindow", "MajorWindow\MajorWindow.vcxproj", "{7583648D-64A6-3DFD-83A1-8FB74FABC063}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Win32 = Debug|Win32
+		Debug|x64 = Debug|x64
+		Release|Win32 = Release|Win32
+		Release|x64 = Release|x64
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{B9572513-5751-3EAC-831B-AF96D42BC66A}.Debug|Win32.ActiveCfg = Debug|Win32
+		{B9572513-5751-3EAC-831B-AF96D42BC66A}.Debug|Win32.Build.0 = Debug|Win32
+		{B9572513-5751-3EAC-831B-AF96D42BC66A}.Debug|x64.ActiveCfg = Debug|x64
+		{B9572513-5751-3EAC-831B-AF96D42BC66A}.Debug|x64.Build.0 = Debug|x64
+		{B9572513-5751-3EAC-831B-AF96D42BC66A}.Release|Win32.ActiveCfg = Release|Win32
+		{B9572513-5751-3EAC-831B-AF96D42BC66A}.Release|Win32.Build.0 = Release|Win32
+		{B9572513-5751-3EAC-831B-AF96D42BC66A}.Release|x64.ActiveCfg = Release|x64
+		{B9572513-5751-3EAC-831B-AF96D42BC66A}.Release|x64.Build.0 = Release|x64
+		{7583648D-64A6-3DFD-83A1-8FB74FABC063}.Debug|Win32.ActiveCfg = Debug|Win32
+		{7583648D-64A6-3DFD-83A1-8FB74FABC063}.Debug|Win32.Build.0 = Debug|Win32
+		{7583648D-64A6-3DFD-83A1-8FB74FABC063}.Debug|x64.ActiveCfg = Debug|x64
+		{7583648D-64A6-3DFD-83A1-8FB74FABC063}.Debug|x64.Build.0 = Debug|x64
+		{7583648D-64A6-3DFD-83A1-8FB74FABC063}.Release|Win32.ActiveCfg = Release|Win32
+		{7583648D-64A6-3DFD-83A1-8FB74FABC063}.Release|Win32.Build.0 = Release|Win32
+		{7583648D-64A6-3DFD-83A1-8FB74FABC063}.Release|x64.ActiveCfg = Release|x64
+		{7583648D-64A6-3DFD-83A1-8FB74FABC063}.Release|x64.Build.0 = Release|x64
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		Qt5Version = msvc2017
+		SolutionGuid = {8EB42CCB-9E93-446A-A3FE-8D466FC26BC5}
+	EndGlobalSection
+EndGlobal

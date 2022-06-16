@@ -1,4 +1,4 @@
-#include "cmajor.h"
+﻿#include "cmajor.h"
 #include "ui_cmajor.h"
 
 #include <QColorDialog>
