@@ -1,4 +1,4 @@
-#ifndef PLUGIN_H
+﻿#ifndef PLUGIN_H
 #define PLUGIN_H
 
 #define PluginInfo "Plugin 1.0"

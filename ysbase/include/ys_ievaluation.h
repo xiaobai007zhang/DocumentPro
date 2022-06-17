@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #include "ys_error.h"
 #include "ys_coredata.h"
 #include "ys_ibase.h"

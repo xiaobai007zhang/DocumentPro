@@ -27,10 +27,6 @@
 #include "ysbase.h"
 using namespace ys;
 
-R_STRUCT_BEGIN(STEST)
-R_BOOL(b)
-R_INT(ia)
-R_STRUCT_END;
 
 //{
 // 'ia': 0,
@@ -303,41 +299,72 @@ void CMajor::getJson()
 
 	//====================================================
 	//测试接口功能
-	STEST t;
+	R_STRUCT_BEGIN(CHILD1)
+		R_INTARRAY(intArray)
+		R_FIXSTRING(fixString, 10)
+		R_BOOLARRAY(boolArray)
+		R_STRUCT_END;
 
-	t.SetName(L"张佳旭");
+	R_STRUCT_BEGIN(CHILD2)
+		R_DOUBLEARRAY(doubleArray)
+		R_FIXDOUBLEARRAY(fixDouble, 10)
+		R_OBJ(obj, CHILD1)
+		R_STRUCT_END;
 
-	if (json_parse(strFile.toStdString().c_str(), t) == false)
+	R_STRUCT_BEGIN(CHILD3)
+		R_STRING(str)
+		R_STRINGARRAY(strArray)
+		R_STRUCT_END;
+
+
+	R_STRUCT_BEGIN(PARENT)
+		R_OBJARRAY(objArray1, CHILD1)
+		R_OBJARRAY(objArray2, CHILD2)
+		R_OBJARRAY(objArray3, CHILD3)
+
+		R_OBJ(obj, CHILD3)
+		R_STRUCT_END;
+
+	CHILD1 child1;
+	CHILD2 child2;
+	CHILD3 child3;
+	PARENT parent;
+
+	//child1
+	child1.boolArray.Add(true);
+	child1.boolArray.Add(false);
+	child1.boolArray.Add(false);
+	child1.fixString[0] = child1.fixString.Count();
+	child1.fixString.Set(L"zhang", strlen("zhang"));
+	for (int i = 0; i < 10; i++)
 	{
-		qDebug() << (QStringLiteral("json_parse方法 失败!"));
-	}
-	else
-	{
-		qDebug() << (QStringLiteral("json_parse方法 成功!"));
+		child1.intArray.Add(i);
 	}
 
-	//t.Traversal(set_disable, nullptr);
+	//child2
+	child2.doubleArray.Add(1.123456);
+	child2.doubleArray.Add(2.123456);
+	const double dou = 16.5;
+	child2.fixDouble.Set(&dou, 10);
+	child2.obj = child1;
 
-	if (json_load("./zjx.json", t) == false)
-	{
-		qDebug() << (QStringLiteral("json_load方法 失败!"));
-	}
-	else
-	{
-		qDebug() << (QStringLiteral("json_load方法 成功!"));
-	}
-	char s = 'a';
-	//StringA 类型是MemoryT<char> 类型
-	StringA str;
-	json_save(str, t, 1);
-	str.New(10, true);
-	str.Add(s);
-	str.Add(s);
+	//child3
+	child3.str.Add(L'a');
+	child3.strArray.Add(L"奥里给");
+	child3.strArray.Add(L"干了兄弟们");
+	//parent
 
-	qDebug() << "StringA Count() : " << str.Count() << "Capacity() : " << str.Capacity();
-	for (const char& chr : str) {
-		qDebug() << "char: " << chr;
-	}
+	parent.obj = child3;
+	parent.objArray1.Add(std::move(child1));
+
+	parent.objArray3.Add(std::move(child3));
+	child3.SetName(L"child4");
+	parent.objArray2.Add(std::move(child2));
+	parent.objArray3.Add(std::move(child3));
+
+
+	json_save(L"./test.json", parent, true);
+
 	//=====================================================
 
 	//QJsonParseError error;

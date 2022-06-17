@@ -1,4 +1,4 @@
-// HOT库头文件
+﻿// HOT库头文件
 // hhoking 2015
 //
 #pragma once

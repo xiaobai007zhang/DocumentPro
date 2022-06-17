@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #include "cmn.h"
 #undef max
 #undef min

@@ -1,4 +1,4 @@
-// CMN头文件
+﻿// CMN头文件
 // hhoking 2015
 //
 #pragma once
@@ -49,26 +49,26 @@ typedef unsigned __int64            ulint;  // 64bits
 typedef wchar_t                     wch;    // windows:16bits,linux:32bits
 
 // 扩展基本类型
-typedef void*                       pvoid;
-typedef const void*                 pcvoid;
-typedef char*                       pchar;
-typedef const char*                 pcchar;
-typedef uchar*                      puchar;
-typedef const uchar*                pcuchar;
-typedef wch*                        pwchar;
-typedef const wch*                  pcwchar;
-typedef short*                      pshort;
-typedef const short*                pcshort;
-typedef ushort*                     pushort;
-typedef const ushort*               pcushort;
-typedef int*                        pint;
-typedef const int*                  pcint;
-typedef uint*                       puint;
-typedef const uint*                 pcuint;
-typedef long*                       plong;
-typedef const long*                 pclong;
-typedef ulong*                      pulong;
-typedef const ulong*                pculong;
+typedef void* pvoid;
+typedef const void* pcvoid;
+typedef char* pchar;
+typedef const char* pcchar;
+typedef uchar* puchar;
+typedef const uchar* pcuchar;
+typedef wch* pwchar;
+typedef const wch* pcwchar;
+typedef short* pshort;
+typedef const short* pcshort;
+typedef ushort* pushort;
+typedef const ushort* pcushort;
+typedef int* pint;
+typedef const int* pcint;
+typedef uint* puint;
+typedef const uint* pcuint;
+typedef long* plong;
+typedef const long* pclong;
+typedef ulong* pulong;
+typedef const ulong* pculong;
 
 // 布尔返回值定义
 typedef int                         BOOL;
@@ -132,24 +132,24 @@ typedef pchar                       szbuf;
 #ifndef PF_WINDOWS
 typedef struct tagRECT
 {
-    int left;
-    int top;
-    int right;
-    int bottom;
+	int left;
+	int top;
+	int right;
+	int bottom;
 }
 RECT;
 
 typedef struct tagPOINT
 {
-    int x;
-    int y;
+	int x;
+	int y;
 }
 POINT;
 
 typedef struct tagSIZE
 {
-    int cx;
-    int cy;
+	int cx;
+	int cy;
 }
 SIZE;
 #endif
@@ -172,7 +172,7 @@ SIZE;
 #endif
 
 // 比较函数
-typedef int (CC_C * FUNC_COMPARE)(pcvoid elem1, pcvoid elem2);
+typedef int (CC_C* FUNC_COMPARE)(pcvoid elem1, pcvoid elem2);
 
 // 句柄类型
 #define MY_HANDLE(name)    typedef struct tag##name{int unused;} *name
