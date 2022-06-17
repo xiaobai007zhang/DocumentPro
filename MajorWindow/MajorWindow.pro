@@ -4,6 +4,7 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 CONFIG += c++11
 INCLUDEPATH += ../Journal
+INCLUDEPATH += ../ysbase/include
 
 include(CenterWidget.pri)
 include(Find.pri)
@@ -12,8 +13,8 @@ include(MyHightLighter.pri)
 include(App.pri)
 include(Major.pri)
 
-INCLUDEPATH += ../ysbase/include/
-LIBS += -LD:\QtProject\DocumentPro\ysbase\ -lysbase
+#INCLUDEPATH += ../ysbase/include/
+#LIBS += -LD:\QtProject\DocumentPro\ysbase\ -lysbase
 
 # The following define makes your compiler emit warnings if you use
 # any Qt feature that has been marked deprecated (the exact warnings
@@ -38,3 +39,6 @@ DISTFILES += \
     Major.pri \
     MyHightLighter.pri \
     Table.pri
+
+
+LIBS += -LC:/Users/13030/Desktop/ -lysbase

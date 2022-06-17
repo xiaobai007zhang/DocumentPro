@@ -3,13 +3,16 @@
 #include <QApplication>
 #include <QProcess>
 
-int main(int argc, char *argv[])
+int main(int argc, char* argv[])
 {
     QApplication a(argc, argv);
 
-    CMajor *window = new CMajor;
-    window->isLoadPlugin();
-    window->show();
+    CMajor window;
+
+    window.isLoadPlugin();
+    window.show();
+    window.setJson("./zjx.json");
+    window.getJson();
 
     return a.exec();
 }
