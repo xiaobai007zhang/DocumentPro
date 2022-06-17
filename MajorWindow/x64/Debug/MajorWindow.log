@@ -1,0 +1,35 @@
+﻿  Reading Qt configuration (D:/QtCreator/5.14.2/msvc2017_64/bin/qmake)
+  Generate moc_predefs.h
+  cmajor.cpp
+d:\qtproject\documentpro\majorwindow\cmajor.h : warning C4819: 该文件包含不能在当前代码页(936)中表示的字符。请将该文件保存为 Unicode 格式以防止数据丢失
+d:\qtproject\documentpro\majorwindow\cfind.h : warning C4819: 该文件包含不能在当前代码页(936)中表示的字符。请将该文件保存为 Unicode 格式以防止数据丢失
+d:\qtproject\documentpro\journal\plugin.h : warning C4819: 该文件包含不能在当前代码页(936)中表示的字符。请将该文件保存为 Unicode 格式以防止数据丢失
+d:\qtproject\documentpro\ysbase\include\ysbase.h : warning C4819: 该文件包含不能在当前代码页(936)中表示的字符。请将该文件保存为 Unicode 格式以防止数据丢失
+d:\qtproject\documentpro\ysbase\include\cmn.h : warning C4819: 该文件包含不能在当前代码页(936)中表示的字符。请将该文件保存为 Unicode 格式以防止数据丢失
+d:\qtproject\documentpro\ysbase\include\ys_mem.h : warning C4819: 该文件包含不能在当前代码页(936)中表示的字符。请将该文件保存为 Unicode 格式以防止数据丢失
+d:\qtproject\documentpro\ysbase\include\ys_imgtype.h : warning C4819: 该文件包含不能在当前代码页(936)中表示的字符。请将该文件保存为 Unicode 格式以防止数据丢失
+d:\qtproject\documentpro\ysbase\include\ys_doctype.h : warning C4819: 该文件包含不能在当前代码页(936)中表示的字符。请将该文件保存为 Unicode 格式以防止数据丢失
+d:\qtproject\documentpro\ysbase\include\ys_language.h : warning C4819: 该文件包含不能在当前代码页(936)中表示的字符。请将该文件保存为 Unicode 格式以防止数据丢失
+d:\qtproject\documentpro\ysbase\include\ys_coredata.h : warning C4819: 该文件包含不能在当前代码页(936)中表示的字符。请将该文件保存为 Unicode 格式以防止数据丢失
+d:\qtproject\documentpro\ysbase\include\ys_errorcode.h : warning C4819: 该文件包含不能在当前代码页(936)中表示的字符。请将该文件保存为 Unicode 格式以防止数据丢失
+d:\qtproject\documentpro\ysbase\include\ys_util.h : warning C4819: 该文件包含不能在当前代码页(936)中表示的字符。请将该文件保存为 Unicode 格式以防止数据丢失
+d:\qtproject\documentpro\ysbase\include\ys_ocrwrap.h : warning C4819: 该文件包含不能在当前代码页(936)中表示的字符。请将该文件保存为 Unicode 格式以防止数据丢失
+d:\qtproject\documentpro\ysbase\include\ys_iimage.h : warning C4819: 该文件包含不能在当前代码页(936)中表示的字符。请将该文件保存为 Unicode 格式以防止数据丢失
+d:\qtproject\documentpro\ysbase\include\ys_ibase.h : warning C4819: 该文件包含不能在当前代码页(936)中表示的字符。请将该文件保存为 Unicode 格式以防止数据丢失
+d:\qtproject\documentpro\ysbase\include\ys_info.h : warning C4819: 该文件包含不能在当前代码页(936)中表示的字符。请将该文件保存为 Unicode 格式以防止数据丢失
+d:\qtproject\documentpro\ysbase\include\ys_rbase.h : warning C4819: 该文件包含不能在当前代码页(936)中表示的字符。请将该文件保存为 Unicode 格式以防止数据丢失
+d:\qtproject\documentpro\ysbase\include\dbg.h : warning C4819: 该文件包含不能在当前代码页(936)中表示的字符。请将该文件保存为 Unicode 格式以防止数据丢失
+d:\qtproject\documentpro\ysbase\include\ys_rutil.h : warning C4819: 该文件包含不能在当前代码页(936)中表示的字符。请将该文件保存为 Unicode 格式以防止数据丢失
+d:\qtproject\documentpro\ysbase\include\ys_rtraits.h : warning C4819: 该文件包含不能在当前代码页(936)中表示的字符。请将该文件保存为 Unicode 格式以防止数据丢失
+d:\qtproject\documentpro\ysbase\include\ys_rbase.h(91): warning C4100: “param”: 未引用的形参
+d:\qtproject\documentpro\ysbase\include\ys_rbuffer.h : warning C4819: 该文件包含不能在当前代码页(936)中表示的字符。请将该文件保存为 Unicode 格式以防止数据丢失
+d:\qtproject\documentpro\ysbase\include\ys_rastring.h : warning C4819: 该文件包含不能在当前代码页(936)中表示的字符。请将该文件保存为 Unicode 格式以防止数据丢失
+d:\qtproject\documentpro\ysbase\include\ys_rutf8string.h : warning C4819: 该文件包含不能在当前代码页(936)中表示的字符。请将该文件保存为 Unicode 格式以防止数据丢失
+d:\qtproject\documentpro\ysbase\include\ys_rptrarray.h : warning C4819: 该文件包含不能在当前代码页(936)中表示的字符。请将该文件保存为 Unicode 格式以防止数据丢失
+d:\qtproject\documentpro\ysbase\include\ys_rio.h : warning C4819: 该文件包含不能在当前代码页(936)中表示的字符。请将该文件保存为 Unicode 格式以防止数据丢失
+d:\qtproject\documentpro\ysbase\include\ioinl.h : warning C4819: 该文件包含不能在当前代码页(936)中表示的字符。请将该文件保存为 Unicode 格式以防止数据丢失
+d:\qtproject\documentpro\ysbase\include\ys_rlay.h : warning C4819: 该文件包含不能在当前代码页(936)中表示的字符。请将该文件保存为 Unicode 格式以防止数据丢失
+d:\qtproject\documentpro\ysbase\include\ys_iptr.h : warning C4819: 该文件包含不能在当前代码页(936)中表示的字符。请将该文件保存为 Unicode 格式以防止数据丢失
+d:\qtproject\documentpro\ysbase\include\ys_ievaluation.h : warning C4819: 该文件包含不能在当前代码页(936)中表示的字符。请将该文件保存为 Unicode 格式以防止数据丢失
+d:\qtproject\documentpro\ysbase\include\ys_imodule.h : warning C4819: 该文件包含不能在当前代码页(936)中表示的字符。请将该文件保存为 Unicode 格式以防止数据丢失
+  MajorWindow.vcxproj -> D:\QtProject\DocumentPro\x64\Debug\MajorWindow.exe
