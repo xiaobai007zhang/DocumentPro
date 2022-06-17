@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #include "cmn.h"
 #ifndef interface
 #define interface struct

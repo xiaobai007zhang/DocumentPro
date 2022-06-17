@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #include "ys_rbase.h"
 #include "ys_rptrarray.h"
 

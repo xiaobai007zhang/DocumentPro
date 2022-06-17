@@ -1,4 +1,4 @@
-#ifndef CFIND_H
+﻿#ifndef CFIND_H
 #define CFIND_H
 
 #include <QWidget>
@@ -6,35 +6,35 @@
 #include <QLineEdit>
 
 namespace Ui {
-class CFind;
+	class CFind;
 }
 
 class CFind : public QWidget
 {
-    Q_OBJECT
+	Q_OBJECT
 
 public:
-    explicit CFind(QWidget *parent = nullptr);
-    ~CFind();
+	explicit CFind(QWidget* parent = nullptr);
+	~CFind();
 
 
-//!普通成员函数
+	//!普通成员函数
 private:
-    void initFindWidget();
+	void initFindWidget();
 
-    void initConnection();
+	void initConnection();
 
-//!成员变量
+	//!成员变量
 private:
-    QString m_findText;
-    QPushButton *m_findBtn;
-    QLineEdit *m_lineEdit;
+	QString m_findText;
+	QPushButton* m_findBtn;
+	QLineEdit* m_lineEdit;
 
 signals:
-    void sig_findText(QString);
+	void sig_findText(QString);
 
 private:
-    Ui::CFind *ui;
+	Ui::CFind* ui;
 };
 
 #endif // CFIND_H

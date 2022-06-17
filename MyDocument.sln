@@ -8,26 +8,16 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MajorWindow", "MajorWindow\
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
-		Debug|Win32 = Debug|Win32
 		Debug|x64 = Debug|x64
-		Release|Win32 = Release|Win32
 		Release|x64 = Release|x64
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{F3CCCFBD-5F33-35A8-94E6-C6DE1D62B9FE}.Debug|Win32.ActiveCfg = Debug|Win32
-		{F3CCCFBD-5F33-35A8-94E6-C6DE1D62B9FE}.Debug|Win32.Build.0 = Debug|Win32
 		{F3CCCFBD-5F33-35A8-94E6-C6DE1D62B9FE}.Debug|x64.ActiveCfg = Debug|x64
 		{F3CCCFBD-5F33-35A8-94E6-C6DE1D62B9FE}.Debug|x64.Build.0 = Debug|x64
-		{F3CCCFBD-5F33-35A8-94E6-C6DE1D62B9FE}.Release|Win32.ActiveCfg = Release|Win32
-		{F3CCCFBD-5F33-35A8-94E6-C6DE1D62B9FE}.Release|Win32.Build.0 = Release|Win32
 		{F3CCCFBD-5F33-35A8-94E6-C6DE1D62B9FE}.Release|x64.ActiveCfg = Release|x64
 		{F3CCCFBD-5F33-35A8-94E6-C6DE1D62B9FE}.Release|x64.Build.0 = Release|x64
-		{CF6C32AE-C4C2-3BE2-AA58-15F137A05C2C}.Debug|Win32.ActiveCfg = Debug|Win32
-		{CF6C32AE-C4C2-3BE2-AA58-15F137A05C2C}.Debug|Win32.Build.0 = Debug|Win32
 		{CF6C32AE-C4C2-3BE2-AA58-15F137A05C2C}.Debug|x64.ActiveCfg = Debug|x64
 		{CF6C32AE-C4C2-3BE2-AA58-15F137A05C2C}.Debug|x64.Build.0 = Debug|x64
-		{CF6C32AE-C4C2-3BE2-AA58-15F137A05C2C}.Release|Win32.ActiveCfg = Release|Win32
-		{CF6C32AE-C4C2-3BE2-AA58-15F137A05C2C}.Release|Win32.Build.0 = Release|Win32
 		{CF6C32AE-C4C2-3BE2-AA58-15F137A05C2C}.Release|x64.ActiveCfg = Release|x64
 		{CF6C32AE-C4C2-3BE2-AA58-15F137A05C2C}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
@@ -35,7 +25,7 @@ Global
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
-		Qt5Version = 5.14.2_msvc2017
-		SolutionGuid = {0F136434-839B-446C-ADAE-8C6CE511D0E7}
+		Qt5Version = 5.14.2_msvc2017_64
+		SolutionGuid = {BF9CC76C-7F21-4DB1-998C-72D3F8520AF6}
 	EndGlobalSection
 EndGlobal

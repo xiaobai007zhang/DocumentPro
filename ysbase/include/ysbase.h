@@ -1,4 +1,4 @@
-// YSBASE库头文件
+﻿// YSBASE库头文件
 // hhoking 2019.10.10
 //
 #pragma once
@@ -64,32 +64,32 @@
 
 namespace ys
 {
-    // 测试
-    YSBASE_API void ysbaseTest();
+	// 测试
+	YSBASE_API void ysbaseTest();
 
 
-    // Summary: 进行透视变换
-    // Parameters:
-    // [out] dstcoords  - 目标坐标
-    // [in]  srccoords  - 源坐标
-    // [in]  mat        - 变换矩阵
-    YSBASE_API void ysPerspectiveTransform(int dstcoords[8], const int srccoords[8], const double mat[9]);
+	// Summary: 进行透视变换
+	// Parameters:
+	// [out] dstcoords  - 目标坐标
+	// [in]  srccoords  - 源坐标
+	// [in]  mat        - 变换矩阵
+	YSBASE_API void ysPerspectiveTransform(int dstcoords[8], const int srccoords[8], const double mat[9]);
 
-    // Summary: 获取透视变换矩阵
-    // Parameters:
-    // [out] mat        - 变换矩阵
-    // [in]  srccoords  - 源坐标
-    // [in]  dstcoords  - 目标坐标
-    YSBASE_API void ysGetPerspectiveMat(double mat[9], const int srccoords[8], const int dstcoords[8]);
+	// Summary: 获取透视变换矩阵
+	// Parameters:
+	// [out] mat        - 变换矩阵
+	// [in]  srccoords  - 源坐标
+	// [in]  dstcoords  - 目标坐标
+	YSBASE_API void ysGetPerspectiveMat(double mat[9], const int srccoords[8], const int dstcoords[8]);
 
-    // Summary: 得到图像文件类型
-    // Parameters:
-    // [in] filename  - 图像文件路径名
-    YSBASE_API ImgType ysGetImageType(pcchar filename);
+	// Summary: 得到图像文件类型
+	// Parameters:
+	// [in] filename  - 图像文件路径名
+	YSBASE_API ImgType ysGetImageType(pcchar filename);
 
-    // Summary: 得到图像数据类型
-    // Parameters:
-    // [in] buf      - 图像数据缓冲区
-    // [in] bufsize  - 缓冲区大小
-    YSBASE_API ImgType ysGetImageTypeFromBuffer(pcuchar buf, size_t bufsize);
+	// Summary: 得到图像数据类型
+	// Parameters:
+	// [in] buf      - 图像数据缓冲区
+	// [in] bufsize  - 缓冲区大小
+	YSBASE_API ImgType ysGetImageTypeFromBuffer(pcuchar buf, size_t bufsize);
 }
