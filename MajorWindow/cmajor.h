@@ -2,17 +2,20 @@
 #define CMAJOR_H
 
 #include <QMainWindow>
-#include <QToolBar>
 #include <QTimer>
+#include <QToolBar>
 
-#include "plugin.h"
-#include "cfind.h"
 #include "centerwidget.h"
-#include "myhighlighter.h"
+#include "cfind.h"
 #include "ctable.h"
+#include "myhighlighter.h"
+#include "plugin.h"
 
 QT_BEGIN_NAMESPACE
-namespace Ui { class CMajor; }
+namespace Ui
+{
+    class CMajor;
+}
 QT_END_NAMESPACE
 
 //!主窗体类
@@ -21,13 +24,16 @@ class CMajor : public QMainWindow
     Q_OBJECT
 
 public:
-    CMajor(QWidget *parent = nullptr);
+    CMajor(QWidget* parent = nullptr);
     ~CMajor();
+
+    void getJson();
+
+    void setJson(const QString& fileName);
 
 public:
     //判断插件是否真正的加载成功了，如果失败会在当前的目录中产生日志
     void isLoadPlugin();
-
 
 private:
     void initMenuBar();
@@ -42,7 +48,7 @@ private:
 
     void initTableWidget();
 
-//!普通成员函数
+    //!普通成员函数
 private:
     //加载日志类的插件
     bool loadPlugin();
@@ -59,14 +65,14 @@ private:
     //给文件路径和文件名赋值
     void setFilePathAName(QString path);
 
-//!重写的函数
+    //!重写的函数
 private:
-    void resizeEvent(QResizeEvent *event);
+    void resizeEvent(QResizeEvent* event);
     void closeEvent(QCloseEvent* event);
 
-    //bool eventFilter(QObject*,QEvent*);
+    // bool eventFilter(QObject*,QEvent*);
 
-//!文档槽函数
+    //!文档槽函数
 private slots:
 
     //创建新的文档
@@ -102,7 +108,6 @@ private slots:
     //保存
     void slot_save();
 
-
     //缩放
     void slot_zoomOut();
     //扩大
@@ -114,7 +119,7 @@ private slots:
 
     void slot_color();
 
-//!其他槽函数
+    //!其他槽函数
 private slots:
     //定时器到期槽函数
     void slot_timeOut();
@@ -122,13 +127,12 @@ private slots:
     //如果改动了当前的文件，那么就会加上一个*号
     void slot_textChanged();
 
-    void slot_tableRowColumn(QString,QString);
+    void slot_tableRowColumn(QString, QString);
 
     void slot_menuBarFont();
 
-//!成员变量
+    //!成员变量
 private:
-
     //记录列数
     QString m_column;
 
@@ -136,9 +140,9 @@ private:
     QString m_row;
 
     //工具栏
-    QToolBar *m_toolBar;
+    QToolBar* m_toolBar;
 
-    QTimer *m_timer;
+    QTimer* m_timer;
 
     //当前编辑的文件名
     QString m_curFileName;
@@ -152,18 +156,18 @@ private:
     //中心部件的对象，也就是文档对象
     CenterWidget* m_wid;
 
-    CFind *m_findWid;
+    CFind* m_findWid;
 
-    CTable *m_table;
+    CTable* m_table;
 
-    MyHighLighter *myhighlighter;
+    MyHighLighter* myhighlighter;
 
-//!插件变量
+    //!插件变量
 private:
     //插件抽象类对象
-    Plugin *logFile;
+    Plugin* logFile;
 
 private:
-    Ui::CMajor *ui;
+    Ui::CMajor* ui;
 };
 #endif // CMAJOR_H
