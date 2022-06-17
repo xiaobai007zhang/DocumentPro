@@ -1,9 +1,0 @@
-﻿  Reading Qt configuration (C:\Qt\Qt5.14.2\5.14.2\msvc2017_64\bin\qmake.exe)
-  Generate moc_predefs.h
-  Moc'ing clog.h...
-  clog.cpp
-i:\vs2019-project\documentpro\journal\plugin.h : warning C4819: 该文件包含不能在当前代码页(936)中表示的字符。请将该文件保存为 Unicode 格式以防止数据丢失
-  moc_clog.cpp
-i:\vs2019-project\documentpro\journal\plugin.h : warning C4819: 该文件包含不能在当前代码页(936)中表示的字符。请将该文件保存为 Unicode 格式以防止数据丢失
-    正在创建库 I:\vs2019-project\DocumentPro\x64\Debug\\Journal.lib 和对象 I:\vs2019-project\DocumentPro\x64\Debug\\Journal.exp
-  Journal.vcxproj -> I:\vs2019-project\DocumentPro\x64\Debug\Journal.dll
