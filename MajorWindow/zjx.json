@@ -1,0 +1,22 @@
+{
+    "array": [
+        "language",
+        "math",
+        "calculate"
+    ],
+    "liujiabao": {
+        "age": "21",
+        "name": "刘家宝",
+        "sex": "男"
+    },
+    "wangshibo": {
+        "age": "22",
+        "name": "王世博",
+        "sex": "男"
+    },
+    "zhangjiaxu": {
+        "age": "22",
+        "name": "张佳旭",
+        "sex": "男"
+    }
+}

@@ -1,0 +1,30 @@
+﻿{
+    "objArray1": [{
+            "intArray": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+            "fixString": "zhang",
+            "boolArray": [true, false, false]
+        }, {
+            "intArray": [],
+            "fixString": "zhang",
+            "boolArray": []
+        }],
+    "objArray2": [{
+            "doubleArray": [1.1234, 2.1234],
+            "fixDouble": [10.5, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+            "obj": {
+                "intArray": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+                "fixString": "zhang",
+                "boolArray": [true, false, false]
+            }
+        }],
+    "objArray3": [{
+            "str": "a",
+            "strArray": ["奥里给", "兄弟们"]
+        }],
+    "整形": 10,
+    "obj": {
+        "str": "a",
+        "strArray": ["奥里给", "兄弟们"]
+    },
+    "utf8StrArray": []
+}

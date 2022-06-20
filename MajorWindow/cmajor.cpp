@@ -26,12 +26,57 @@
 
 #include "ysbase.h"
 using namespace ys;
+//json对象1
+R_STRUCT_BEGIN(CHILD1)
+R_INTARRAY(intArray)
+R_FIXSTRING(fixString, 10)
+R_BOOLARRAY(boolArray)
+R_STRUCT_END;
+
+//json对象2
+R_STRUCT_BEGIN(CHILD2)
+R_DOUBLEARRAY(doubleArray)
+R_FIXDOUBLEARRAY(fixDouble, 10)
+R_OBJ(obj, CHILD1)
+R_STRUCT_END;
+
+//json对象3
+R_STRUCT_BEGIN(CHILD3)
+R_STRING(str)
+R_STRINGARRAY(strArray)
+R_STRUCT_END;
+
+//json根对象，操作其他json子对象
+R_STRUCT_BEGIN(PARENT)
+R_OBJARRAY(objArray1, CHILD1)
+R_OBJARRAY(objArray2, CHILD2)
+R_OBJARRAY(objArray3, CHILD3)
+R_INT(iInt)
+R_OBJ(obj, CHILD3)
+R_UTF8STRINGARRAY(utf8StrArray)
+R_STRUCT_END;
+
+//测试宏 R_SAX_STRUCT_BEGIN,包括SAX字段的类都是包含着友元类
+R_SAX_STRUCT_BEGIN(TEST)
+R_SAX_STRUCT_END;
+
+//测试宏 R_SAX_FUNC_BEGIN ,定义了TEST的SAX序列化函数，并调用TEST类的普通序列化函数
+R_SAX_FUNC_BEGIN(TEST)
+R_SAX(TEST)
+R_SAX_FUNC_END;
 
 
-//{
-// 'ia': 0,
-// 'b': false
-//}
+RBoxD box;
+
+//测试宏 R_STRUCT_DERIVE, 该宏的功能为：让第一个参数的类继承第二个参数的类
+R_STRUCT_DERIVE(TDERIVE, PARENT)
+R_STRUCT_END;
+
+//测试宏 R_STRUCT_BASE， 跟普通的R_STRUCT_BEGIN一样，就是多了一个静态函数New(int type)，需要重写静态函数，否则编译报错
+R_STRUCT_BASE(BASE)
+R_STRUCT_END;
+
+
 
 enum enum_num
 {
@@ -56,6 +101,8 @@ CMajor::CMajor(QWidget* parent) : QMainWindow(parent), ui(new Ui::CMajor)
 	//练习接口
 	// printf("%d\n", arr.Count());
 	// RArray<R<int>> arr(L"张佳旭", nullptr);
+
+
 }
 
 CMajor::~CMajor()
@@ -284,6 +331,10 @@ void CMajor::setFilePathAName(QString path)
 	m_curFileName = list.at(len - 1);
 }
 
+BASE* BASE::New(int type) {
+	printf("type:%d\n", type);
+	return nullptr;
+}
 void CMajor::getJson()
 {
 	QFile file("./zjx.json");
@@ -297,74 +348,60 @@ void CMajor::getJson()
 	stream.setCodec("UTF-8");
 	QString strFile = stream.readAll();
 
+
 	//====================================================
 	//测试接口功能
-	R_STRUCT_BEGIN(CHILD1)
-		R_INTARRAY(intArray)
-		R_FIXSTRING(fixString, 10)
-		R_BOOLARRAY(boolArray)
-		R_STRUCT_END;
-
-	R_STRUCT_BEGIN(CHILD2)
-		R_DOUBLEARRAY(doubleArray)
-		R_FIXDOUBLEARRAY(fixDouble, 10)
-		R_OBJ(obj, CHILD1)
-		R_STRUCT_END;
-
-	R_STRUCT_BEGIN(CHILD3)
-		R_STRING(str)
-		R_STRINGARRAY(strArray)
-		R_STRUCT_END;
-
-
-	R_STRUCT_BEGIN(PARENT)
-		R_OBJARRAY(objArray1, CHILD1)
-		R_OBJARRAY(objArray2, CHILD2)
-		R_OBJARRAY(objArray3, CHILD3)
-
-		R_OBJ(obj, CHILD3)
-		R_STRUCT_END;
-
 	CHILD1 child1;
 	CHILD2 child2;
 	CHILD3 child3;
 	PARENT parent;
+	BASE base;
 
-	//child1
-	child1.boolArray.Add(true);
-	child1.boolArray.Add(false);
-	child1.boolArray.Add(false);
-	child1.fixString[0] = child1.fixString.Count();
-	child1.fixString.Set(L"zhang", strlen("zhang"));
+	base.New(10);
+
 	for (int i = 0; i < 10; i++)
 	{
 		child1.intArray.Add(i);
 	}
+	child1.boolArray.Add(true);
+	child1.boolArray.Add(false);
+	child1.boolArray.Add(false);
+
+	child1.fixString[0] = child1.fixString.Count();
+	child1.fixString.Set(L"zhang", strlen("zhang"));
 
 	//child2
-	child2.doubleArray.Add(1.123456);
-	child2.doubleArray.Add(2.123456);
-	const double dou = 16.5;
-	child2.fixDouble.Set(&dou, 10);
+	child2.doubleArray.Add(1.1234);
+	child2.doubleArray.Add(2.1234);
 	child2.obj = child1;
+	double* dou = new double(10.5);
+	child2.fixDouble.Set(dou, 1);
 
 	//child3
 	child3.str.Add(L'a');
 	child3.strArray.Add(L"奥里给");
-	child3.strArray.Add(L"干了兄弟们");
-	//parent
+	child3.strArray.Add(L"兄弟们");
+	////parent
 
+	parent.iInt = 10;
+	parent.iInt.SetName(L"整形");
 	parent.obj = child3;
 	parent.objArray1.Add(std::move(child1));
 
 	parent.objArray3.Add(std::move(child3));
-	child3.SetName(L"child4");
+	//child3.SetName(L"child4");
 	parent.objArray2.Add(std::move(child2));
-	parent.objArray3.Add(std::move(child3));
-
+	//parent.objArray3.Add(std::move(child3));
+	parent.objArray1.Add(std::move(child1));
 
 	json_save(L"./test.json", parent, true);
 
+	/*if (json_save(L"./test.json", child3, true) == true) {
+		m_wid->m_textEdit->setText("success");
+	}
+	else {
+		m_wid->m_textEdit->setText("failed");
+	}*/
 	//=====================================================
 
 	//QJsonParseError error;
@@ -397,11 +434,11 @@ void CMajor::setJson(const QString& fileName)
 	QJsonObject obj1;
 
 	obj1.insert("age", QJsonValue("22"));
-	obj1.insert("name", "张佳旭");
-	obj1.insert("sex", "男");
+	obj1.insert("name", QStringLiteral("张佳旭"));
+	obj1.insert("sex", QStringLiteral("男"));
 
-	QJsonObject obj2({ {"age", "21"}, {"name", "刘家宝"}, {"sex", "男"} });
-	QJsonObject obj3({ {"age", "22"}, {"name", "王世博"}, {"sex", "男"} });
+	QJsonObject obj2({ {"age", "21"}, {"name", QStringLiteral("刘家宝")}, {"sex", QStringLiteral("男")} });
+	QJsonObject obj3({ {"age", "22"}, {"name", QStringLiteral("王世博")}, {"sex", QStringLiteral("男")} });
 
 	QJsonArray array;
 	array.append("language");

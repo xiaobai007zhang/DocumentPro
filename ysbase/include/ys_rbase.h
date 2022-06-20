@@ -396,6 +396,7 @@ namespace ys
 		{
 			_mem.Insert(idx, std::move(val));
 		}
+		//把元素抽出来，然后返回该元素
 		T Detach(int idx) // 分离元素
 		{
 			T val = std::move(_mem[idx]);
@@ -962,7 +963,7 @@ namespace ys
 		}
 	};
 }
-
+//cls是一个类对象，继承了ROBjectSAX,而且还是RObjectSAX的友元类，互为友元类
 #define R_SAX_STRUCT_BEGIN(cls)                                           \
     struct cls : public ys::RObjectSAX<cls>                               \
     {                                                                     \
@@ -976,6 +977,7 @@ protected:                                      \
     void _serialize_sax(Handler &writer) const; \
     }
 
+//重新实现sax序列化函数
 #define R_SAX_FUNC_BEGIN(cls)                       \
     template <typename Handler>                     \
     void cls::_serialize_sax(Handler &writer) const \
