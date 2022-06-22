@@ -85,6 +85,7 @@ namespace ys
 	// 用意：只接收反序列化的数据，如果遇到了非反序列化的数据，那么直接停止遍历
 	inline TraversalStatus set_disable(ReflexBase* rb, const void* param)
 	{
+		Q_UNUSED(param);
 		if (!rb->IsDeserialized())
 		{
 			rb->SetDisabled(true);

@@ -65,6 +65,12 @@
     <ClCompile Include="myhighlighter.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="mygraphicstextitem.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="mygraphicsscene.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <QtMoc Include="centerwidget.h">
@@ -82,26 +88,20 @@
     <ClInclude Include="myhighlighter.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <QtMoc Include="mygraphicstextitem.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="mygraphicsscene.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
   </ItemGroup>
   <ItemGroup>
-    
-    
-    
-    
-    
-    
-    
-    
     <CustomBuild Include="debug\moc_predefs.h.cbt">
       <Filter>Generated Files</Filter>
     </CustomBuild>
     <CustomBuild Include="release\moc_predefs.h.cbt">
       <Filter>Generated Files</Filter>
     </CustomBuild>
-    
-    
-    
-    
   </ItemGroup>
   <ItemGroup>
     <QtUic Include="centerwidget.ui">
