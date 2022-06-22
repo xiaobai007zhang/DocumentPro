@@ -161,7 +161,7 @@
       <IgnoreImportLibrary>true</IgnoreImportLibrary>
       <OutputFile>$(OutDir)MajorWindow.exe</OutputFile>
       <RandomizedBaseAddress>true</RandomizedBaseAddress>
-      <SubSystem>Windows</SubSystem>
+      <SubSystem>Console</SubSystem>
       <SuppressStartupBanner>true</SuppressStartupBanner>
     </Link>
     <Midl>
@@ -192,6 +192,8 @@
     <ClCompile Include="cmajor.cpp" />
     <ClCompile Include="ctable.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="mygraphicsscene.cpp" />
+    <ClCompile Include="mygraphicstextitem.cpp" />
     <ClCompile Include="myhighlighter.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -203,6 +205,8 @@
     </QtMoc>
     <QtMoc Include="ctable.h">
     </QtMoc>
+    <QtMoc Include="mygraphicstextitem.h" />
+    <QtMoc Include="mygraphicsscene.h" />
     <ClInclude Include="myhighlighter.h" />
   </ItemGroup>
   <ItemGroup>

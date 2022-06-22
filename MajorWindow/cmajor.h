@@ -4,12 +4,19 @@
 #include <QMainWindow>
 #include <QTimer>
 #include <QToolBar>
+#include <QGraphicsView>
+#include <QGraphicsItem>
+#include <QGraphicsScene>
+#include <QThread>
+#include "mygraphicstextitem.h"
 
 #include "centerwidget.h"
 #include "cfind.h"
 #include "ctable.h"
 #include "myhighlighter.h"
 #include "plugin.h"
+#include "mygraphicsscene.h"
+
 
 QT_BEGIN_NAMESPACE
 namespace Ui
@@ -27,9 +34,12 @@ public:
 	CMajor(QWidget* parent = nullptr);
 	~CMajor();
 
+	//=================测试====================//
 	void getJson();
 
 	void setJson(const QString& fileName);
+
+	//=========================================//
 
 public:
 	//判断插件是否真正的加载成功了，如果失败会在当前的目录中产生日志
@@ -47,6 +57,8 @@ private:
 	void initFindWidget();
 
 	void initTableWidget();
+
+	void initGraphics();
 
 	//!普通成员函数
 private:
@@ -67,10 +79,14 @@ private:
 
 	//!重写的函数
 private:
-	void resizeEvent(QResizeEvent* event);
-	void closeEvent(QCloseEvent* event);
+	void resizeEvent(QResizeEvent* event)override;
+	void closeEvent(QCloseEvent* event)override;
 
+protected:
+	void mousePressEvent(QMouseEvent* event)override;
 	// bool eventFilter(QObject*,QEvent*);
+
+	//void mouseReleaseEvent(QMouseEvent* event)override;
 
 	//!文档槽函数
 private slots:
@@ -118,6 +134,13 @@ private slots:
 	void slot_findBtnClicked(QString);
 
 	void slot_color();
+	//改变光标形状,改变标志位
+	void slot_textFrame();
+
+	//删除文本框
+	void slot_eraseTextFrame(QGraphicsTextItem*);
+
+	void slot_rectFrame(QSize size, QPointF point);
 
 	//!其他槽函数
 private slots:
@@ -125,12 +148,13 @@ private slots:
 	void slot_timeOut();
 
 	//如果改动了当前的文件，那么就会加上一个*号
-	void slot_textChanged();
+	void slot_textChanged(const QList<QRectF>);
 
 	void slot_tableRowColumn(QString, QString);
 
 	void slot_menuBarFont();
 
+	void slot_sceneUpdate();
 	//!成员变量
 private:
 	//记录列数
@@ -161,6 +185,19 @@ private:
 	CTable* m_table;
 
 	MyHighLighter* myhighlighter;
+
+	QGraphicsView* m_view;
+
+	//QGraphicsScene* m_scene;
+	MyGraphicsScene* m_scene;
+
+	MyGraphicsTextItem* text;
+
+	bool m_textEnable;
+
+	QThread* m_slotTimerThread;
+
+	QAction* m_tempTextFrame;
 
 	//!插件变量
 private:
