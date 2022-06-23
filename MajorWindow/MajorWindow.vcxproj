@@ -192,6 +192,7 @@
     <ClCompile Include="cmajor.cpp" />
     <ClCompile Include="ctable.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="mygraphicspixmapitem.cpp" />
     <ClCompile Include="mygraphicsscene.cpp" />
     <ClCompile Include="mygraphicstextitem.cpp" />
     <ClCompile Include="myhighlighter.cpp" />
@@ -207,6 +208,7 @@
     </QtMoc>
     <QtMoc Include="mygraphicstextitem.h" />
     <QtMoc Include="mygraphicsscene.h" />
+    <QtMoc Include="mygraphicspixmapitem.h" />
     <ClInclude Include="myhighlighter.h" />
   </ItemGroup>
   <ItemGroup>
