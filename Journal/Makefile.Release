@@ -169,7 +169,7 @@ release/moc_clog.cpp: clog.h \
 		Journal_global.h \
 		release/moc_predefs.h \
 		C:/Qt/Qt5.14.2/5.14.2/mingw73_32/bin/moc.exe
-	C:\Qt\Qt5.14.2\5.14.2\mingw73_32\bin\moc.exe $(DEFINES) --include I:/QTCreator/MyDocument/Journal/release/moc_predefs.h -IC:/Qt/Qt5.14.2/5.14.2/mingw73_32/mkspecs/win32-g++ -II:/QTCreator/MyDocument/Journal -IC:/Qt/Qt5.14.2/5.14.2/mingw73_32/include -IC:/Qt/Qt5.14.2/5.14.2/mingw73_32/include/QtCore -IC:/Qt/Qt5.14.2/Tools/mingw730_32/lib/gcc/i686-w64-mingw32/7.3.0/include/c++ -IC:/Qt/Qt5.14.2/Tools/mingw730_32/lib/gcc/i686-w64-mingw32/7.3.0/include/c++/i686-w64-mingw32 -IC:/Qt/Qt5.14.2/Tools/mingw730_32/lib/gcc/i686-w64-mingw32/7.3.0/include/c++/backward -IC:/Qt/Qt5.14.2/Tools/mingw730_32/lib/gcc/i686-w64-mingw32/7.3.0/include -IC:/Qt/Qt5.14.2/Tools/mingw730_32/lib/gcc/i686-w64-mingw32/7.3.0/include-fixed -IC:/Qt/Qt5.14.2/Tools/mingw730_32/i686-w64-mingw32/include clog.h -o release\moc_clog.cpp
+	C:\Qt\Qt5.14.2\5.14.2\mingw73_32\bin\moc.exe $(DEFINES) --include I:/test/DocumentPro/Journal/release/moc_predefs.h -IC:/Qt/Qt5.14.2/5.14.2/mingw73_32/mkspecs/win32-g++ -II:/test/DocumentPro/Journal -IC:/Qt/Qt5.14.2/5.14.2/mingw73_32/include -IC:/Qt/Qt5.14.2/5.14.2/mingw73_32/include/QtCore -I"C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.32.31326\ATLMFC\include" -I"C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.32.31326\include" -I"C:\Program Files (x86)\Windows Kits\NETFXSDK\4.8\include\um" -I"C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\ucrt" -I"C:\Program Files (x86)\Windows Kits\10\\include\10.0.19041.0\\shared" -I"C:\Program Files (x86)\Windows Kits\10\\include\10.0.19041.0\\um" -I"C:\Program Files (x86)\Windows Kits\10\\include\10.0.19041.0\\winrt" -I"C:\Program Files (x86)\Windows Kits\10\\include\10.0.19041.0\\cppwinrt" clog.h -o release\moc_clog.cpp
 
 compiler_moc_objc_header_make_all:
 compiler_moc_objc_header_clean:
@@ -260,7 +260,11 @@ release/clog.o: clog.cpp clog.h \
 		C:/Qt/Qt5.14.2/5.14.2/mingw73_32/include/QtCore/qset.h \
 		C:/Qt/Qt5.14.2/5.14.2/mingw73_32/include/QtCore/qcontiguouscache.h \
 		C:/Qt/Qt5.14.2/5.14.2/mingw73_32/include/QtCore/qsharedpointer.h \
-		C:/Qt/Qt5.14.2/5.14.2/mingw73_32/include/QtCore/qsharedpointer_impl.h
+		C:/Qt/Qt5.14.2/5.14.2/mingw73_32/include/QtCore/qsharedpointer_impl.h \
+		C:/Qt/Qt5.14.2/5.14.2/mingw73_32/include/QtCore/QDir \
+		C:/Qt/Qt5.14.2/5.14.2/mingw73_32/include/QtCore/qdir.h \
+		C:/Qt/Qt5.14.2/5.14.2/mingw73_32/include/QtCore/qfileinfo.h \
+		C:/Qt/Qt5.14.2/5.14.2/mingw73_32/include/QtCore/QDebug
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o release\clog.o clog.cpp
 
 release/moc_clog.o: release/moc_clog.cpp 

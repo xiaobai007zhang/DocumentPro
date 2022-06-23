@@ -16,10 +16,10 @@ CXX           = g++
 DEFINES       = -DUNICODE -D_UNICODE -DWIN32 -DMINGW_HAS_SECURE_API=1 -DQT_DEPRECATED_WARNINGS -DQT_QML_DEBUG -DQT_PRINTSUPPORT_LIB -DQT_WIDGETS_LIB -DQT_GUI_LIB -DQT_CORE_LIB -DQT_NEEDS_QMAIN
 CFLAGS        = -fno-keep-inline-dllexport -g -Wall -Wextra -Wextra $(DEFINES)
 CXXFLAGS      = -fno-keep-inline-dllexport -g -std=gnu++11 -Wall -Wextra -Wextra -fexceptions -mthreads $(DEFINES)
-INCPATH       = -I. -I..\Journal -IC:\Qt\Qt5.14.2\5.14.2\mingw73_32\include -IC:\Qt\Qt5.14.2\5.14.2\mingw73_32\include\QtPrintSupport -IC:\Qt\Qt5.14.2\5.14.2\mingw73_32\include\QtWidgets -IC:\Qt\Qt5.14.2\5.14.2\mingw73_32\include\QtGui -IC:\Qt\Qt5.14.2\5.14.2\mingw73_32\include\QtANGLE -IC:\Qt\Qt5.14.2\5.14.2\mingw73_32\include\QtCore -Idebug -I. -IC:\Qt\Qt5.14.2\5.14.2\mingw73_32\mkspecs\win32-g++ 
+INCPATH       = -I. -I..\ysbase\include -I..\ysbase\lib -IC:\Qt\Qt5.14.2\5.14.2\mingw73_32\include -IC:\Qt\Qt5.14.2\5.14.2\mingw73_32\include\QtPrintSupport -IC:\Qt\Qt5.14.2\5.14.2\mingw73_32\include\QtWidgets -IC:\Qt\Qt5.14.2\5.14.2\mingw73_32\include\QtGui -IC:\Qt\Qt5.14.2\5.14.2\mingw73_32\include\QtANGLE -IC:\Qt\Qt5.14.2\5.14.2\mingw73_32\include\QtCore -Idebug -I. -IC:\Qt\Qt5.14.2\5.14.2\mingw73_32\mkspecs\win32-g++ 
 LINKER      =        g++
 LFLAGS        =        -Wl,-subsystem,windows -mthreads
-LIBS        =        C:\Qt\Qt5.14.2\5.14.2\mingw73_32\lib\libQt5PrintSupport.a C:\Qt\Qt5.14.2\5.14.2\mingw73_32\lib\libQt5Widgets.a C:\Qt\Qt5.14.2\5.14.2\mingw73_32\lib\libQt5Gui.a C:\Qt\Qt5.14.2\5.14.2\mingw73_32\lib\libQt5Core.a  -lmingw32 C:\Qt\Qt5.14.2\5.14.2\mingw73_32\lib\libqtmain.a -LC:\openssl\lib -LC:\Utils\my_sql\mysql-5.7.25-win32\lib -LC:\Utils\postgresql\pgsql\lib -lshell32 
+LIBS        =        -LC:\Users\13030\Desktop -LI:\test\DocumentPro\ysbase\lib -lysbase C:\Qt\Qt5.14.2\5.14.2\mingw73_32\lib\libQt5PrintSupport.a C:\Qt\Qt5.14.2\5.14.2\mingw73_32\lib\libQt5Widgets.a C:\Qt\Qt5.14.2\5.14.2\mingw73_32\lib\libQt5Gui.a C:\Qt\Qt5.14.2\5.14.2\mingw73_32\lib\libQt5Core.a  -lmingw32 C:\Qt\Qt5.14.2\5.14.2\mingw73_32\lib\libqtmain.a -LC:\openssl\lib -LC:\Utils\my_sql\mysql-5.7.25-win32\lib -LC:\Utils\postgresql\pgsql\lib -lshell32 
 QMAKE         = C:\Qt\Qt5.14.2\5.14.2\mingw73_32\bin\qmake.exe
 DEL_FILE      = del
 CHK_DIR_EXISTS= if not exist
@@ -257,7 +257,7 @@ debug/moc_centerwidget.cpp: centerwidget.h \
 		C:/Qt/Qt5.14.2/5.14.2/mingw73_32/include/QtGui/qfontdatabase.h \
 		debug/moc_predefs.h \
 		C:/Qt/Qt5.14.2/5.14.2/mingw73_32/bin/moc.exe
-	C:\Qt\Qt5.14.2\5.14.2\mingw73_32\bin\moc.exe $(DEFINES) --include I:/QTCreator/MyDocument/MajorWindow/debug/moc_predefs.h -IC:/Qt/Qt5.14.2/5.14.2/mingw73_32/mkspecs/win32-g++ -II:/QTCreator/MyDocument/MajorWindow -II:/QTCreator/MyDocument/Journal -IC:/Qt/Qt5.14.2/5.14.2/mingw73_32/include -IC:/Qt/Qt5.14.2/5.14.2/mingw73_32/include/QtPrintSupport -IC:/Qt/Qt5.14.2/5.14.2/mingw73_32/include/QtWidgets -IC:/Qt/Qt5.14.2/5.14.2/mingw73_32/include/QtGui -IC:/Qt/Qt5.14.2/5.14.2/mingw73_32/include/QtANGLE -IC:/Qt/Qt5.14.2/5.14.2/mingw73_32/include/QtCore -IC:/Qt/Qt5.14.2/Tools/mingw730_32/lib/gcc/i686-w64-mingw32/7.3.0/include/c++ -IC:/Qt/Qt5.14.2/Tools/mingw730_32/lib/gcc/i686-w64-mingw32/7.3.0/include/c++/i686-w64-mingw32 -IC:/Qt/Qt5.14.2/Tools/mingw730_32/lib/gcc/i686-w64-mingw32/7.3.0/include/c++/backward -IC:/Qt/Qt5.14.2/Tools/mingw730_32/lib/gcc/i686-w64-mingw32/7.3.0/include -IC:/Qt/Qt5.14.2/Tools/mingw730_32/lib/gcc/i686-w64-mingw32/7.3.0/include-fixed -IC:/Qt/Qt5.14.2/Tools/mingw730_32/i686-w64-mingw32/include centerwidget.h -o debug\moc_centerwidget.cpp
+	C:\Qt\Qt5.14.2\5.14.2\mingw73_32\bin\moc.exe $(DEFINES) --include I:/test/DocumentPro/MajorWindow/debug/moc_predefs.h -IC:/Qt/Qt5.14.2/5.14.2/mingw73_32/mkspecs/win32-g++ -II:/test/DocumentPro/MajorWindow -II:/test/DocumentPro/ysbase/include -II:/test/DocumentPro/ysbase/lib -IC:/Qt/Qt5.14.2/5.14.2/mingw73_32/include -IC:/Qt/Qt5.14.2/5.14.2/mingw73_32/include/QtPrintSupport -IC:/Qt/Qt5.14.2/5.14.2/mingw73_32/include/QtWidgets -IC:/Qt/Qt5.14.2/5.14.2/mingw73_32/include/QtGui -IC:/Qt/Qt5.14.2/5.14.2/mingw73_32/include/QtANGLE -IC:/Qt/Qt5.14.2/5.14.2/mingw73_32/include/QtCore -I"C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.32.31326\ATLMFC\include" -I"C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.32.31326\include" -I"C:\Program Files (x86)\Windows Kits\NETFXSDK\4.8\include\um" -I"C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\ucrt" -I"C:\Program Files (x86)\Windows Kits\10\\include\10.0.19041.0\\shared" -I"C:\Program Files (x86)\Windows Kits\10\\include\10.0.19041.0\\um" -I"C:\Program Files (x86)\Windows Kits\10\\include\10.0.19041.0\\winrt" -I"C:\Program Files (x86)\Windows Kits\10\\include\10.0.19041.0\\cppwinrt" centerwidget.h -o debug\moc_centerwidget.cpp
 
 debug/moc_cfind.cpp: cfind.h \
 		C:/Qt/Qt5.14.2/5.14.2/mingw73_32/include/QtWidgets/QWidget \
@@ -377,7 +377,7 @@ debug/moc_cfind.cpp: cfind.h \
 		C:/Qt/Qt5.14.2/5.14.2/mingw73_32/include/QtGui/qtextoption.h \
 		debug/moc_predefs.h \
 		C:/Qt/Qt5.14.2/5.14.2/mingw73_32/bin/moc.exe
-	C:\Qt\Qt5.14.2\5.14.2\mingw73_32\bin\moc.exe $(DEFINES) --include I:/QTCreator/MyDocument/MajorWindow/debug/moc_predefs.h -IC:/Qt/Qt5.14.2/5.14.2/mingw73_32/mkspecs/win32-g++ -II:/QTCreator/MyDocument/MajorWindow -II:/QTCreator/MyDocument/Journal -IC:/Qt/Qt5.14.2/5.14.2/mingw73_32/include -IC:/Qt/Qt5.14.2/5.14.2/mingw73_32/include/QtPrintSupport -IC:/Qt/Qt5.14.2/5.14.2/mingw73_32/include/QtWidgets -IC:/Qt/Qt5.14.2/5.14.2/mingw73_32/include/QtGui -IC:/Qt/Qt5.14.2/5.14.2/mingw73_32/include/QtANGLE -IC:/Qt/Qt5.14.2/5.14.2/mingw73_32/include/QtCore -IC:/Qt/Qt5.14.2/Tools/mingw730_32/lib/gcc/i686-w64-mingw32/7.3.0/include/c++ -IC:/Qt/Qt5.14.2/Tools/mingw730_32/lib/gcc/i686-w64-mingw32/7.3.0/include/c++/i686-w64-mingw32 -IC:/Qt/Qt5.14.2/Tools/mingw730_32/lib/gcc/i686-w64-mingw32/7.3.0/include/c++/backward -IC:/Qt/Qt5.14.2/Tools/mingw730_32/lib/gcc/i686-w64-mingw32/7.3.0/include -IC:/Qt/Qt5.14.2/Tools/mingw730_32/lib/gcc/i686-w64-mingw32/7.3.0/include-fixed -IC:/Qt/Qt5.14.2/Tools/mingw730_32/i686-w64-mingw32/include cfind.h -o debug\moc_cfind.cpp
+	C:\Qt\Qt5.14.2\5.14.2\mingw73_32\bin\moc.exe $(DEFINES) --include I:/test/DocumentPro/MajorWindow/debug/moc_predefs.h -IC:/Qt/Qt5.14.2/5.14.2/mingw73_32/mkspecs/win32-g++ -II:/test/DocumentPro/MajorWindow -II:/test/DocumentPro/ysbase/include -II:/test/DocumentPro/ysbase/lib -IC:/Qt/Qt5.14.2/5.14.2/mingw73_32/include -IC:/Qt/Qt5.14.2/5.14.2/mingw73_32/include/QtPrintSupport -IC:/Qt/Qt5.14.2/5.14.2/mingw73_32/include/QtWidgets -IC:/Qt/Qt5.14.2/5.14.2/mingw73_32/include/QtGui -IC:/Qt/Qt5.14.2/5.14.2/mingw73_32/include/QtANGLE -IC:/Qt/Qt5.14.2/5.14.2/mingw73_32/include/QtCore -I"C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.32.31326\ATLMFC\include" -I"C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.32.31326\include" -I"C:\Program Files (x86)\Windows Kits\NETFXSDK\4.8\include\um" -I"C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\ucrt" -I"C:\Program Files (x86)\Windows Kits\10\\include\10.0.19041.0\\shared" -I"C:\Program Files (x86)\Windows Kits\10\\include\10.0.19041.0\\um" -I"C:\Program Files (x86)\Windows Kits\10\\include\10.0.19041.0\\winrt" -I"C:\Program Files (x86)\Windows Kits\10\\include\10.0.19041.0\\cppwinrt" cfind.h -o debug\moc_cfind.cpp
 
 debug/moc_ctable.cpp: ctable.h \
 		C:/Qt/Qt5.14.2/5.14.2/mingw73_32/include/QtWidgets/QWidget \
@@ -486,7 +486,7 @@ debug/moc_ctable.cpp: ctable.h \
 		C:/Qt/Qt5.14.2/5.14.2/mingw73_32/include/QtGui/qtouchdevice.h \
 		debug/moc_predefs.h \
 		C:/Qt/Qt5.14.2/5.14.2/mingw73_32/bin/moc.exe
-	C:\Qt\Qt5.14.2\5.14.2\mingw73_32\bin\moc.exe $(DEFINES) --include I:/QTCreator/MyDocument/MajorWindow/debug/moc_predefs.h -IC:/Qt/Qt5.14.2/5.14.2/mingw73_32/mkspecs/win32-g++ -II:/QTCreator/MyDocument/MajorWindow -II:/QTCreator/MyDocument/Journal -IC:/Qt/Qt5.14.2/5.14.2/mingw73_32/include -IC:/Qt/Qt5.14.2/5.14.2/mingw73_32/include/QtPrintSupport -IC:/Qt/Qt5.14.2/5.14.2/mingw73_32/include/QtWidgets -IC:/Qt/Qt5.14.2/5.14.2/mingw73_32/include/QtGui -IC:/Qt/Qt5.14.2/5.14.2/mingw73_32/include/QtANGLE -IC:/Qt/Qt5.14.2/5.14.2/mingw73_32/include/QtCore -IC:/Qt/Qt5.14.2/Tools/mingw730_32/lib/gcc/i686-w64-mingw32/7.3.0/include/c++ -IC:/Qt/Qt5.14.2/Tools/mingw730_32/lib/gcc/i686-w64-mingw32/7.3.0/include/c++/i686-w64-mingw32 -IC:/Qt/Qt5.14.2/Tools/mingw730_32/lib/gcc/i686-w64-mingw32/7.3.0/include/c++/backward -IC:/Qt/Qt5.14.2/Tools/mingw730_32/lib/gcc/i686-w64-mingw32/7.3.0/include -IC:/Qt/Qt5.14.2/Tools/mingw730_32/lib/gcc/i686-w64-mingw32/7.3.0/include-fixed -IC:/Qt/Qt5.14.2/Tools/mingw730_32/i686-w64-mingw32/include ctable.h -o debug\moc_ctable.cpp
+	C:\Qt\Qt5.14.2\5.14.2\mingw73_32\bin\moc.exe $(DEFINES) --include I:/test/DocumentPro/MajorWindow/debug/moc_predefs.h -IC:/Qt/Qt5.14.2/5.14.2/mingw73_32/mkspecs/win32-g++ -II:/test/DocumentPro/MajorWindow -II:/test/DocumentPro/ysbase/include -II:/test/DocumentPro/ysbase/lib -IC:/Qt/Qt5.14.2/5.14.2/mingw73_32/include -IC:/Qt/Qt5.14.2/5.14.2/mingw73_32/include/QtPrintSupport -IC:/Qt/Qt5.14.2/5.14.2/mingw73_32/include/QtWidgets -IC:/Qt/Qt5.14.2/5.14.2/mingw73_32/include/QtGui -IC:/Qt/Qt5.14.2/5.14.2/mingw73_32/include/QtANGLE -IC:/Qt/Qt5.14.2/5.14.2/mingw73_32/include/QtCore -I"C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.32.31326\ATLMFC\include" -I"C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.32.31326\include" -I"C:\Program Files (x86)\Windows Kits\NETFXSDK\4.8\include\um" -I"C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\ucrt" -I"C:\Program Files (x86)\Windows Kits\10\\include\10.0.19041.0\\shared" -I"C:\Program Files (x86)\Windows Kits\10\\include\10.0.19041.0\\um" -I"C:\Program Files (x86)\Windows Kits\10\\include\10.0.19041.0\\winrt" -I"C:\Program Files (x86)\Windows Kits\10\\include\10.0.19041.0\\cppwinrt" ctable.h -o debug\moc_ctable.cpp
 
 debug/moc_cmajor.cpp: cmajor.h \
 		C:/Qt/Qt5.14.2/5.14.2/mingw73_32/include/QtWidgets/QMainWindow \
@@ -596,31 +596,40 @@ debug/moc_cmajor.cpp: cmajor.h \
 		C:/Qt/Qt5.14.2/5.14.2/mingw73_32/include/QtGui/qtouchdevice.h \
 		C:/Qt/Qt5.14.2/5.14.2/mingw73_32/include/QtWidgets/qtabwidget.h \
 		C:/Qt/Qt5.14.2/5.14.2/mingw73_32/include/QtGui/qicon.h \
+		C:/Qt/Qt5.14.2/5.14.2/mingw73_32/include/QtCore/QTimer \
+		C:/Qt/Qt5.14.2/5.14.2/mingw73_32/include/QtCore/qtimer.h \
+		C:/Qt/Qt5.14.2/5.14.2/mingw73_32/include/QtCore/qbasictimer.h \
 		C:/Qt/Qt5.14.2/5.14.2/mingw73_32/include/QtWidgets/QToolBar \
 		C:/Qt/Qt5.14.2/5.14.2/mingw73_32/include/QtWidgets/qtoolbar.h \
 		C:/Qt/Qt5.14.2/5.14.2/mingw73_32/include/QtWidgets/qaction.h \
 		C:/Qt/Qt5.14.2/5.14.2/mingw73_32/include/QtWidgets/qactiongroup.h \
-		C:/Qt/Qt5.14.2/5.14.2/mingw73_32/include/QtCore/QTimer \
-		C:/Qt/Qt5.14.2/5.14.2/mingw73_32/include/QtCore/qtimer.h \
-		C:/Qt/Qt5.14.2/5.14.2/mingw73_32/include/QtCore/qbasictimer.h \
-		../Journal/plugin.h \
-		C:/Qt/Qt5.14.2/5.14.2/mingw73_32/include/QtCore/QObject \
-		cfind.h \
-		C:/Qt/Qt5.14.2/5.14.2/mingw73_32/include/QtWidgets/QWidget \
-		C:/Qt/Qt5.14.2/5.14.2/mingw73_32/include/QtWidgets/QPushButton \
-		C:/Qt/Qt5.14.2/5.14.2/mingw73_32/include/QtWidgets/qpushbutton.h \
-		C:/Qt/Qt5.14.2/5.14.2/mingw73_32/include/QtWidgets/qabstractbutton.h \
-		C:/Qt/Qt5.14.2/5.14.2/mingw73_32/include/QtWidgets/QLineEdit \
-		C:/Qt/Qt5.14.2/5.14.2/mingw73_32/include/QtWidgets/qlineedit.h \
+		C:/Qt/Qt5.14.2/5.14.2/mingw73_32/include/QtWidgets/QGraphicsView \
+		C:/Qt/Qt5.14.2/5.14.2/mingw73_32/include/QtWidgets/qgraphicsview.h \
+		C:/Qt/Qt5.14.2/5.14.2/mingw73_32/include/QtGui/qpainter.h \
+		C:/Qt/Qt5.14.2/5.14.2/mingw73_32/include/QtGui/qtextoption.h \
+		C:/Qt/Qt5.14.2/5.14.2/mingw73_32/include/QtGui/qpen.h \
+		C:/Qt/Qt5.14.2/5.14.2/mingw73_32/include/QtWidgets/qscrollarea.h \
+		C:/Qt/Qt5.14.2/5.14.2/mingw73_32/include/QtWidgets/qabstractscrollarea.h \
 		C:/Qt/Qt5.14.2/5.14.2/mingw73_32/include/QtWidgets/qframe.h \
+		C:/Qt/Qt5.14.2/5.14.2/mingw73_32/include/QtWidgets/qgraphicsscene.h \
+		C:/Qt/Qt5.14.2/5.14.2/mingw73_32/include/QtWidgets/QGraphicsItem \
+		C:/Qt/Qt5.14.2/5.14.2/mingw73_32/include/QtWidgets/qgraphicsitem.h \
+		C:/Qt/Qt5.14.2/5.14.2/mingw73_32/include/QtWidgets/QGraphicsScene \
+		C:/Qt/Qt5.14.2/5.14.2/mingw73_32/include/QtCore/QThread \
+		C:/Qt/Qt5.14.2/5.14.2/mingw73_32/include/QtCore/qthread.h \
+		mygraphicstextitem.h \
+		C:/Qt/Qt5.14.2/5.14.2/mingw73_32/include/QtWidgets/QGraphicsTextItem \
+		C:/Qt/Qt5.14.2/5.14.2/mingw73_32/include/QtGui/QPen \
+		C:/Qt/Qt5.14.2/5.14.2/mingw73_32/include/QtGui/QFontMetricsF \
+		C:/Qt/Qt5.14.2/5.14.2/mingw73_32/include/QtGui/QPainterPath \
+		C:/Qt/Qt5.14.2/5.14.2/mingw73_32/include/QtGui/QTextCursor \
 		C:/Qt/Qt5.14.2/5.14.2/mingw73_32/include/QtGui/qtextcursor.h \
 		C:/Qt/Qt5.14.2/5.14.2/mingw73_32/include/QtGui/qtextformat.h \
-		C:/Qt/Qt5.14.2/5.14.2/mingw73_32/include/QtGui/qpen.h \
-		C:/Qt/Qt5.14.2/5.14.2/mingw73_32/include/QtGui/qtextoption.h \
+		C:/Qt/Qt5.14.2/5.14.2/mingw73_32/include/QtGui/QColor \
 		centerwidget.h \
+		C:/Qt/Qt5.14.2/5.14.2/mingw73_32/include/QtWidgets/QWidget \
 		C:/Qt/Qt5.14.2/5.14.2/mingw73_32/include/QtWidgets/QTextEdit \
 		C:/Qt/Qt5.14.2/5.14.2/mingw73_32/include/QtWidgets/qtextedit.h \
-		C:/Qt/Qt5.14.2/5.14.2/mingw73_32/include/QtWidgets/qabstractscrollarea.h \
 		C:/Qt/Qt5.14.2/5.14.2/mingw73_32/include/QtGui/qtextdocument.h \
 		C:/Qt/Qt5.14.2/5.14.2/mingw73_32/include/QtGui/QSyntaxHighlighter \
 		C:/Qt/Qt5.14.2/5.14.2/mingw73_32/include/QtGui/qsyntaxhighlighter.h \
@@ -629,11 +638,22 @@ debug/moc_cmajor.cpp: cmajor.h \
 		C:/Qt/Qt5.14.2/5.14.2/mingw73_32/include/QtGui/qglyphrun.h \
 		C:/Qt/Qt5.14.2/5.14.2/mingw73_32/include/QtGui/qrawfont.h \
 		C:/Qt/Qt5.14.2/5.14.2/mingw73_32/include/QtGui/qfontdatabase.h \
-		myhighlighter.h \
+		cfind.h \
+		C:/Qt/Qt5.14.2/5.14.2/mingw73_32/include/QtWidgets/QPushButton \
+		C:/Qt/Qt5.14.2/5.14.2/mingw73_32/include/QtWidgets/qpushbutton.h \
+		C:/Qt/Qt5.14.2/5.14.2/mingw73_32/include/QtWidgets/qabstractbutton.h \
+		C:/Qt/Qt5.14.2/5.14.2/mingw73_32/include/QtWidgets/QLineEdit \
+		C:/Qt/Qt5.14.2/5.14.2/mingw73_32/include/QtWidgets/qlineedit.h \
 		ctable.h \
+		myhighlighter.h \
+		mygraphicsscene.h \
+		C:/Qt/Qt5.14.2/5.14.2/mingw73_32/include/QtGui/QMouseEvent \
+		mygraphicspixmapitem.h \
+		C:/Qt/Qt5.14.2/5.14.2/mingw73_32/include/QtWidgets/QGraphicsPixmapItem \
+		C:/Qt/Qt5.14.2/5.14.2/mingw73_32/include/QtCore/QObject \
 		debug/moc_predefs.h \
 		C:/Qt/Qt5.14.2/5.14.2/mingw73_32/bin/moc.exe
-	C:\Qt\Qt5.14.2\5.14.2\mingw73_32\bin\moc.exe $(DEFINES) --include I:/QTCreator/MyDocument/MajorWindow/debug/moc_predefs.h -IC:/Qt/Qt5.14.2/5.14.2/mingw73_32/mkspecs/win32-g++ -II:/QTCreator/MyDocument/MajorWindow -II:/QTCreator/MyDocument/Journal -IC:/Qt/Qt5.14.2/5.14.2/mingw73_32/include -IC:/Qt/Qt5.14.2/5.14.2/mingw73_32/include/QtPrintSupport -IC:/Qt/Qt5.14.2/5.14.2/mingw73_32/include/QtWidgets -IC:/Qt/Qt5.14.2/5.14.2/mingw73_32/include/QtGui -IC:/Qt/Qt5.14.2/5.14.2/mingw73_32/include/QtANGLE -IC:/Qt/Qt5.14.2/5.14.2/mingw73_32/include/QtCore -IC:/Qt/Qt5.14.2/Tools/mingw730_32/lib/gcc/i686-w64-mingw32/7.3.0/include/c++ -IC:/Qt/Qt5.14.2/Tools/mingw730_32/lib/gcc/i686-w64-mingw32/7.3.0/include/c++/i686-w64-mingw32 -IC:/Qt/Qt5.14.2/Tools/mingw730_32/lib/gcc/i686-w64-mingw32/7.3.0/include/c++/backward -IC:/Qt/Qt5.14.2/Tools/mingw730_32/lib/gcc/i686-w64-mingw32/7.3.0/include -IC:/Qt/Qt5.14.2/Tools/mingw730_32/lib/gcc/i686-w64-mingw32/7.3.0/include-fixed -IC:/Qt/Qt5.14.2/Tools/mingw730_32/i686-w64-mingw32/include cmajor.h -o debug\moc_cmajor.cpp
+	C:\Qt\Qt5.14.2\5.14.2\mingw73_32\bin\moc.exe $(DEFINES) --include I:/test/DocumentPro/MajorWindow/debug/moc_predefs.h -IC:/Qt/Qt5.14.2/5.14.2/mingw73_32/mkspecs/win32-g++ -II:/test/DocumentPro/MajorWindow -II:/test/DocumentPro/ysbase/include -II:/test/DocumentPro/ysbase/lib -IC:/Qt/Qt5.14.2/5.14.2/mingw73_32/include -IC:/Qt/Qt5.14.2/5.14.2/mingw73_32/include/QtPrintSupport -IC:/Qt/Qt5.14.2/5.14.2/mingw73_32/include/QtWidgets -IC:/Qt/Qt5.14.2/5.14.2/mingw73_32/include/QtGui -IC:/Qt/Qt5.14.2/5.14.2/mingw73_32/include/QtANGLE -IC:/Qt/Qt5.14.2/5.14.2/mingw73_32/include/QtCore -I"C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.32.31326\ATLMFC\include" -I"C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.32.31326\include" -I"C:\Program Files (x86)\Windows Kits\NETFXSDK\4.8\include\um" -I"C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\ucrt" -I"C:\Program Files (x86)\Windows Kits\10\\include\10.0.19041.0\\shared" -I"C:\Program Files (x86)\Windows Kits\10\\include\10.0.19041.0\\um" -I"C:\Program Files (x86)\Windows Kits\10\\include\10.0.19041.0\\winrt" -I"C:\Program Files (x86)\Windows Kits\10\\include\10.0.19041.0\\cppwinrt" cmajor.h -o debug\moc_cmajor.cpp
 
 compiler_moc_objc_header_make_all:
 compiler_moc_objc_header_clean:
@@ -1294,31 +1314,40 @@ debug/main.o: main.cpp cmajor.h \
 		C:/Qt/Qt5.14.2/5.14.2/mingw73_32/include/QtGui/qtouchdevice.h \
 		C:/Qt/Qt5.14.2/5.14.2/mingw73_32/include/QtWidgets/qtabwidget.h \
 		C:/Qt/Qt5.14.2/5.14.2/mingw73_32/include/QtGui/qicon.h \
+		C:/Qt/Qt5.14.2/5.14.2/mingw73_32/include/QtCore/QTimer \
+		C:/Qt/Qt5.14.2/5.14.2/mingw73_32/include/QtCore/qtimer.h \
+		C:/Qt/Qt5.14.2/5.14.2/mingw73_32/include/QtCore/qbasictimer.h \
 		C:/Qt/Qt5.14.2/5.14.2/mingw73_32/include/QtWidgets/QToolBar \
 		C:/Qt/Qt5.14.2/5.14.2/mingw73_32/include/QtWidgets/qtoolbar.h \
 		C:/Qt/Qt5.14.2/5.14.2/mingw73_32/include/QtWidgets/qaction.h \
 		C:/Qt/Qt5.14.2/5.14.2/mingw73_32/include/QtWidgets/qactiongroup.h \
-		C:/Qt/Qt5.14.2/5.14.2/mingw73_32/include/QtCore/QTimer \
-		C:/Qt/Qt5.14.2/5.14.2/mingw73_32/include/QtCore/qtimer.h \
-		C:/Qt/Qt5.14.2/5.14.2/mingw73_32/include/QtCore/qbasictimer.h \
-		../Journal/plugin.h \
-		C:/Qt/Qt5.14.2/5.14.2/mingw73_32/include/QtCore/QObject \
-		cfind.h \
-		C:/Qt/Qt5.14.2/5.14.2/mingw73_32/include/QtWidgets/QWidget \
-		C:/Qt/Qt5.14.2/5.14.2/mingw73_32/include/QtWidgets/QPushButton \
-		C:/Qt/Qt5.14.2/5.14.2/mingw73_32/include/QtWidgets/qpushbutton.h \
-		C:/Qt/Qt5.14.2/5.14.2/mingw73_32/include/QtWidgets/qabstractbutton.h \
-		C:/Qt/Qt5.14.2/5.14.2/mingw73_32/include/QtWidgets/QLineEdit \
-		C:/Qt/Qt5.14.2/5.14.2/mingw73_32/include/QtWidgets/qlineedit.h \
+		C:/Qt/Qt5.14.2/5.14.2/mingw73_32/include/QtWidgets/QGraphicsView \
+		C:/Qt/Qt5.14.2/5.14.2/mingw73_32/include/QtWidgets/qgraphicsview.h \
+		C:/Qt/Qt5.14.2/5.14.2/mingw73_32/include/QtGui/qpainter.h \
+		C:/Qt/Qt5.14.2/5.14.2/mingw73_32/include/QtGui/qtextoption.h \
+		C:/Qt/Qt5.14.2/5.14.2/mingw73_32/include/QtGui/qpen.h \
+		C:/Qt/Qt5.14.2/5.14.2/mingw73_32/include/QtWidgets/qscrollarea.h \
+		C:/Qt/Qt5.14.2/5.14.2/mingw73_32/include/QtWidgets/qabstractscrollarea.h \
 		C:/Qt/Qt5.14.2/5.14.2/mingw73_32/include/QtWidgets/qframe.h \
+		C:/Qt/Qt5.14.2/5.14.2/mingw73_32/include/QtWidgets/qgraphicsscene.h \
+		C:/Qt/Qt5.14.2/5.14.2/mingw73_32/include/QtWidgets/QGraphicsItem \
+		C:/Qt/Qt5.14.2/5.14.2/mingw73_32/include/QtWidgets/qgraphicsitem.h \
+		C:/Qt/Qt5.14.2/5.14.2/mingw73_32/include/QtWidgets/QGraphicsScene \
+		C:/Qt/Qt5.14.2/5.14.2/mingw73_32/include/QtCore/QThread \
+		C:/Qt/Qt5.14.2/5.14.2/mingw73_32/include/QtCore/qthread.h \
+		mygraphicstextitem.h \
+		C:/Qt/Qt5.14.2/5.14.2/mingw73_32/include/QtWidgets/QGraphicsTextItem \
+		C:/Qt/Qt5.14.2/5.14.2/mingw73_32/include/QtGui/QPen \
+		C:/Qt/Qt5.14.2/5.14.2/mingw73_32/include/QtGui/QFontMetricsF \
+		C:/Qt/Qt5.14.2/5.14.2/mingw73_32/include/QtGui/QPainterPath \
+		C:/Qt/Qt5.14.2/5.14.2/mingw73_32/include/QtGui/QTextCursor \
 		C:/Qt/Qt5.14.2/5.14.2/mingw73_32/include/QtGui/qtextcursor.h \
 		C:/Qt/Qt5.14.2/5.14.2/mingw73_32/include/QtGui/qtextformat.h \
-		C:/Qt/Qt5.14.2/5.14.2/mingw73_32/include/QtGui/qpen.h \
-		C:/Qt/Qt5.14.2/5.14.2/mingw73_32/include/QtGui/qtextoption.h \
+		C:/Qt/Qt5.14.2/5.14.2/mingw73_32/include/QtGui/QColor \
 		centerwidget.h \
+		C:/Qt/Qt5.14.2/5.14.2/mingw73_32/include/QtWidgets/QWidget \
 		C:/Qt/Qt5.14.2/5.14.2/mingw73_32/include/QtWidgets/QTextEdit \
 		C:/Qt/Qt5.14.2/5.14.2/mingw73_32/include/QtWidgets/qtextedit.h \
-		C:/Qt/Qt5.14.2/5.14.2/mingw73_32/include/QtWidgets/qabstractscrollarea.h \
 		C:/Qt/Qt5.14.2/5.14.2/mingw73_32/include/QtGui/qtextdocument.h \
 		C:/Qt/Qt5.14.2/5.14.2/mingw73_32/include/QtGui/QSyntaxHighlighter \
 		C:/Qt/Qt5.14.2/5.14.2/mingw73_32/include/QtGui/qsyntaxhighlighter.h \
@@ -1327,15 +1356,28 @@ debug/main.o: main.cpp cmajor.h \
 		C:/Qt/Qt5.14.2/5.14.2/mingw73_32/include/QtGui/qglyphrun.h \
 		C:/Qt/Qt5.14.2/5.14.2/mingw73_32/include/QtGui/qrawfont.h \
 		C:/Qt/Qt5.14.2/5.14.2/mingw73_32/include/QtGui/qfontdatabase.h \
-		myhighlighter.h \
+		cfind.h \
+		C:/Qt/Qt5.14.2/5.14.2/mingw73_32/include/QtWidgets/QPushButton \
+		C:/Qt/Qt5.14.2/5.14.2/mingw73_32/include/QtWidgets/qpushbutton.h \
+		C:/Qt/Qt5.14.2/5.14.2/mingw73_32/include/QtWidgets/qabstractbutton.h \
+		C:/Qt/Qt5.14.2/5.14.2/mingw73_32/include/QtWidgets/QLineEdit \
+		C:/Qt/Qt5.14.2/5.14.2/mingw73_32/include/QtWidgets/qlineedit.h \
 		ctable.h \
+		myhighlighter.h \
+		mygraphicsscene.h \
+		C:/Qt/Qt5.14.2/5.14.2/mingw73_32/include/QtGui/QMouseEvent \
+		mygraphicspixmapitem.h \
+		C:/Qt/Qt5.14.2/5.14.2/mingw73_32/include/QtWidgets/QGraphicsPixmapItem \
+		C:/Qt/Qt5.14.2/5.14.2/mingw73_32/include/QtCore/QObject \
 		C:/Qt/Qt5.14.2/5.14.2/mingw73_32/include/QtWidgets/QApplication \
 		C:/Qt/Qt5.14.2/5.14.2/mingw73_32/include/QtWidgets/qapplication.h \
 		C:/Qt/Qt5.14.2/5.14.2/mingw73_32/include/QtCore/qcoreapplication.h \
 		C:/Qt/Qt5.14.2/5.14.2/mingw73_32/include/QtCore/qeventloop.h \
 		C:/Qt/Qt5.14.2/5.14.2/mingw73_32/include/QtWidgets/qdesktopwidget.h \
 		C:/Qt/Qt5.14.2/5.14.2/mingw73_32/include/QtGui/qguiapplication.h \
-		C:/Qt/Qt5.14.2/5.14.2/mingw73_32/include/QtGui/qinputmethod.h
+		C:/Qt/Qt5.14.2/5.14.2/mingw73_32/include/QtGui/qinputmethod.h \
+		C:/Qt/Qt5.14.2/5.14.2/mingw73_32/include/QtCore/QProcess \
+		C:/Qt/Qt5.14.2/5.14.2/mingw73_32/include/QtCore/qprocess.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o debug\main.o main.cpp
 
 debug/cmajor.o: cmajor.cpp cmajor.h \
@@ -1446,31 +1488,40 @@ debug/cmajor.o: cmajor.cpp cmajor.h \
 		C:/Qt/Qt5.14.2/5.14.2/mingw73_32/include/QtGui/qtouchdevice.h \
 		C:/Qt/Qt5.14.2/5.14.2/mingw73_32/include/QtWidgets/qtabwidget.h \
 		C:/Qt/Qt5.14.2/5.14.2/mingw73_32/include/QtGui/qicon.h \
+		C:/Qt/Qt5.14.2/5.14.2/mingw73_32/include/QtCore/QTimer \
+		C:/Qt/Qt5.14.2/5.14.2/mingw73_32/include/QtCore/qtimer.h \
+		C:/Qt/Qt5.14.2/5.14.2/mingw73_32/include/QtCore/qbasictimer.h \
 		C:/Qt/Qt5.14.2/5.14.2/mingw73_32/include/QtWidgets/QToolBar \
 		C:/Qt/Qt5.14.2/5.14.2/mingw73_32/include/QtWidgets/qtoolbar.h \
 		C:/Qt/Qt5.14.2/5.14.2/mingw73_32/include/QtWidgets/qaction.h \
 		C:/Qt/Qt5.14.2/5.14.2/mingw73_32/include/QtWidgets/qactiongroup.h \
-		C:/Qt/Qt5.14.2/5.14.2/mingw73_32/include/QtCore/QTimer \
-		C:/Qt/Qt5.14.2/5.14.2/mingw73_32/include/QtCore/qtimer.h \
-		C:/Qt/Qt5.14.2/5.14.2/mingw73_32/include/QtCore/qbasictimer.h \
-		../Journal/plugin.h \
-		C:/Qt/Qt5.14.2/5.14.2/mingw73_32/include/QtCore/QObject \
-		cfind.h \
-		C:/Qt/Qt5.14.2/5.14.2/mingw73_32/include/QtWidgets/QWidget \
-		C:/Qt/Qt5.14.2/5.14.2/mingw73_32/include/QtWidgets/QPushButton \
-		C:/Qt/Qt5.14.2/5.14.2/mingw73_32/include/QtWidgets/qpushbutton.h \
-		C:/Qt/Qt5.14.2/5.14.2/mingw73_32/include/QtWidgets/qabstractbutton.h \
-		C:/Qt/Qt5.14.2/5.14.2/mingw73_32/include/QtWidgets/QLineEdit \
-		C:/Qt/Qt5.14.2/5.14.2/mingw73_32/include/QtWidgets/qlineedit.h \
+		C:/Qt/Qt5.14.2/5.14.2/mingw73_32/include/QtWidgets/QGraphicsView \
+		C:/Qt/Qt5.14.2/5.14.2/mingw73_32/include/QtWidgets/qgraphicsview.h \
+		C:/Qt/Qt5.14.2/5.14.2/mingw73_32/include/QtGui/qpainter.h \
+		C:/Qt/Qt5.14.2/5.14.2/mingw73_32/include/QtGui/qtextoption.h \
+		C:/Qt/Qt5.14.2/5.14.2/mingw73_32/include/QtGui/qpen.h \
+		C:/Qt/Qt5.14.2/5.14.2/mingw73_32/include/QtWidgets/qscrollarea.h \
+		C:/Qt/Qt5.14.2/5.14.2/mingw73_32/include/QtWidgets/qabstractscrollarea.h \
 		C:/Qt/Qt5.14.2/5.14.2/mingw73_32/include/QtWidgets/qframe.h \
+		C:/Qt/Qt5.14.2/5.14.2/mingw73_32/include/QtWidgets/qgraphicsscene.h \
+		C:/Qt/Qt5.14.2/5.14.2/mingw73_32/include/QtWidgets/QGraphicsItem \
+		C:/Qt/Qt5.14.2/5.14.2/mingw73_32/include/QtWidgets/qgraphicsitem.h \
+		C:/Qt/Qt5.14.2/5.14.2/mingw73_32/include/QtWidgets/QGraphicsScene \
+		C:/Qt/Qt5.14.2/5.14.2/mingw73_32/include/QtCore/QThread \
+		C:/Qt/Qt5.14.2/5.14.2/mingw73_32/include/QtCore/qthread.h \
+		mygraphicstextitem.h \
+		C:/Qt/Qt5.14.2/5.14.2/mingw73_32/include/QtWidgets/QGraphicsTextItem \
+		C:/Qt/Qt5.14.2/5.14.2/mingw73_32/include/QtGui/QPen \
+		C:/Qt/Qt5.14.2/5.14.2/mingw73_32/include/QtGui/QFontMetricsF \
+		C:/Qt/Qt5.14.2/5.14.2/mingw73_32/include/QtGui/QPainterPath \
+		C:/Qt/Qt5.14.2/5.14.2/mingw73_32/include/QtGui/QTextCursor \
 		C:/Qt/Qt5.14.2/5.14.2/mingw73_32/include/QtGui/qtextcursor.h \
 		C:/Qt/Qt5.14.2/5.14.2/mingw73_32/include/QtGui/qtextformat.h \
-		C:/Qt/Qt5.14.2/5.14.2/mingw73_32/include/QtGui/qpen.h \
-		C:/Qt/Qt5.14.2/5.14.2/mingw73_32/include/QtGui/qtextoption.h \
+		C:/Qt/Qt5.14.2/5.14.2/mingw73_32/include/QtGui/QColor \
 		centerwidget.h \
+		C:/Qt/Qt5.14.2/5.14.2/mingw73_32/include/QtWidgets/QWidget \
 		C:/Qt/Qt5.14.2/5.14.2/mingw73_32/include/QtWidgets/QTextEdit \
 		C:/Qt/Qt5.14.2/5.14.2/mingw73_32/include/QtWidgets/qtextedit.h \
-		C:/Qt/Qt5.14.2/5.14.2/mingw73_32/include/QtWidgets/qabstractscrollarea.h \
 		C:/Qt/Qt5.14.2/5.14.2/mingw73_32/include/QtGui/qtextdocument.h \
 		C:/Qt/Qt5.14.2/5.14.2/mingw73_32/include/QtGui/QSyntaxHighlighter \
 		C:/Qt/Qt5.14.2/5.14.2/mingw73_32/include/QtGui/qsyntaxhighlighter.h \
@@ -1479,8 +1530,19 @@ debug/cmajor.o: cmajor.cpp cmajor.h \
 		C:/Qt/Qt5.14.2/5.14.2/mingw73_32/include/QtGui/qglyphrun.h \
 		C:/Qt/Qt5.14.2/5.14.2/mingw73_32/include/QtGui/qrawfont.h \
 		C:/Qt/Qt5.14.2/5.14.2/mingw73_32/include/QtGui/qfontdatabase.h \
-		myhighlighter.h \
+		cfind.h \
+		C:/Qt/Qt5.14.2/5.14.2/mingw73_32/include/QtWidgets/QPushButton \
+		C:/Qt/Qt5.14.2/5.14.2/mingw73_32/include/QtWidgets/qpushbutton.h \
+		C:/Qt/Qt5.14.2/5.14.2/mingw73_32/include/QtWidgets/qabstractbutton.h \
+		C:/Qt/Qt5.14.2/5.14.2/mingw73_32/include/QtWidgets/QLineEdit \
+		C:/Qt/Qt5.14.2/5.14.2/mingw73_32/include/QtWidgets/qlineedit.h \
 		ctable.h \
+		myhighlighter.h \
+		mygraphicsscene.h \
+		C:/Qt/Qt5.14.2/5.14.2/mingw73_32/include/QtGui/QMouseEvent \
+		mygraphicspixmapitem.h \
+		C:/Qt/Qt5.14.2/5.14.2/mingw73_32/include/QtWidgets/QGraphicsPixmapItem \
+		C:/Qt/Qt5.14.2/5.14.2/mingw73_32/include/QtCore/QObject \
 		ui_cmajor.h \
 		C:/Qt/Qt5.14.2/5.14.2/mingw73_32/include/QtCore/QVariant \
 		C:/Qt/Qt5.14.2/5.14.2/mingw73_32/include/QtWidgets/QApplication \
@@ -1495,44 +1557,102 @@ debug/cmajor.o: cmajor.cpp cmajor.h \
 		C:/Qt/Qt5.14.2/5.14.2/mingw73_32/include/QtWidgets/qmenu.h \
 		C:/Qt/Qt5.14.2/5.14.2/mingw73_32/include/QtWidgets/QStatusBar \
 		C:/Qt/Qt5.14.2/5.14.2/mingw73_32/include/QtWidgets/qstatusbar.h \
-		C:/Qt/Qt5.14.2/5.14.2/mingw73_32/include/QtCore/QFile \
+		C:/Qt/Qt5.14.2/5.14.2/mingw73_32/include/QtWidgets/QColorDialog \
+		C:/Qt/Qt5.14.2/5.14.2/mingw73_32/include/QtWidgets/qcolordialog.h \
+		C:/Qt/Qt5.14.2/5.14.2/mingw73_32/include/QtWidgets/qdialog.h \
+		C:/Qt/Qt5.14.2/5.14.2/mingw73_32/include/QtCore/QDateTime \
+		C:/Qt/Qt5.14.2/5.14.2/mingw73_32/include/QtCore/qdatetime.h \
+		C:/Qt/Qt5.14.2/5.14.2/mingw73_32/include/QtCore/QDebug \
 		C:/Qt/Qt5.14.2/5.14.2/mingw73_32/include/QtCore/QDir \
 		C:/Qt/Qt5.14.2/5.14.2/mingw73_32/include/QtCore/qdir.h \
 		C:/Qt/Qt5.14.2/5.14.2/mingw73_32/include/QtCore/qfileinfo.h \
+		C:/Qt/Qt5.14.2/5.14.2/mingw73_32/include/QtCore/QFile \
+		C:/Qt/Qt5.14.2/5.14.2/mingw73_32/include/QtWidgets/QFileDialog \
+		C:/Qt/Qt5.14.2/5.14.2/mingw73_32/include/QtWidgets/qfiledialog.h \
+		C:/Qt/Qt5.14.2/5.14.2/mingw73_32/include/QtWidgets/QFontDialog \
+		C:/Qt/Qt5.14.2/5.14.2/mingw73_32/include/QtWidgets/qfontdialog.h \
+		C:/Qt/Qt5.14.2/5.14.2/mingw73_32/include/QtCore/QJsonArray \
+		C:/Qt/Qt5.14.2/5.14.2/mingw73_32/include/QtCore/qjsonarray.h \
+		C:/Qt/Qt5.14.2/5.14.2/mingw73_32/include/QtCore/qjsonvalue.h \
+		C:/Qt/Qt5.14.2/5.14.2/mingw73_32/include/QtCore/QJsonDocument \
+		C:/Qt/Qt5.14.2/5.14.2/mingw73_32/include/QtCore/qjsondocument.h \
+		C:/Qt/Qt5.14.2/5.14.2/mingw73_32/include/QtCore/QJsonObject \
+		C:/Qt/Qt5.14.2/5.14.2/mingw73_32/include/QtCore/qjsonobject.h \
+		C:/Qt/Qt5.14.2/5.14.2/mingw73_32/include/QtCore/QJsonValue \
+		C:/Qt/Qt5.14.2/5.14.2/mingw73_32/include/QtWidgets/QMenu \
+		C:/Qt/Qt5.14.2/5.14.2/mingw73_32/include/QtWidgets/QMessageBox \
+		C:/Qt/Qt5.14.2/5.14.2/mingw73_32/include/QtWidgets/qmessagebox.h \
+		C:/Qt/Qt5.14.2/5.14.2/mingw73_32/include/QtCore/QMetaClassInfo \
+		C:/Qt/Qt5.14.2/5.14.2/mingw73_32/include/QtCore/qmetaobject.h \
+		C:/Qt/Qt5.14.2/5.14.2/mingw73_32/include/QtCore/QMetaObject \
 		C:/Qt/Qt5.14.2/5.14.2/mingw73_32/include/QtCore/QPluginLoader \
 		C:/Qt/Qt5.14.2/5.14.2/mingw73_32/include/QtCore/qpluginloader.h \
 		C:/Qt/Qt5.14.2/5.14.2/mingw73_32/include/QtCore/qlibrary.h \
 		C:/Qt/Qt5.14.2/5.14.2/mingw73_32/include/QtCore/qplugin.h \
 		C:/Qt/Qt5.14.2/5.14.2/mingw73_32/include/QtCore/qpointer.h \
-		C:/Qt/Qt5.14.2/5.14.2/mingw73_32/include/QtCore/qjsonobject.h \
-		C:/Qt/Qt5.14.2/5.14.2/mingw73_32/include/QtCore/qjsonvalue.h \
-		C:/Qt/Qt5.14.2/5.14.2/mingw73_32/include/QtCore/QDateTime \
-		C:/Qt/Qt5.14.2/5.14.2/mingw73_32/include/QtCore/qdatetime.h \
-		C:/Qt/Qt5.14.2/5.14.2/mingw73_32/include/QtCore/QDebug \
-		C:/Qt/Qt5.14.2/5.14.2/mingw73_32/include/QtCore/QTextStream \
-		C:/Qt/Qt5.14.2/5.14.2/mingw73_32/include/QtWidgets/QMenu \
-		C:/Qt/Qt5.14.2/5.14.2/mingw73_32/include/QtCore/QMetaObject \
-		C:/Qt/Qt5.14.2/5.14.2/mingw73_32/include/QtCore/QMetaClassInfo \
-		C:/Qt/Qt5.14.2/5.14.2/mingw73_32/include/QtCore/qmetaobject.h \
+		C:/Qt/Qt5.14.2/5.14.2/mingw73_32/include/QtGui/QTextBlock \
 		C:/Qt/Qt5.14.2/5.14.2/mingw73_32/include/QtGui/QTextDocument \
 		C:/Qt/Qt5.14.2/5.14.2/mingw73_32/include/QtGui/QTextLayout \
-		C:/Qt/Qt5.14.2/5.14.2/mingw73_32/include/QtGui/QTextBlock \
-		C:/Qt/Qt5.14.2/5.14.2/mingw73_32/include/QtWidgets/QMessageBox \
-		C:/Qt/Qt5.14.2/5.14.2/mingw73_32/include/QtWidgets/qmessagebox.h \
-		C:/Qt/Qt5.14.2/5.14.2/mingw73_32/include/QtWidgets/qdialog.h \
-		C:/Qt/Qt5.14.2/5.14.2/mingw73_32/include/QtWidgets/QFileDialog \
-		C:/Qt/Qt5.14.2/5.14.2/mingw73_32/include/QtWidgets/qfiledialog.h \
-		C:/Qt/Qt5.14.2/5.14.2/mingw73_32/include/QtWidgets/QFontDialog \
-		C:/Qt/Qt5.14.2/5.14.2/mingw73_32/include/QtWidgets/qfontdialog.h \
+		C:/Qt/Qt5.14.2/5.14.2/mingw73_32/include/QtCore/QTextStream \
 		C:/Qt/Qt5.14.2/5.14.2/mingw73_32/include/QtGui/QTextTable \
 		C:/Qt/Qt5.14.2/5.14.2/mingw73_32/include/QtGui/qtexttable.h \
-		C:/Qt/Qt5.14.2/5.14.2/mingw73_32/include/QtPrintSupport/QPrinter \
-		C:/Qt/Qt5.14.2/5.14.2/mingw73_32/include/QtPrintSupport/qprinter.h \
-		C:/Qt/Qt5.14.2/5.14.2/mingw73_32/include/QtPrintSupport/qtprintsupportglobal.h \
-		C:/Qt/Qt5.14.2/5.14.2/mingw73_32/include/QtPrintSupport/qtprintsupport-config.h \
-		C:/Qt/Qt5.14.2/5.14.2/mingw73_32/include/QtGui/qpagedpaintdevice.h \
-		C:/Qt/Qt5.14.2/5.14.2/mingw73_32/include/QtGui/qpagelayout.h \
-		C:/Qt/Qt5.14.2/5.14.2/mingw73_32/include/QtGui/qpagesize.h
+		../ysbase/include/ysbase.h \
+		../ysbase/include/cmn.h \
+		../ysbase/include/ys_mem.h \
+		../ysbase/include/ys_imgtype.h \
+		../ysbase/include/ys_doctype.h \
+		../ysbase/include/ys_language.h \
+		../ysbase/include/ys_coredata.h \
+		../ysbase/include/ys_basetype.h \
+		../ysbase/include/ys_error.h \
+		../ysbase/include/ys_errorcode.h \
+		../ysbase/include/ys_util.h \
+		../ysbase/include/ys_ocrwrap.h \
+		../ysbase/include/ys_iimage.h \
+		../ysbase/include/ys_ibase.h \
+		../ysbase/include/ys_info.h \
+		../ysbase/include/ys_rbase.h \
+		../ysbase/include/dbg.h \
+		../ysbase/include/ys_rutil.h \
+		../ysbase/include/rapidjson/rapidjson.h \
+		../ysbase/include/rapidjson/msinttypes/stdint.h \
+		../ysbase/include/rapidjson/msinttypes/inttypes.h \
+		../ysbase/include/rapidjson/document.h \
+		../ysbase/include/rapidjson/reader.h \
+		../ysbase/include/rapidjson/allocators.h \
+		../ysbase/include/rapidjson/stream.h \
+		../ysbase/include/rapidjson/encodings.h \
+		../ysbase/include/rapidjson/encodedstream.h \
+		../ysbase/include/rapidjson/memorystream.h \
+		../ysbase/include/rapidjson/internal/meta.h \
+		../ysbase/include/rapidjson/internal/stack.h \
+		../ysbase/include/rapidjson/internal/swap.h \
+		../ysbase/include/rapidjson/internal/strtod.h \
+		../ysbase/include/rapidjson/internal/ieee754.h \
+		../ysbase/include/rapidjson/internal/biginteger.h \
+		../ysbase/include/rapidjson/internal/diyfp.h \
+		../ysbase/include/rapidjson/internal/pow10.h \
+		../ysbase/include/rapidjson/error/error.h \
+		../ysbase/include/rapidjson/internal/strfunc.h \
+		../ysbase/include/rapidjson/stringbuffer.h \
+		../ysbase/include/rapidjson/filereadstream.h \
+		../ysbase/include/rapidjson/filewritestream.h \
+		../ysbase/include/rapidjson/writer.h \
+		../ysbase/include/rapidjson/internal/dtoa.h \
+		../ysbase/include/rapidjson/internal/itoa.h \
+		../ysbase/include/rapidjson/prettywriter.h \
+		../ysbase/include/ys_rtraits.h \
+		../ysbase/include/ys_rbuffer.h \
+		../ysbase/include/ys_rastring.h \
+		../ysbase/include/ys_rutf8string.h \
+		../ysbase/include/ys_rptrarray.h \
+		../ysbase/include/ys_rio.h \
+		../ysbase/include/ioinl.h \
+		../ysbase/include/ys_rtypes.h \
+		../ysbase/include/ys_rlay.h \
+		../ysbase/include/ys_iptr.h \
+		../ysbase/include/ys_ievaluation.h \
+		../ysbase/include/ys_imodule.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o debug\cmajor.o cmajor.cpp
 
 debug/moc_centerwidget.o: debug/moc_centerwidget.cpp 

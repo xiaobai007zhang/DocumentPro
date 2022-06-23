@@ -65,13 +65,13 @@
     <ClCompile Include="myhighlighter.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="mygraphicstextitem.cpp">
+    <ClCompile Include="mygraphicspixmapitem.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="mygraphicsscene.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="mygraphicspixmapitem.cpp">
+    <ClCompile Include="mygraphicstextitem.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -91,13 +91,13 @@
     <ClInclude Include="myhighlighter.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <QtMoc Include="mygraphicstextitem.h">
+    <QtMoc Include="mygraphicspixmapitem.h">
       <Filter>Header Files</Filter>
     </QtMoc>
     <QtMoc Include="mygraphicsscene.h">
       <Filter>Header Files</Filter>
     </QtMoc>
-    <QtMoc Include="mygraphicspixmapitem.h">
+    <QtMoc Include="mygraphicstextitem.h">
       <Filter>Header Files</Filter>
     </QtMoc>
   </ItemGroup>

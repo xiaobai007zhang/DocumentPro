@@ -1,4 +1,4 @@
-#include "ctable.h"
+﻿#include "ctable.h"
 #include "ui_ctable.h"
 
 #include <QHBoxLayout>

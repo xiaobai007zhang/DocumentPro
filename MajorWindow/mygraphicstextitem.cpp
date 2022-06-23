@@ -179,6 +179,13 @@ void MyGraphicsTextItem::mouseReleaseEvent(QGraphicsSceneMouseEvent* event)
 
 void MyGraphicsTextItem::mouseMoveEvent(QGraphicsSceneMouseEvent* event)
 {
+	if (hasFocus()) {
+		emit sig_hideRectMouse(true);
+		QGraphicsTextItem::mouseMoveEvent(event);
+	}
+	else {
+
+	}
 	if (m_isMousePress) {
 		//qDebug() << "scenePos: " << event->scenePos();
 		moveBy(event->scenePos().rx() - m_startPos.rx(), event->scenePos().ry() - m_startPos.ry());

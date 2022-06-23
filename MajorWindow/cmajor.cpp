@@ -28,8 +28,6 @@
 #include "ysbase.h"
 using namespace ys;
 
-static short g_textNumber;
-
 // json对象1
 R_STRUCT_BEGIN(CHILD1)
 R_INTARRAY(intArray)
@@ -95,7 +93,7 @@ CMajor::CMajor(QWidget* parent) : QMainWindow(parent), ui(new Ui::CMajor), m_tex
 	initTableWidget();
 
 	initConnection();
-
+	//setFixedSize(width(), height());
 	//练习接口
 	// printf("%d\n", arr.Count());
 	// RArray<R<int>> arr(L"张佳旭", nullptr);
@@ -308,7 +306,7 @@ void CMajor::initGraphics()
 {
 	resize(width(), height());
 	m_view = new QGraphicsView(this);
-	m_scene = new MyGraphicsScene(width(), height());
+	m_scene = new MyGraphicsScene(width()-30, height()-30);
 
 	connect(m_scene, SIGNAL(sig_rectFrame(QSize, QPointF, bool)), this, SLOT(slot_rectFrame(QSize, QPointF, bool)));
 
@@ -850,21 +848,21 @@ void CMajor::slot_typeface()
 
 	//先暂定为只要是焦点的都可以改变字体,后期在区分各种不同的结构
 	QGraphicsItem* itemTmp = m_scene->focusItem();
-	QGraphicsTextItem* item = dynamic_cast<QGraphicsTextItem*>(itemTmp);
+	MyGraphicsTextItem* item = dynamic_cast<MyGraphicsTextItem*>(itemTmp);
 	//ASSERT(item);
 
 	if (item) {
 		//区分选中和未选中两种
 		if (item->textCursor().selectedText().isEmpty() || item->textCursor().selectedText().isNull()) {
 			item->setFont(font);
+			item->setText(item->toPlainText());
 		}
 		else {
 			QTextCharFormat fmt;        //文本字符格式
 			fmt.setFont(font);
 			QTextCursor cursor = item->textCursor();
 			cursor.setCharFormat(fmt);
-			//item->setTextCursor(cursor);
-
+			item->setTextCursor(cursor);
 		}
 
 	}
