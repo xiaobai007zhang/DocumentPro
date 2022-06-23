@@ -71,6 +71,9 @@
     <ClCompile Include="mygraphicsscene.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="mygraphicspixmapitem.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <QtMoc Include="centerwidget.h">
@@ -92,6 +95,9 @@
       <Filter>Header Files</Filter>
     </QtMoc>
     <QtMoc Include="mygraphicsscene.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="mygraphicspixmapitem.h">
       <Filter>Header Files</Filter>
     </QtMoc>
   </ItemGroup>

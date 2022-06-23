@@ -6,12 +6,12 @@
 class MyHighLighter : public QSyntaxHighlighter
 {
 public:
-    MyHighLighter(QTextDocument *parent = nullptr,QString findText = "");
+	MyHighLighter(QTextDocument* parent = nullptr, QString findText = "");
 
-    void highlightBlock(const QString &text);
+	void highlightBlock(const QString& text);
 
 private:
-    QString m_findText;
+	QString m_findText;
 };
 
 #endif // MYHIGHLIGHTER_H

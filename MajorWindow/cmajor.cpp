@@ -24,6 +24,7 @@
 #include <QTextStream>
 #include <QTextTable>
 
+
 #include "ysbase.h"
 using namespace ys;
 
@@ -81,8 +82,7 @@ enum enum_num
 	JOURNAL = 2
 };
 
-CMajor::CMajor(QWidget* parent) : QMainWindow(parent), ui(new Ui::CMajor), m_textEnable(false)
-{
+CMajor::CMajor(QWidget* parent) : QMainWindow(parent), ui(new Ui::CMajor), m_textEnable(false) {
 	ui->setupUi(this);
 
 	initTimer();
@@ -176,7 +176,7 @@ void CMajor::initMenuBar()
 	QAction* copy = new QAction(QStringLiteral("复制"));
 	QAction* paste = new QAction(QStringLiteral("粘贴"));
 	QAction* remove = new QAction(QStringLiteral("删除"));
-	QAction* find = new QAction(QStringLiteral("查找"));
+	//QAction* find = new QAction(QStringLiteral("查找"));
 	QAction* typeface = new QAction(QStringLiteral("字体"));
 	QAction* color = new QAction(QStringLiteral("颜色"));
 
@@ -185,7 +185,7 @@ void CMajor::initMenuBar()
 	edit->addAction(copy);
 	edit->addAction(paste);
 	edit->addAction(remove);
-	edit->addAction(find);
+	//edit->addAction(find);
 	edit->addAction(typeface);
 	edit->addAction(color);
 
@@ -194,7 +194,7 @@ void CMajor::initMenuBar()
 	connect(copy, SIGNAL(triggered()), this, SLOT(slot_copy()));
 	connect(paste, SIGNAL(triggered()), this, SLOT(slot_paste()));
 	connect(remove, SIGNAL(triggered()), this, SLOT(slot_remove()));
-	connect(find, SIGNAL(triggered()), this, SLOT(slot_search()));
+	//connect(find, SIGNAL(triggered()), this, SLOT(slot_search()));
 	connect(typeface, SIGNAL(triggered()), this, SLOT(slot_typeface()));
 	connect(color, SIGNAL(triggered()), this, SLOT(slot_color()));
 
@@ -240,9 +240,9 @@ void CMajor::initToolBar()
 
 	QAction* newCreat = new QAction(QStringLiteral("新建"));
 	QAction* open = new QAction(QStringLiteral("打开"));
-	QAction* shear = new QAction(QStringLiteral("剪切"));
-	QAction* copy = new QAction(QStringLiteral("复制"));
-	QAction* paste = new QAction(QStringLiteral("粘贴"));
+	//QAction* shear = new QAction(QStringLiteral("剪切"));
+	//QAction* copy = new QAction(QStringLiteral("复制"));
+	//QAction* paste = new QAction(QStringLiteral("粘贴"));
 	QAction* textFrame = new QAction(QStringLiteral("文本框"));
 	QAction* remove = new QAction(QStringLiteral("删除"));
 
@@ -250,9 +250,9 @@ void CMajor::initToolBar()
 	m_tempTextFrame = textFrame;
 	m_toolBar->addAction(newCreat);
 	m_toolBar->addAction(open);
-	m_toolBar->addAction(shear);
-	m_toolBar->addAction(copy);
-	m_toolBar->addAction(paste);
+	//m_toolBar->addAction(shear);
+	//m_toolBar->addAction(copy);
+	//m_toolBar->addAction(paste);
 	m_toolBar->addAction(textFrame);
 	m_toolBar->addAction(remove);
 
@@ -260,9 +260,9 @@ void CMajor::initToolBar()
 	//对于临时的对象，他们的信号槽连接都是在本地连接的
 	connect(newCreat, SIGNAL(triggered()), this, SLOT(slot_creatDocument()));
 	connect(open, SIGNAL(triggered()), this, SLOT(slot_openFile()));
-	connect(shear, SIGNAL(triggered()), this, SLOT(slot_shear()));
-	connect(copy, SIGNAL(triggered()), this, SLOT(slot_copy()));
-	connect(paste, SIGNAL(triggered()), this, SLOT(slot_paste()));
+	//connect(shear, SIGNAL(triggered()), this, SLOT(slot_shear()));
+	//connect(copy, SIGNAL(triggered()), this, SLOT(slot_copy()));
+	//connect(paste, SIGNAL(triggered()), this, SLOT(slot_paste()));
 	connect(textFrame, SIGNAL(triggered()), this, SLOT(slot_textFrame()));
 	connect(remove, SIGNAL(triggered()), this, SLOT(slot_remove()));
 	// connect(,SIGNAL(triggered()),this,SLOT());
@@ -307,12 +307,15 @@ void CMajor::initTableWidget()
 void CMajor::initGraphics()
 {
 	resize(width(), height());
-	m_view = new QGraphicsView;
+	m_view = new QGraphicsView(this);
 	m_scene = new MyGraphicsScene(width(), height());
-	connect(m_scene, SIGNAL(sig_rectFrame(QSize, QPointF)), this, SLOT(slot_rectFrame(QSize, QPointF)));
+
+	connect(m_scene, SIGNAL(sig_rectFrame(QSize, QPointF, bool)), this, SLOT(slot_rectFrame(QSize, QPointF, bool)));
 
 	m_view->setFixedSize(width(), height());
 	m_view->setScene(m_scene);
+	m_view->setAcceptDrops(true);
+
 	CenterWidget().setFocusPolicy(Qt::NoFocus);
 }
 
@@ -549,10 +552,15 @@ void CMajor::closeEvent(QCloseEvent* event)
 	m_curFilePath = "";
 }
 
-void CMajor::mousePressEvent(QMouseEvent* event)
+
+void CMajor::keyPressEvent(QKeyEvent* event)
 {
-	//qDebug() << "cmajor mousePressEvent";
+	if (event->key() == Qt::Key_Delete) {
+		slot_remove();
+	}
+	QMainWindow::keyPressEvent(event);
 }
+
 
 void CMajor::slot_creatDocument()
 {
@@ -750,8 +758,9 @@ void CMajor::slot_exitDocument()
 
 void CMajor::slot_copy()
 {
-	//m_wid->m_textEdit->copy();
 
+	//m_itemGroup = m_scene->createItemGroup(m_scene->selectedItems());
+	//qDebug() << "group bound: " << m_itemGroup->boundingRect().toRect();
 }
 
 void CMajor::slot_revoke()
@@ -766,22 +775,32 @@ void CMajor::slot_shear()
 
 void CMajor::slot_paste()
 {
-	//m_wid->m_textEdit->paste();
+
 
 }
 
 //如果有选中的就删除选中的，否则删除当前的文本框
 void CMajor::slot_remove()
 {
-
+	//删除的话分为两种情况，第一种情况是获得了焦点状态，再细分为焦点状态的选中文本
 	QGraphicsTextItem* item = dynamic_cast<QGraphicsTextItem*>(m_scene->focusItem());
-	if (item->textCursor().selectedText().isNull() || item->textCursor().selectedText().isEmpty()) {
-		m_scene->removeItem(item);
+	if (item) {
+		if (item->textCursor().selectedText().isNull() || item->textCursor().selectedText().isEmpty()) {
+			m_scene->removeItem(item);
+		}
+		else {
+			item->textCursor().removeSelectedText();
+
+		}
 	}
 	else {
-		item->textCursor().removeSelectedText();
-
+		//第二种情况就是选中状态，而非焦点状态
+		QList<QGraphicsItem*>list = m_scene->selectedItems();
+		for (const auto& value : list) {
+			m_scene->removeItem(value);
+		}
 	}
+
 
 }
 
@@ -793,13 +812,30 @@ void CMajor::slot_search()
 void CMajor::slot_insertImage()
 {
 	QString imageName = QFileDialog::getOpenFileName(nullptr, "Tips", "./", "*.png;;*.jpg;;*.gif");
-	QTextCursor cursor = m_wid->m_textEdit->textCursor();
+	//QGraphicsPixmapItem* pixmap = new QGraphicsPixmapItem;
+	MyGraphicsPixmapItem* pixmap = new MyGraphicsPixmapItem;
+
+	QPixmap pix(imageName);
+	pix.scaled(25, 25, Qt::KeepAspectRatio);
+
+	pixmap->setScale(0.5);
+
+	pixmap->setPixmap(pix);
+	m_scene->addItem(pixmap);
+	pixmap->setFlag(QGraphicsItem::ItemIsMovable);
+	pixmap->setFlag(QGraphicsItem::ItemIsSelectable);
+
+	connect(pixmap, SIGNAL(sig_hideRectMouse(bool)), m_scene, SLOT(slot_hideRectMouse(bool)));
+
+
+	//m_scene->addItem(pixmap);
+	/*QTextCursor cursor = m_wid->m_textEdit->textCursor();
 	QTextImageFormat imageFormat;
 	imageFormat.setName(imageName);
 	imageFormat.setWidth(100);
 	imageFormat.setHeight(100);
 
-	cursor.insertImage(imageFormat);
+	cursor.insertImage(imageFormat);*/
 }
 
 void CMajor::slot_insertForm()
@@ -811,21 +847,44 @@ void CMajor::slot_typeface()
 {
 	bool ok;
 	QFont font = QFontDialog::getFont(&ok);
-	//设置全部字体
-	if (m_wid->m_textEdit->textCursor().selectedText().isNull() || m_wid->m_textEdit->textCursor().selectedText().isEmpty())
-	{
 
-		m_wid->m_textEdit->setFont(font);
+	//先暂定为只要是焦点的都可以改变字体,后期在区分各种不同的结构
+	QGraphicsItem* itemTmp = m_scene->focusItem();
+	QGraphicsTextItem* item = dynamic_cast<QGraphicsTextItem*>(itemTmp);
+	//ASSERT(item);
+
+	if (item) {
+		//区分选中和未选中两种
+		if (item->textCursor().selectedText().isEmpty() || item->textCursor().selectedText().isNull()) {
+			item->setFont(font);
+		}
+		else {
+			QTextCharFormat fmt;        //文本字符格式
+			fmt.setFont(font);
+			QTextCursor cursor = item->textCursor();
+			cursor.setCharFormat(fmt);
+			//item->setTextCursor(cursor);
+
+		}
+
 	}
-	else
-	{
-		//只设置选中的字体
-		QTextCharFormat fmt;                                  //文本字符格式
-		fmt.setFont(font);                                    //字体
-		QTextCursor cursor = m_wid->m_textEdit->textCursor(); //获取文本光标
-		// cursor.mergeCharFormat(fmt);//光标后的文字就用该格式显示
-		cursor.setCharFormat(fmt);
+	else {
+
+		//还有一种是选中状态的字体
+		QList<QGraphicsItem*> list = m_scene->selectedItems();
+		if (list.isEmpty()) {
+			return;
+		}
+
+		for (QGraphicsItem* tmp : list) {
+			MyGraphicsTextItem* item = dynamic_cast<MyGraphicsTextItem*>(tmp);
+			item->setFont(font);
+			item->setText(item->toPlainText());
+		}
+
 	}
+
+
 }
 
 //保存文件
@@ -850,18 +909,65 @@ void CMajor::slot_save()
 }
 
 void CMajor::slot_zoomOut()
-{
-	m_wid->m_textEdit->zoomOut(2);
+{	//第一种情况，有选中的就会方法选中的进行调整
+	//第二种情况，没有选中的会全部进行调整
+	if (m_scene->selectedItems().isEmpty()) {
+
+		for (QGraphicsItem* tmp : m_scene->items()) {
+			//缩放比例最小为原型
+			if (tmp->scale() - 0.5 <= 0) {
+				return;
+			}
+			tmp->setScale(tmp->scale() - 0.5);
+		}
+	}
+	else {
+		for (QGraphicsItem* tmp : m_scene->selectedItems()) {
+			//缩放比例最小为原型
+			if (tmp->scale() - 0.5 <= 0) {
+				return;
+			}
+			tmp->setScale(tmp->scale() - 0.5);
+		}
+	}
 }
 
 void CMajor::slot_zoomIn()
 {
-	m_wid->m_textEdit->zoomIn(2);
+	/*m_wid->m_textEdit->zoomIn(2);*/
+	//第一种情况，有选中的就会方法选中的进行调整
+	//第二种情况，没有选中的会全部进行调整
+
+	if (m_scene->selectedItems().isEmpty()) {
+
+		for (QGraphicsItem* tmp : m_scene->items()) {
+
+			if (tmp->scale() + 0.5 >= 5) {
+				return;
+			}
+
+			tmp->setScale(tmp->scale() + 0.5);
+		}
+	}
+	else {
+		for (QGraphicsItem* tmp : m_scene->selectedItems()) {
+			if (tmp->scale() + 0.5 >= 5) {
+				return;
+			}
+			tmp->setScale(tmp->scale() + 0.5);
+		}
+	}
+
+
 }
 
+//恢复默认比例
 void CMajor::slot_defaulted()
 {
-	m_wid->m_textEdit->setFont(m_font);
+	for (const auto& tmp : m_scene->items()) {
+		tmp->setScale(1);
+	}
+
 }
 
 //!把查找到的文本进行添加蓝色高光
@@ -873,41 +979,64 @@ void CMajor::slot_findBtnClicked(QString findText)
 void CMajor::slot_color()
 {
 	QColor color = QColorDialog::getColor();
-	QString flags = m_wid->m_textEdit->textCursor().selectedText();
 
-	//如果没有选中的，那么就会全部变颜色
-	if (flags.isNull() || flags.isEmpty())
-	{
+	//三种情况，第一种焦点状态，分为两个子部分，光标选中和未选中，
+	//选择多个item都要改变
 
-		m_wid->m_textEdit->setTextColor(color);
+	QGraphicsItem* tmp = m_scene->focusItem();
+	QGraphicsTextItem* item = dynamic_cast<QGraphicsTextItem*>(tmp);
+	if (item) {
+		QString flags = item->textCursor().selectedText();
+		if (flags.isEmpty() || flags.isNull()) {
+			//当前的焦点Item都要改变颜色
+			item->setDefaultTextColor(color);
+
+		}
+		else {
+			//只改变选中的部分颜色
+			QTextCharFormat format;
+			format.setForeground(color);
+			QTextCursor cursor = item->textCursor();
+			cursor.setCharFormat(format);
+			//item->setTextCursor(cursor);
+		}
 	}
-	else
+	else {
+		//选中的Item都要改变颜色
+		QList<QGraphicsItem*>list = m_scene->selectedItems();
+		for (QGraphicsItem* tmp : list) {
+			QGraphicsTextItem* item = dynamic_cast<QGraphicsTextItem*>(tmp);
+			if (item) {
+				item->setDefaultTextColor(color);
+			}
+		}
+	}
+
+
 	{
 		//只改变选中的部分
 
 		QTextCharFormat format;
 		format.setForeground(color);
-		QTextCursor cursor = m_wid->m_textEdit->textCursor();
-		cursor.setCharFormat(format);
+		//QTextCursor cursor = ->textCursor();
+		//cursor.setCharFormat(format);
 	}
 }
 
-//改变光标形状
+//设置标志位，证明要创建文本框了
 void CMajor::slot_textFrame()
 {
 	m_scene->clearFocus();
-	//m_tempTextFrame->setCheckable(true);
 
+	//m_tempTextFrame->setCheckable(true);
+	//m_scene->slot_hideRectMouse(false);
 	//printf("slot_textFrame\n");
 	if (m_textEnable == false) {
 		m_textEnable = true;
-		//QApplication::setOverrideCursor(Qt::IBeamCursor);
-		//setCursor(Qt::IBeamCursor);
+
 	}
 	else if (m_textEnable == true) {
 		m_textEnable = false;
-		//QApplication::setOverrideCursor(Qt::ArrowCursor);
-		//setCursor(Qt::ArrowCursor);
 	}
 }
 
@@ -917,12 +1046,15 @@ void CMajor::slot_eraseTextFrame(QGraphicsTextItem* item)
 
 }
 
-void CMajor::slot_rectFrame(QSize size, QPointF point)
+void CMajor::slot_rectFrame(QSize size, QPointF point, bool flag)
 {
+	//证明当前要拖动窗口，而不是要选择或者创建窗口
+	if (flag) {
+		return;
+	}
+
 	if (m_textEnable) {
 		MyGraphicsTextItem* item = new MyGraphicsTextItem(QRectF(0, 0, abs(size.width()), abs(size.height())));
-
-		//item->setParent(m_scene);
 		m_scene->addItem(item);
 		if (size.height() < 0 && size.width() < 0) {
 			item->moveBy(point.rx(), point.ry());
@@ -940,11 +1072,54 @@ void CMajor::slot_rectFrame(QSize size, QPointF point)
 		}
 		connect(item, SIGNAL(sig_loseFocusText(QGraphicsTextItem*)), this, SLOT(slot_eraseTextFrame(QGraphicsTextItem*)));
 		connect(item, SIGNAL(sig_needSceneUpdate()), this, SLOT(slot_sceneUpdate()));
+		connect(item, SIGNAL(sig_deleteKey()), this, SLOT(slot_remove()));
+		connect(item, SIGNAL(sig_hideRectMouse(bool)), m_scene, SLOT(slot_hideRectMouse(bool)));
+
 		//item->setName(g_textNumber++, QString::number(g_textNumber));
 		//item->setPlainText("11111111111");
 	}
+	else {
+		if (size.height() > 0 && size.width() > 0) {
+			QRect rect(point.toPoint() - QPoint(size.width(), size.height()), size);
+			QPainterPath path;
+			path.addRect(rect);
+			m_scene->setSelectionArea(path);
+		}
+
+		if (size.height() < 0 && size.width() < 0) {
+			size = QSize(abs(size.width()), abs(size.height()));
+			QRect rect(point.toPoint(), size);
+			QPainterPath path;
+			path.addRect(rect);
+			m_scene->setSelectionArea(path);
+
+			//QGraphicsRectItem* tmp = new QGraphicsRectItem;
+			//tmp->setRect(rect);
+			//tmp->setBrush(Qt::blue);
+			//m_scene->addItem(tmp);
+		}
+
+		if (size.height() < 0 && size.width() > 0) {
+			size = QSize(abs(size.width()), abs(size.height()));
+			QRect rect(point.toPoint() - QPoint(size.width(), 0), size);
+			QPainterPath path;
+			path.addRect(rect);
+			m_scene->setSelectionArea(path);
+		}
+
+		if (size.height() > 0 && size.width() < 0) {
+			size = QSize(abs(size.width()), abs(size.height()));
+			QRect rect(point.toPoint() - QPoint(0, size.height()), size);
+			QPainterPath path;
+			path.addRect(rect);
+			m_scene->setSelectionArea(path);
+		}
+
+	}
+
+
 	m_textEnable = false;
-	m_tempTextFrame->setCheckable(false);
+	//m_tempTextFrame->setCheckable(false);
 }
 
 void CMajor::slot_timeOut()

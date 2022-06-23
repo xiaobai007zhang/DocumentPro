@@ -6,7 +6,7 @@
 #include <QPainterPath>
 #include <QTextCursor>
 #include <QColor>
-
+#include <QTimer>
 
 class MyGraphicsTextItem : public QGraphicsTextItem
 {
@@ -28,25 +28,36 @@ public:
 
 	void setText(QString text);
 
+
 protected:
 	//void hoverEnterEvent(QGraphicsSceneHoverEvent* event) override;
 	void focusInEvent(QFocusEvent* e)override;
 	void focusOutEvent(QFocusEvent* e)override;
+
 
 	void paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget)override;
 	QRectF boundingRect()const override;
 
 	int     type() const;
 	void mousePressEvent(QGraphicsSceneMouseEvent* event)override;
+	void mouseReleaseEvent(QGraphicsSceneMouseEvent* event)override;
+	void mouseMoveEvent(QGraphicsSceneMouseEvent* event)override;
 
 	QPainterPath shape() const;
 
 	void mouseDoubleClickEvent(QGraphicsSceneMouseEvent* e)override;
+
 signals:
 	void sig_loseFocusText(QGraphicsTextItem* item);
 
 	//需要刷新一下场景
 	void sig_needSceneUpdate();
+
+	//删除键上传
+	void sig_deleteKey();
+
+	//隐藏鼠标移动形成的框
+	void sig_hideRectMouse(bool);
 
 private:
 	QRectF m_rect;
@@ -56,6 +67,6 @@ private:
 	qreal m_fontWidth;
 	qreal m_fontHeight;
 	//QFont m_font;
-	bool isMousePress = false;
-
+	bool m_isMousePress = false;
+	QPointF m_startPos;
 };

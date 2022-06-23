@@ -16,6 +16,7 @@
 #include "myhighlighter.h"
 #include "plugin.h"
 #include "mygraphicsscene.h"
+#include "mygraphicspixmapitem.h"
 
 
 QT_BEGIN_NAMESPACE
@@ -83,10 +84,18 @@ private:
 	void closeEvent(QCloseEvent* event)override;
 
 protected:
-	void mousePressEvent(QMouseEvent* event)override;
+	//void mousePressEvent(QMouseEvent* event)override;
+
+	//void mouseReleaseEvent(QMouseEvent* event)override;
+
+	void keyPressEvent(QKeyEvent* event)override;
+
+	//void paintEvent(QPaintEvent* event)override;
+
 	// bool eventFilter(QObject*,QEvent*);
 
 	//void mouseReleaseEvent(QMouseEvent* event)override;
+
 
 	//!文档槽函数
 private slots:
@@ -140,7 +149,9 @@ private slots:
 	//删除文本框
 	void slot_eraseTextFrame(QGraphicsTextItem*);
 
-	void slot_rectFrame(QSize size, QPointF point);
+	void slot_rectFrame(QSize size, QPointF point, bool flag);
+
+
 
 	//!其他槽函数
 private slots:
@@ -155,6 +166,9 @@ private slots:
 	void slot_menuBarFont();
 
 	void slot_sceneUpdate();
+
+
+
 	//!成员变量
 private:
 	//记录列数
@@ -191,13 +205,18 @@ private:
 	//QGraphicsScene* m_scene;
 	MyGraphicsScene* m_scene;
 
-	MyGraphicsTextItem* text;
-
 	bool m_textEnable;
 
 	QThread* m_slotTimerThread;
 
 	QAction* m_tempTextFrame;
+
+	QPoint m_startPos;
+
+	bool m_isPress;
+
+	//暂定，用作复制粘贴等操作再回来想想
+	//QGraphicsItemGroup* m_itemGroup;
 
 	//!插件变量
 private:
