@@ -3,9 +3,6 @@
 #include <QApplication>
 #include <QProcess>
 
-
-
-
 int main(int argc, char* argv[])
 {
 	QApplication a(argc, argv);
@@ -18,4 +15,5 @@ int main(int argc, char* argv[])
 	window.getJson();
 
 	return a.exec();
+
 }

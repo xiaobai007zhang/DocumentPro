@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 ﻿#pragma once
+=======
+#pragma once
+>>>>>>> master
 #include "ioinl.h"
 #include "ys_rutil.h"
 #include "ys_util.h"

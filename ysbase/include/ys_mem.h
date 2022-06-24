@@ -1,4 +1,6 @@
+
 ﻿#pragma once
+
 #include "cmn.h"
 #include <utility>
 

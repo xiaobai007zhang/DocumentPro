@@ -47,3 +47,4 @@ win32: LIBS += -L$$PWD/../ysbase/lib/ -lysbase
 
 INCLUDEPATH += $$PWD/../ysbase/lib
 DEPENDPATH += $$PWD/../ysbase/lib
+

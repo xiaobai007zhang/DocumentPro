@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 ﻿#ifndef PLUGIN_H
+=======
+#ifndef PLUGIN_H
+>>>>>>> master
 #define PLUGIN_H
 
 #define PluginInfo "Plugin 1.0"
