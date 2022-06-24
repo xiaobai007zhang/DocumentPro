@@ -19,6 +19,7 @@ protected:
 	void mousePressEvent(QGraphicsSceneMouseEvent* event)override;
 	void mouseMoveEvent(QGraphicsSceneMouseEvent* event)override;
 	void mouseReleaseEvent(QGraphicsSceneMouseEvent* event)override;
+	void wheelEvent(QGraphicsSceneWheelEvent* event)override;
 
 signals:
 	void sig_rectFrame(QSize size, QPointF point, bool);
@@ -26,8 +27,8 @@ signals:
 public slots:
 	void slot_hideRectMouse(bool);
 private:
-	QPointF m_curPos;
 
+	QPointF m_curPos;
 	bool m_isPress;
 	QGraphicsRectItem* m_rectMouse;
 	//等于1的话就证明要拖动了，等于零就代表执行默认操作

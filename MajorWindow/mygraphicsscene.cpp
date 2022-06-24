@@ -4,14 +4,16 @@
 #include <QGraphicsTextItem>
 #include <QGraphicsRectItem>
 #include <QPainter>
-#include <QLabel>
+
 
 #include "mygraphicstextitem.h"
 MyGraphicsScene::MyGraphicsScene(const int& width, const int& height, QObject* parent)
 	: QGraphicsScene(parent), m_textItemFlag(false)
 {
 	setWidHei(width, height);
-	m_rectMouse = new QGraphicsRectItem;
+
+
+	//m_rectMouse = new QGraphicsRectItem;
 	//m_rectMouse->setBrush(Qt::blue);
 
 }
@@ -22,16 +24,19 @@ MyGraphicsScene::~MyGraphicsScene()
 
 void MyGraphicsScene::setWidHei(const int& width, const int& height)
 {
+	//qDebug() << width << " " << height;
 	setSceneRect(0, 0, width, height);
+	//addRect(0, 0, width, height)->setBrush(Qt::blue);
+
 }
 
 
 void MyGraphicsScene::mousePressEvent(QGraphicsSceneMouseEvent* event)
 {
 	//qDebug() << "My mouse press event";
-	if (m_rectMouse == nullptr) {
-		m_rectMouse = new QGraphicsRectItem;
-	}
+
+	m_rectMouse = new QGraphicsRectItem;
+
 
 
 	addItem(m_rectMouse);
@@ -97,6 +102,42 @@ void MyGraphicsScene::mouseReleaseEvent(QGraphicsSceneMouseEvent* event)
 	QGraphicsScene::mouseReleaseEvent(event);
 
 }
+
+void MyGraphicsScene::wheelEvent(QGraphicsSceneWheelEvent* event)
+{
+	//qDebug() << "scene wheel event";
+	QList<QGraphicsItem*> list = selectedItems();
+	if (!list.isEmpty()) {
+		for (QGraphicsItem* item : list) {
+
+
+			if (event->delta() > 0) {
+				//qDebug() << QStringLiteral("大于零");
+				item->setScale(item->scale() + 0.1);
+				//item->setPos((item->pos().x() - item->boundingRect().width() * 0.1), (item->pos().y() - item->boundingRect().height() * 0.1));
+			}
+			else {
+				if (item->scale() - 0.1 <= 0) {
+					continue;
+				}
+				else {
+					item->setScale(item->scale() - 0.1);
+				}
+				//qDebug() << QStringLiteral("小于零");
+				//item->setPos((item->pos().x() + item->boundingRect().width() * 0.1), (item->pos().y() + item->boundingRect().height() * 0.1));
+
+			}
+		}
+
+		event->accept();
+	}
+	else {
+		QGraphicsScene::wheelEvent(event);
+	}
+
+
+}
+
 
 void MyGraphicsScene::slot_hideRectMouse(bool flag) {
 

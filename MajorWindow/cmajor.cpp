@@ -17,18 +17,19 @@
 #include <QMetaClassInfo>
 #include <QMetaObject>
 #include <QPluginLoader>
+#include <QResizeEvent>
 
+#include <QDragEnterEvent>
+#include <QMimeData>
 #include <QTextBlock>
 #include <QTextDocument>
 #include <QTextLayout>
 #include <QTextStream>
 #include <QTextTable>
 
-
+// clang-format off
 #include "ysbase.h"
 using namespace ys;
-
-static short g_textNumber;
 
 // json对象1
 R_STRUCT_BEGIN(CHILD1)
@@ -85,7 +86,8 @@ enum enum_num
 CMajor::CMajor(QWidget* parent) : QMainWindow(parent), ui(new Ui::CMajor), m_textEnable(false) {
 	ui->setupUi(this);
 
-	initTimer();
+	initCMajor();
+	//initTimer();
 	initMenuBar();
 	initToolBar();
 	initGraphics();
@@ -95,7 +97,11 @@ CMajor::CMajor(QWidget* parent) : QMainWindow(parent), ui(new Ui::CMajor), m_tex
 	initTableWidget();
 
 	initConnection();
-
+	setAcceptDrops(true);
+	m_view->setAcceptDrops(false);
+	ui->statusbar->hide();
+	//setFixedSize(800, 555);
+	//setFixedSize(width(), height());
 	//练习接口
 	// printf("%d\n", arr.Count());
 	// RArray<R<int>> arr(L"张佳旭", nullptr);
@@ -236,6 +242,7 @@ void CMajor::initMenuBar()
 void CMajor::initToolBar()
 {
 	m_toolBar = new QToolBar("title");
+	m_toolBar->setFixedHeight(20);
 	addToolBar(m_toolBar);
 
 	QAction* newCreat = new QAction(QStringLiteral("新建"));
@@ -270,21 +277,22 @@ void CMajor::initToolBar()
 
 void CMajor::initCenterWidget()
 {
-	m_wid = new CenterWidget;
-	m_wid->resize(width(), height());
-	m_wid->initWidget();
+	//m_wid = new CenterWidget;
+	//m_wid->resize(width(), height());
+	//m_wid->initWidget();
 	//setCentralWidget(m_wid);
 	//text = new MyGraphicsTextItem;
 	//text->setPlainText("1231111111");
 	//m_scene->addItem(text);
 	setCentralWidget(m_view);
+
 }
 
 //!所有的连接信号槽都在这里
 void CMajor::initConnection()
 {
 	//定时器
-	connect(m_timer, SIGNAL(timeout()), this, SLOT(slot_timeOut()));
+	//connect(m_timer, SIGNAL(timeout()), this, SLOT(slot_timeOut()));
 	// textEdit文本改变
 	//connect(m_wid->m_textEdit, SIGNAL(textChanged()), this, SLOT(slot_textChanged()));
 	connect(m_scene, SIGNAL(changed(const QList<QRectF>)), this, SLOT(slot_textChanged(const QList<QRectF>)));
@@ -306,40 +314,39 @@ void CMajor::initTableWidget()
 
 void CMajor::initGraphics()
 {
-	resize(width(), height());
 	m_view = new QGraphicsView(this);
-	m_scene = new MyGraphicsScene(width(), height());
-
+	m_scene = new MyGraphicsScene(width(), height(), this);
 	connect(m_scene, SIGNAL(sig_rectFrame(QSize, QPointF, bool)), this, SLOT(slot_rectFrame(QSize, QPointF, bool)));
 
-	m_view->setFixedSize(width(), height());
-	m_view->setScene(m_scene);
-	m_view->setAcceptDrops(true);
 
-	CenterWidget().setFocusPolicy(Qt::NoFocus);
+	m_view->setScene(m_scene);
+	//m_view->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+	//m_view->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+	//CenterWidget().setFocusPolicy(Qt::NoFocus);
+
 }
 
 //!实时更新状态栏的 光标 行列数
 void CMajor::updateStatusBar()
 {
 
-	QTextCursor tc = m_wid->m_textEdit->textCursor();
-	// QTextLayout *pLayout = tc.block().layout();
+	//QTextCursor tc = m_wid->m_textEdit->textCursor();
+	//// QTextLayout *pLayout = tc.block().layout();
 
-	//光标在一行中的位置
-	//光标的绝对位置-当前的文本块的起始位置，得出光标所在列数
-	m_column = QString::number(tc.position() - tc.block().position());
+	////光标在一行中的位置
+	////光标的绝对位置-当前的文本块的起始位置，得出光标所在列数
+	//m_column = QString::number(tc.position() - tc.block().position());
 
-	m_row = QString::number(tc.block().firstLineNumber());
-	// m_lineCount = QString::number(pLayout->lineForTextPosition(nCurpos).lineNumber() + tc.block().firstLineNumber());
+	//m_row = QString::number(tc.block().firstLineNumber());
+	//// m_lineCount = QString::number(pLayout->lineForTextPosition(nCurpos).lineNumber() + tc.block().firstLineNumber());
 
-	ui->statusbar->showMessage(QStringLiteral("行：") + m_row + QStringLiteral(" 列：") + m_column);
+	//ui->statusbar->showMessage(QStringLiteral("行：") + m_row + QStringLiteral(" 列：") + m_column);
 }
 
 void CMajor::initTimer()
 {
 	m_timer = new QTimer;
-	m_timer->setInterval(600);
+	m_timer->setInterval(1000);
 	m_timer->start();
 
 }
@@ -355,6 +362,14 @@ void CMajor::setFilePathAName(QString path)
 	QStringList list = path.split("/");
 	int len = list.count();
 	m_curFileName = list.at(len - 1);
+}
+
+//记录当前的高度
+void CMajor::initCMajor()
+{
+	//qDebug() << "width: " << width() << ",height: " << height();
+	m_curWidth = width();
+	m_curHeight = height();
 }
 
 BASE* BASE::New(int type)
@@ -489,9 +504,27 @@ void CMajor::setJson(const QString& fileName)
 
 void CMajor::resizeEvent(QResizeEvent* event)
 {
-	Q_UNUSED(event);
+	//Q_UNUSED(event);
+	//qreal scaleW = m_curWidth / width() * 0.01;
+	//qreal scaleH = m_curHeight / height() * 0.01;
+	//QList<QGraphicsItem*>list = m_scene->items();
+	//for (QGraphicsItem* item : list) {
+	//	item->setPos(item->pos().rx() * scaleW, item->pos().ry() * scaleH);
+	//}
 
-	QWidget::resizeEvent(event);
+	//m_view->resize(CenterWidget().width(), CenterWidget().height());
+	//m_scene->setSceneRect(0, 0, width(), height());
+	//m_scene->setSceneRect(0, 0, width(), height());
+	//m_scene->addRect(m_scene->sceneRect())->setBrush(Qt::blue);
+	//m_view->setFixedSize(m_scene->sceneRect().width() + 100, m_scene->sceneRect().height() + 100);
+	//m_view->setMaximumSize(QSize(width(), height()));
+	//m_view->setFixedSize()
+	//m_view->setBackgroundBrush(Qt::gray);
+
+	//记录当前的数值
+	initCMajor();
+
+	QMainWindow::resizeEvent(event);
 }
 
 void CMajor::closeEvent(QCloseEvent* event)
@@ -561,72 +594,119 @@ void CMajor::keyPressEvent(QKeyEvent* event)
 	QMainWindow::keyPressEvent(event);
 }
 
+void CMajor::dragEnterEvent(QDragEnterEvent* event)
+{
+	qDebug() << "dropEvent";
+	qDebug() << event->mimeData()->hasUrls();
+	QStringList FileTypes;
+	FileTypes.append("jpg");
+	FileTypes.append("png");
+
+	if (event->mimeData()->hasUrls() && event->mimeData()->urls().count() == 1) {
+
+		QFileInfo file(event->mimeData()->urls().at(0).toLocalFile());
+		//qDebug() << "event->mimeData()->urls().at(0).toLocalFile(): " << event->mimeData()->urls().at(0).toLocalFile();
+
+		if (FileTypes.contains(file.suffix().toLower())) {
+			event->acceptProposedAction();
+		}
+
+	}
+	QMainWindow::dragEnterEvent(event);
+}
+
+void CMajor::dropEvent(QDropEvent* event)
+{
+	//读取图片的信息
+	QFileInfo file(event->mimeData()->urls().at(0).toLocalFile());
+	QPixmap pixmap(file.absoluteFilePath());
+
+	MyGraphicsPixmapItem* item = new MyGraphicsPixmapItem(QRectF(0, 0, pixmap.width(), pixmap.height()));
+	//item->setImage(file.absoluteFilePath());
+	item->setPixmap(pixmap);
+	item->setFlags(QGraphicsItem::ItemIsMovable | QGraphicsItem::ItemIsSelectable | QGraphicsItem::ItemSendsGeometryChanges);
+	m_scene->addItem(item);
+
+	connect(item, SIGNAL(sig_hideRectMouse(bool)), m_scene, SLOT(slot_hideRectMouse(bool)));
+
+	//如果图片的宽高大于当前编辑器的大小，就会自动调整为0.3，后期可以修改
+	if (pixmap.width() > this->width() || pixmap.height() > this->height()) {
+		item->setScale(0.3);
+	}
+	item->setScale(1);
+	//这里减去50的意义在于，因为是MainWindow所以他的菜单栏和工具栏也包含在其中了
+	item->moveBy(cursor().pos().x() - geometry().topLeft().x(), cursor().pos().y() - geometry().topLeft().y() - 50);
+	QMainWindow::dropEvent(event);
+}
+
+
+
 
 void CMajor::slot_creatDocument()
 {
 
-	if (windowTitle().contains("*"))
-	{
+	//if (windowTitle().contains("*"))
+	//{
 
-		//另存为或者不保存
-		QMessageBox::StandardButton standard =
-			QMessageBox::information(nullptr, "Tips", QStringLiteral("是否保存对此文件的修改"), QMessageBox::Save | QMessageBox::No | QMessageBox::Cancel);
+	//	//另存为或者不保存
+	//	QMessageBox::StandardButton standard =
+	//		QMessageBox::information(nullptr, "Tips", QStringLiteral("是否保存对此文件的修改"), QMessageBox::Save | QMessageBox::No | QMessageBox::Cancel);
 
-		if (standard == QMessageBox::Save)
-		{
+	//	if (standard == QMessageBox::Save)
+	//	{
 
-			//处理保存逻辑
+	//		//处理保存逻辑
 
-			QFile file(m_curFilePath);
+	//		QFile file(m_curFilePath);
 
-			//判断是否存在，如果不存在那么就另存为后关闭
-			if (!file.exists())
-			{
-				//不存在
-				QString fileName = QFileDialog::getSaveFileName(nullptr, "Save", "./");
-				QFile file(fileName);
-				file.open(QIODevice::WriteOnly | QIODevice::Truncate | QIODevice::Text);
-				if (!file.isOpen())
-				{
-					// QMessageBox::critical(nullptr,"Tips","文件保存失败，请重试!");
-					return;
-				}
+	//		//判断是否存在，如果不存在那么就另存为后关闭
+	//		if (!file.exists())
+	//		{
+	//			//不存在
+	//			QString fileName = QFileDialog::getSaveFileName(nullptr, "Save", "./");
+	//			QFile file(fileName);
+	//			file.open(QIODevice::WriteOnly | QIODevice::Truncate | QIODevice::Text);
+	//			if (!file.isOpen())
+	//			{
+	//				// QMessageBox::critical(nullptr,"Tips","文件保存失败，请重试!");
+	//				return;
+	//			}
 
-				QTextStream stream(&file);
-				stream << m_wid->m_textEdit->toHtml();
-				file.close();
-				QMessageBox::information(nullptr, "Tips", "保存成功!");
-			}
-			else
-			{
-				file.open(QIODevice::WriteOnly | QIODevice::Truncate | QIODevice::Text);
-				if (!file.isOpen())
-				{
-					// QMessageBox::critical(nullptr,"Tips","文件打开失败!");
-					return;
-				}
-				//存在
-				QTextStream stream(&file);
-				stream << m_wid->m_textEdit->toHtml();
-				file.close();
-			}
-		}
-		else if (standard == QMessageBox::Cancel)
-		{
+	//			QTextStream stream(&file);
+	//			stream << m_wid->m_textEdit->toHtml();
+	//			file.close();
+	//			QMessageBox::information(nullptr, "Tips", "保存成功!");
+	//		}
+	//		else
+	//		{
+	//			file.open(QIODevice::WriteOnly | QIODevice::Truncate | QIODevice::Text);
+	//			if (!file.isOpen())
+	//			{
+	//				// QMessageBox::critical(nullptr,"Tips","文件打开失败!");
+	//				return;
+	//			}
+	//			//存在
+	//			QTextStream stream(&file);
+	//			stream << m_wid->m_textEdit->toHtml();
+	//			file.close();
+	//		}
+	//	}
+	//	else if (standard == QMessageBox::Cancel)
+	//	{
 
-			return;
-		}
-	}
+	//		return;
+	//	}
+	//}
 
-	m_wid->close();
+	//m_wid->close();
 
-	//新的文档名称
-	setWinTitle(QStringLiteral("新建文件"));
-	initCenterWidget();
-	initConnection();
-	m_wid->resizeWidget();
-	m_curFileName = "";
-	m_curFilePath = "";
+	////新的文档名称
+	//setWinTitle(QStringLiteral("新建文件"));
+	//initCenterWidget();
+	//initConnection();
+	//m_wid->resizeWidget();
+	//m_curFileName = "";
+	//m_curFilePath = "";
 }
 
 bool CMajor::slot_creatDocumentWindow()
@@ -641,27 +721,27 @@ bool CMajor::slot_openFile()
 	//添加功能，在读取json的时候需要固定住大小
 	//=======================================
 
-	QString fileName = QFileDialog::getOpenFileName(nullptr, "Tips", "./");
+	//QString fileName = QFileDialog::getOpenFileName(nullptr, "Tips", "./");
 
-	//从文件路径中获取文件名称,并显示到窗口上
-	setFilePathAName(fileName);
+	////从文件路径中获取文件名称,并显示到窗口上
+	//setFilePathAName(fileName);
 
-	QFile file(m_curFilePath);
-	file.open(QIODevice::ReadOnly);
-	if (!file.isOpen())
-	{
-		// QMessageBox::information(nullptr,"Tips","打开文件失败!");
-		return false;
-	}
+	//QFile file(m_curFilePath);
+	//file.open(QIODevice::ReadOnly);
+	//if (!file.isOpen())
+	//{
+	//	// QMessageBox::information(nullptr,"Tips","打开文件失败!");
+	//	return false;
+	//}
 
-	QTextStream stream(&file);
-	m_wid->m_textEdit->setText(stream.readAll());
+	//QTextStream stream(&file);
+	//m_wid->m_textEdit->setText(stream.readAll());
 
-	file.close();
-	setWindowTitle(m_curFileName);
+	//file.close();
+	//setWindowTitle(m_curFileName);
 
-	//记录日志
-	logFile->PrintLog(QString("打开文件:{文件名:%1,文件路径:%2").arg(m_curFileName).arg(m_curFilePath));
+	////记录日志
+	//logFile->PrintLog(QString("打开文件:{文件名:%1,文件路径:%2").arg(m_curFileName).arg(m_curFilePath));
 
 	return true;
 }
@@ -672,16 +752,25 @@ bool CMajor::slot_otherSave()
 
 	QString fileName = QFileDialog::getSaveFileName(nullptr, "Tips", "./");
 	QFile file(fileName);
-	file.remove();
 
-	QPixmap pix = m_view->grab();
-	pix.save(fileName, "PNG");
+	if (fileName.contains("png")) {
+		file.remove();
+
+		QPixmap pix = m_view->grab();
+		pix.save(fileName, "PNG");
+	}
+	if (fileName.contains("rtf")) {
+		QDataStream stream(&file);
+
+		file.close();
+	}
 
 	QMessageBox::information(nullptr, "Tips", QStringLiteral("保存成功!"));
 
 	setFilePathAName(fileName);
 
 	setWindowTitle(m_curFileName);
+
 
 	//记录日志
 	logFile->PrintLog(QString("另存为:{文件名:%1,文件路径:%2").arg(m_curFileName).arg(m_curFilePath));
@@ -691,66 +780,65 @@ bool CMajor::slot_otherSave()
 
 void CMajor::slot_printFile()
 {
-
 	qDebug() << "slot_printFile";
 }
 
 void CMajor::slot_exitDocument()
 {
-	if (m_curFileName.contains("*") || windowTitle().contains("*"))
-	{
-		//另存为或者不保存
-		QMessageBox::StandardButton standard =
-			QMessageBox::information(nullptr, "Tips", QStringLiteral("是否保存对此文件的修改"), QMessageBox::Save | QMessageBox::No | QMessageBox::Cancel);
+	//if (m_curFileName.contains("*") || windowTitle().contains("*"))
+	//{
+	//	//另存为或者不保存
+	//	QMessageBox::StandardButton standard =
+	//		QMessageBox::information(nullptr, "Tips", QStringLiteral("是否保存对此文件的修改"), QMessageBox::Save | QMessageBox::No | QMessageBox::Cancel);
 
-		if (standard == QMessageBox::Save)
-		{
+	//	if (standard == QMessageBox::Save)
+	//	{
 
-			//处理保存逻辑
-			QFile file(m_curFilePath);
+	//		//处理保存逻辑
+	//		QFile file(m_curFilePath);
 
-			//判断是否存在，如果不存在那么就另存为后关闭
-			if (!file.exists())
-			{
-				//不存在
-				QString fileName = QFileDialog::getSaveFileName(nullptr, "Save", "./");
-				QFile file(fileName);
-				file.open(QIODevice::WriteOnly | QIODevice::Truncate | QIODevice::Text);
-				if (!file.isOpen())
-				{
-					QMessageBox::critical(nullptr, "Tips", QStringLiteral("文件保存失败，请重试!"));
-					return;
-				}
+	//		//判断是否存在，如果不存在那么就另存为后关闭
+	//		if (!file.exists())
+	//		{
+	//			//不存在
+	//			QString fileName = QFileDialog::getSaveFileName(nullptr, "Save", "./");
+	//			QFile file(fileName);
+	//			file.open(QIODevice::WriteOnly | QIODevice::Truncate | QIODevice::Text);
+	//			if (!file.isOpen())
+	//			{
+	//				QMessageBox::critical(nullptr, "Tips", QStringLiteral("文件保存失败，请重试!"));
+	//				return;
+	//			}
 
-				QTextStream stream(&file);
-				stream << m_wid->m_textEdit->toHtml();
-				file.close();
-			}
-			else
-			{
-				file.open(QIODevice::WriteOnly | QIODevice::Truncate | QIODevice::Text);
-				if (!file.isOpen())
-				{
-					QMessageBox::critical(nullptr, "Tips", QStringLiteral("文件打开失败!"));
-					return;
-				}
-				//存在
-				QTextStream stream(&file);
-				stream << m_wid->m_textEdit->toHtml();
-				file.close();
-			}
-		}
-		else if (standard == QMessageBox::Cancel)
-		{
+	//			QTextStream stream(&file);
+	//			stream << m_wid->m_textEdit->toHtml();
+	//			file.close();
+	//		}
+	//		else
+	//		{
+	//			file.open(QIODevice::WriteOnly | QIODevice::Truncate | QIODevice::Text);
+	//			if (!file.isOpen())
+	//			{
+	//				QMessageBox::critical(nullptr, "Tips", QStringLiteral("文件打开失败!"));
+	//				return;
+	//			}
+	//			//存在
+	//			QTextStream stream(&file);
+	//			stream << m_wid->m_textEdit->toHtml();
+	//			file.close();
+	//		}
+	//	}
+	//	else if (standard == QMessageBox::Cancel)
+	//	{
 
-			return;
-		}
-	}
-	m_curFileName = "";
-	m_curFilePath = "";
+	//		return;
+	//	}
+	//}
+	//m_curFileName = "";
+	//m_curFilePath = "";
 
-	m_findWid->close();
-	m_table->close();
+	//m_findWid->close();
+	//m_table->close();
 
 	qApp->closeAllWindows();
 	qApp->quit();
@@ -765,12 +853,12 @@ void CMajor::slot_copy()
 
 void CMajor::slot_revoke()
 {
-	m_wid->m_textEdit->undo();
+	//m_wid->m_textEdit->undo();
 }
 
 void CMajor::slot_shear()
 {
-	m_wid->m_textEdit->cut();
+	//m_wid->m_textEdit->cut();
 }
 
 void CMajor::slot_paste()
@@ -813,29 +901,22 @@ void CMajor::slot_insertImage()
 {
 	QString imageName = QFileDialog::getOpenFileName(nullptr, "Tips", "./", "*.png;;*.jpg;;*.gif");
 	//QGraphicsPixmapItem* pixmap = new QGraphicsPixmapItem;
-	MyGraphicsPixmapItem* pixmap = new MyGraphicsPixmapItem;
 
 	QPixmap pix(imageName);
-	pix.scaled(25, 25, Qt::KeepAspectRatio);
+	MyGraphicsPixmapItem* pixmap = new MyGraphicsPixmapItem(QRectF(0, 0, pix.width(), pix.height()));;
 
-	pixmap->setScale(0.5);
+	if (pix.width() > width() || pix.height() > height()) {
+		pixmap->setScale(0.3);
+	}
+	else {
+		pixmap->setScale(1);
+	}
 
 	pixmap->setPixmap(pix);
 	m_scene->addItem(pixmap);
-	pixmap->setFlag(QGraphicsItem::ItemIsMovable);
-	pixmap->setFlag(QGraphicsItem::ItemIsSelectable);
+	pixmap->setFlags(QGraphicsItem::ItemIsMovable | QGraphicsItem::ItemIsSelectable | QGraphicsItem::ItemSendsGeometryChanges);
 
 	connect(pixmap, SIGNAL(sig_hideRectMouse(bool)), m_scene, SLOT(slot_hideRectMouse(bool)));
-
-
-	//m_scene->addItem(pixmap);
-	/*QTextCursor cursor = m_wid->m_textEdit->textCursor();
-	QTextImageFormat imageFormat;
-	imageFormat.setName(imageName);
-	imageFormat.setWidth(100);
-	imageFormat.setHeight(100);
-
-	cursor.insertImage(imageFormat);*/
 }
 
 void CMajor::slot_insertForm()
@@ -850,21 +931,21 @@ void CMajor::slot_typeface()
 
 	//先暂定为只要是焦点的都可以改变字体,后期在区分各种不同的结构
 	QGraphicsItem* itemTmp = m_scene->focusItem();
-	QGraphicsTextItem* item = dynamic_cast<QGraphicsTextItem*>(itemTmp);
+	MyGraphicsTextItem* item = dynamic_cast<MyGraphicsTextItem*>(itemTmp);
 	//ASSERT(item);
 
 	if (item) {
 		//区分选中和未选中两种
 		if (item->textCursor().selectedText().isEmpty() || item->textCursor().selectedText().isNull()) {
 			item->setFont(font);
+			item->setText(item->toPlainText());
 		}
 		else {
 			QTextCharFormat fmt;        //文本字符格式
 			fmt.setFont(font);
 			QTextCursor cursor = item->textCursor();
 			cursor.setCharFormat(fmt);
-			//item->setTextCursor(cursor);
-
+			item->setTextCursor(cursor);
 		}
 
 	}
@@ -883,7 +964,6 @@ void CMajor::slot_typeface()
 		}
 
 	}
-
 
 }
 
@@ -973,7 +1053,7 @@ void CMajor::slot_defaulted()
 //!把查找到的文本进行添加蓝色高光
 void CMajor::slot_findBtnClicked(QString findText)
 {
-	myhighlighter = new MyHighLighter(m_wid->m_textEdit->document(), findText);
+	//myhighlighter = new MyHighLighter(m_wid->m_textEdit->document(), findText);
 }
 
 void CMajor::slot_color()
@@ -1124,7 +1204,7 @@ void CMajor::slot_rectFrame(QSize size, QPointF point, bool flag)
 
 void CMajor::slot_timeOut()
 {
-	//updateStatusBar();
+	m_scene->update();
 
 }
 
@@ -1140,18 +1220,18 @@ void CMajor::slot_textChanged(const QList<QRectF>)
 
 void CMajor::slot_tableRowColumn(QString row, QString column)
 {
-	QTextCursor cursor = m_wid->m_textEdit->textCursor();
+	//QTextCursor cursor = m_wid->m_textEdit->textCursor();
 
-	QTextTable* table = cursor.insertTable(row.toInt(), column.toInt());
-	QTextTableFormat format = table->format();
-	format.setWidth(200);
-	format.setBorder(1);
-	format.setBorderCollapse(1);
+	//QTextTable* table = cursor.insertTable(row.toInt(), column.toInt());
+	//QTextTableFormat format = table->format();
+	//format.setWidth(200);
+	//format.setBorder(1);
+	//format.setBorderCollapse(1);
 
-	// format.setBorderStyle(QTextFrameFormat::BorderStyle_Solid);
-	// format.setBorderBrush(Qt::black);
+	//// format.setBorderStyle(QTextFrameFormat::BorderStyle_Solid);
+	//// format.setBorderBrush(Qt::black);
 
-	table->setFormat(format);
+	//table->setFormat(format);
 }
 
 void CMajor::slot_menuBarFont()
@@ -1159,6 +1239,11 @@ void CMajor::slot_menuBarFont()
 	bool ok;
 	QFont font = QFontDialog::getFont(&ok);
 	ui->menubar->setFont(font);
+	QList<QAction*> list = ui->menubar->actions();
+
+	for (QAction* action : list) {
+		action->setFont(font);
+	}
 }
 
 void CMajor::slot_sceneUpdate()

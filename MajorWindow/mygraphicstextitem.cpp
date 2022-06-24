@@ -5,6 +5,7 @@
 #include <qtextdocument.h>
 #include <QDebug>
 #include <QStyleOptionGraphicsItem>
+#include <QGraphicsScene>
 #include <QKeyEvent>
 
 MyGraphicsTextItem::MyGraphicsTextItem(const QRectF& rt, QGraphicsItem* parent) :QGraphicsTextItem(parent)
@@ -25,6 +26,7 @@ void MyGraphicsTextItem::initGraphicsTextItem()
 	setFlag(QGraphicsItem::ItemIsSelectable);
 	setFlag(QGraphicsItem::ItemIsMovable);
 	setFlag(QGraphicsItem::ItemIsFocusable);
+	setFlag(QGraphicsItem::ItemSendsGeometryChanges);
 	setTextInteractionFlags(Qt::TextEditorInteraction);
 
 	setFocus();
@@ -117,6 +119,24 @@ void MyGraphicsTextItem::focusOutEvent(QFocusEvent* e)
 	QGraphicsTextItem::focusOutEvent(e);
 }
 
+QVariant MyGraphicsTextItem::itemChange(GraphicsItemChange change, const QVariant& value)
+{
+	if (change == ItemPositionChange && scene()) // 控件发生移动
+	{
+		QPointF newPos = value.toPointF(); //即将要移动的位置
+		//QRectF rect(0, 0, scene()->width(), scene()->height());
+		QRectF rect(0, 0, scene()->width() - scale() * boundingRect().width(), scene()->height() - scale() * boundingRect().height());
+
+		if (!rect.contains(newPos)) // 是否在区域内
+		{
+			newPos.setX(qMin(rect.right(), qMax(newPos.x(), rect.left())));
+			newPos.setY(qMin(rect.bottom(), qMax(newPos.y(), rect.top())));
+			return newPos;
+		}
+	}
+	return QGraphicsItem::itemChange(change, value);
+}
+
 void MyGraphicsTextItem::paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget)
 {
 	//qDebug() << "paint and setText";
@@ -179,10 +199,22 @@ void MyGraphicsTextItem::mouseReleaseEvent(QGraphicsSceneMouseEvent* event)
 
 void MyGraphicsTextItem::mouseMoveEvent(QGraphicsSceneMouseEvent* event)
 {
-	if (m_isMousePress) {
-		//qDebug() << "scenePos: " << event->scenePos();
-		moveBy(event->scenePos().rx() - m_startPos.rx(), event->scenePos().ry() - m_startPos.ry());
+	if (hasFocus()) {
+		emit sig_hideRectMouse(true);
+		//QGraphicsTextItem::mouseMoveEvent(event);
 	}
+	else if (m_isMousePress) {
+		//qDebug() << "scenePos: " << event->scenePos();
+		//emit sig_hideRectMouse(true);
+		//moveBy(event->scenePos().rx() - m_startPos.rx(), event->scenePos().ry() - m_startPos.ry());
+	/*	QList<QGraphicsItem*>list = scene()->collidingItems(this);
+		if (!list.isEmpty()) {
+			for (QGraphicsItem* item : list) {
+
+			}
+		}*/
+	}
+
 	QGraphicsTextItem::mouseMoveEvent(event);
 }
 

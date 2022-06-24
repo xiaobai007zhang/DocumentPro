@@ -78,17 +78,25 @@ private:
 	//给文件路径和文件名赋值
 	void setFilePathAName(QString path);
 
+	void initCMajor();
+
 	//!重写的函数
 private:
 	void resizeEvent(QResizeEvent* event)override;
 	void closeEvent(QCloseEvent* event)override;
 
 protected:
+
+	void keyPressEvent(QKeyEvent* event)override;
+	void dragEnterEvent(QDragEnterEvent* event)override;
+	void dropEvent(QDropEvent* event)override;
+	//void wheelEvent(QWheelEvent* event)override;
+
+	//void drawEnterEvent(QDragEnterEvent* event)override;
 	//void mousePressEvent(QMouseEvent* event)override;
 
 	//void mouseReleaseEvent(QMouseEvent* event)override;
 
-	void keyPressEvent(QKeyEvent* event)override;
 
 	//void paintEvent(QPaintEvent* event)override;
 
@@ -214,6 +222,10 @@ private:
 	QPoint m_startPos;
 
 	bool m_isPress;
+
+	int m_curWidth;
+
+	int m_curHeight;
 
 	//暂定，用作复制粘贴等操作再回来想想
 	//QGraphicsItemGroup* m_itemGroup;
