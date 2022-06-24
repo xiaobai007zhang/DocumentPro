@@ -42,3 +42,8 @@ DISTFILES += \
 
 
 LIBS += -LC:/Users/13030/Desktop/ -lysbase
+
+win32: LIBS += -L$$PWD/../ysbase/lib/ -lysbase
+
+INCLUDEPATH += $$PWD/../ysbase/lib
+DEPENDPATH += $$PWD/../ysbase/lib
