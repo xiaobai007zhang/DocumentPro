@@ -97,10 +97,13 @@ CMajor::CMajor(QWidget* parent) : QMainWindow(parent), ui(new Ui::CMajor), m_tex
 	initTableWidget();
 
 	initConnection();
+<<<<<<< HEAD
 	setAcceptDrops(true);
 	m_view->setAcceptDrops(false);
 	ui->statusbar->hide();
 	//setFixedSize(800, 555);
+=======
+>>>>>>> 4887f329125d6ae369b6e0babd1cb1e6d9eed5df
 	//setFixedSize(width(), height());
 	//练习接口
 	// printf("%d\n", arr.Count());
@@ -315,7 +318,12 @@ void CMajor::initTableWidget()
 void CMajor::initGraphics()
 {
 	m_view = new QGraphicsView(this);
+<<<<<<< HEAD
 	m_scene = new MyGraphicsScene(width(), height(), this);
+=======
+	m_scene = new MyGraphicsScene(width()-30, height()-30);
+
+>>>>>>> 4887f329125d6ae369b6e0babd1cb1e6d9eed5df
 	connect(m_scene, SIGNAL(sig_rectFrame(QSize, QPointF, bool)), this, SLOT(slot_rectFrame(QSize, QPointF, bool)));
 
 

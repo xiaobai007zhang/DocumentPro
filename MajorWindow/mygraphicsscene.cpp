@@ -11,8 +11,11 @@ MyGraphicsScene::MyGraphicsScene(const int& width, const int& height, QObject* p
 	: QGraphicsScene(parent), m_textItemFlag(false)
 {
 	setWidHei(width, height);
+<<<<<<< HEAD
 
 
+=======
+>>>>>>> 4887f329125d6ae369b6e0babd1cb1e6d9eed5df
 	//m_rectMouse = new QGraphicsRectItem;
 	//m_rectMouse->setBrush(Qt::blue);
 
@@ -34,9 +37,15 @@ void MyGraphicsScene::setWidHei(const int& width, const int& height)
 void MyGraphicsScene::mousePressEvent(QGraphicsSceneMouseEvent* event)
 {
 	//qDebug() << "My mouse press event";
+<<<<<<< HEAD
 
 	m_rectMouse = new QGraphicsRectItem;
 
+=======
+	
+	m_rectMouse = new QGraphicsRectItem;
+	
+>>>>>>> 4887f329125d6ae369b6e0babd1cb1e6d9eed5df
 
 
 	addItem(m_rectMouse);
