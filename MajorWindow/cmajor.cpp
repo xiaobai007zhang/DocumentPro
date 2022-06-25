@@ -383,7 +383,7 @@ void CMajor::getJson()
 	file.open(QIODevice::ReadOnly);
 	if (!file.isOpen())
 	{
-		logFile->errorLog("json file open failed!");
+		//logFile->errorLog("json file open failed!");
 		return;
 	}
 	QTextStream stream(&file);
@@ -467,7 +467,7 @@ void CMajor::setJson(const QString& fileName)
 
 	if (!file.isOpen())
 	{
-		logFile->errorLog("Json File to failed!");
+		//logFile->errorLog("Json File to failed!");
 		return;
 	}
 
@@ -514,7 +514,7 @@ void CMajor::resizeEvent(QResizeEvent* event)
 
 	//m_view->resize(CenterWidget().width(), CenterWidget().height());
 	//m_scene->setSceneRect(0, 0, width(), height());
-	//m_scene->setSceneRect(0, 0, width(), height());
+	m_scene->setSceneRect(0, 0, width(), height());
 	//m_scene->addRect(m_scene->sceneRect())->setBrush(Qt::blue);
 	//m_view->setFixedSize(m_scene->sceneRect().width() + 100, m_scene->sceneRect().height() + 100);
 	//m_view->setMaximumSize(QSize(width(), height()));
@@ -773,7 +773,7 @@ bool CMajor::slot_otherSave()
 
 
 	//记录日志
-	logFile->PrintLog(QString("另存为:{文件名:%1,文件路径:%2").arg(m_curFileName).arg(m_curFilePath));
+	//logFile->PrintLog(QString("另存为:{文件名:%1,文件路径:%2").arg(m_curFileName).arg(m_curFilePath));
 
 	return true;
 }
@@ -1264,11 +1264,11 @@ bool CMajor::loadPlugin()
 
 		if (obj)
 		{
-			logFile = qobject_cast<Plugin*>(obj);
+			/*logFile = qobject_cast<Plugin*>(obj);
 			if (logFile)
 			{
 				return true;
-			}
+			}*/
 		}
 	}
 

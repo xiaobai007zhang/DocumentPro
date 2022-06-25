@@ -12,6 +12,10 @@ include(Table.pri)
 include(MyHightLighter.pri)
 include(App.pri)
 include(Major.pri)
+include(PixmapGraphics.pri)
+include(SceneGraphics.pri)
+include(TextItemGraphics.pri)
+
 
 #INCLUDEPATH += ../ysbase/include/
 #LIBS += -LD:\QtProject\DocumentPro\ysbase\ -lysbase
@@ -38,7 +42,10 @@ DISTFILES += \
     Find.pri \
     Major.pri \
     MyHightLighter.pri \
-    Table.pri
+    PixmapGraphics.pri \
+    SceneGraphics.pri \
+    Table.pri \
+    TextItemGraphics.pri
 
 
 LIBS += -LC:/Users/13030/Desktop/ -lysbase
