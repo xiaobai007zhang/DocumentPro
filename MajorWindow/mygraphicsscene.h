@@ -5,32 +5,33 @@
 
 class MyGraphicsScene : public QGraphicsScene
 {
-	Q_OBJECT
+    Q_OBJECT
 
 public:
-	MyGraphicsScene(const int& width, const int& height, QObject* parent = nullptr);
-	~MyGraphicsScene();
+    MyGraphicsScene(const int& width, const int& height, QObject* parent = nullptr);
+    MyGraphicsScene(QObject* parent = nullptr);
+    ~MyGraphicsScene();
+
 private:
-
-	void setWidHei(const int& width, const int& height);
-
+    void setWidHei(const int& width, const int& height);
 
 protected:
-	void mousePressEvent(QGraphicsSceneMouseEvent* event)override;
-	void mouseMoveEvent(QGraphicsSceneMouseEvent* event)override;
-	void mouseReleaseEvent(QGraphicsSceneMouseEvent* event)override;
-	void wheelEvent(QGraphicsSceneWheelEvent* event)override;
+    void mousePressEvent(QGraphicsSceneMouseEvent* event) override;
+    void mouseMoveEvent(QGraphicsSceneMouseEvent* event) override;
+    void mouseReleaseEvent(QGraphicsSceneMouseEvent* event) override;
+    void wheelEvent(QGraphicsSceneWheelEvent* event) override;
+    // void contextMenuEvent(QGraphicsSceneContextMenuEvent* contextMenuEvent) override;
 
 signals:
-	void sig_rectFrame(QSize size, QPointF point, bool);
+    void sig_rectFrame(QSize size, QPointF point, bool);
 
 public slots:
-	void slot_hideRectMouse(bool);
-private:
+    void slot_hideRectMouse(bool);
 
-	QPointF m_curPos;
-	bool m_isPress;
-	QGraphicsRectItem* m_rectMouse;
-	//等于1的话就证明要拖动了，等于零就代表执行默认操作
-	bool m_textItemFlag;
+private:
+    QPointF m_curPos;
+    bool m_isPress;
+    QGraphicsRectItem* m_rectMouse;
+    //等于1的话就证明要拖动了，等于零就代表执行默认操作
+    bool m_textItemFlag;
 };

@@ -1,20 +1,18 @@
 #include "mygraphicstextitem.h"
 #include <QCursor>
-#include <QPainter>
-#include <QGraphicsSceneHoverEvent>
-#include <qtextdocument.h>
 #include <QDebug>
-#include <QStyleOptionGraphicsItem>
 #include <QGraphicsScene>
+#include <QGraphicsSceneHoverEvent>
 #include <QKeyEvent>
+#include <QPainter>
+#include <QStyleOptionGraphicsItem>
+#include <qtextdocument.h>
 
-MyGraphicsTextItem::MyGraphicsTextItem(const QRectF& rt, QGraphicsItem* parent) :QGraphicsTextItem(parent)
+MyGraphicsTextItem::MyGraphicsTextItem(const QRectF& rt, QGraphicsItem* parent) : QGraphicsTextItem(parent), m_isExpand(true)
 {
-	//设置属性，并初始化基本信息
-	m_rect = rt;
-
-	initGraphicsTextItem();
-
+    //设置属性，并初始化基本信息
+    m_rect = rt;
+    initGraphicsTextItem();
 }
 
 MyGraphicsTextItem::~MyGraphicsTextItem()
@@ -23,223 +21,292 @@ MyGraphicsTextItem::~MyGraphicsTextItem()
 
 void MyGraphicsTextItem::initGraphicsTextItem()
 {
-	setFlag(QGraphicsItem::ItemIsSelectable);
-	setFlag(QGraphicsItem::ItemIsMovable);
-	setFlag(QGraphicsItem::ItemIsFocusable);
-	setFlag(QGraphicsItem::ItemSendsGeometryChanges);
-	setTextInteractionFlags(Qt::TextEditorInteraction);
-
-	setFocus();
-
+    setFlag(QGraphicsItem::ItemIsSelectable);
+    setFlag(QGraphicsItem::ItemIsMovable);
+    setFlag(QGraphicsItem::ItemIsFocusable);
+    setFlag(QGraphicsItem::ItemSendsGeometryChanges);
+    setTextInteractionFlags(Qt::TextEditorInteraction);
+    setFocus();
 }
 
 void MyGraphicsTextItem::setName(const int& key, const QString& name)
 {
-	setData(key, name);
+    setData(key, name);
 }
 
 const QString& MyGraphicsTextItem::getName(const int& key)
 {
-	return data(key).toString();
+    return data(key).toString();
 }
 
 void MyGraphicsTextItem::setRect(const QRectF& rect)
 {
-	m_rect = rect;
+    m_rect = rect;
 }
 //更新框架大小
 void MyGraphicsTextItem::updateFontInfo()
 {
+    m_fontWidth = document()->size().width();
+    m_fontHeight = document()->size().height();
+    QFontMetrics metrics(font());
 
-	m_fontWidth = document()->size().width();
-	m_fontHeight = document()->size().height();
-	QFontMetrics metrics(font());
+    //当输入文字长于文本框时
+    if (m_fontWidth > boundingRect().width())
+    {
+        qreal adjust = metrics.width("张");
+        this->setRect(QRectF(boundingRect().x(), boundingRect().y(), m_fontWidth + adjust, boundingRect().height()));
+        // this->setFont(m_font);
+        this->setPlainText(m_text);
 
-	//当输入文字长于文本框时
-	if (m_fontWidth > boundingRect().width())
-	{
-		qreal adjust = metrics.width("张");
-		this->setRect(QRectF(boundingRect().x(), boundingRect().y(), m_fontWidth + adjust, boundingRect().height()));
-		//this->setFont(m_font);
-		this->setPlainText(m_text);
-
-		//当更新文本框后，光标的位置设置，文本的末尾
-		QTextCursor cursor = this->textCursor();
-		cursor.movePosition(QTextCursor::End, QTextCursor::MoveAnchor, 1);
-		this->setTextCursor(cursor);
-	}
-	//当输入文字高于文本框时
-	if (m_fontHeight > boundingRect().height())
-	{
-		qreal adjust = metrics.height();
-		this->setRect(QRectF(boundingRect().x(), boundingRect().y(), boundingRect().width(), m_fontHeight + adjust));
-		//this->setFont(m_font);
-		this->setPlainText(m_text);
-		QTextCursor cursor = this->textCursor();
-		cursor.movePosition(QTextCursor::End, QTextCursor::MoveAnchor, 1);
-		this->setTextCursor(cursor);
-	}
+        //当更新文本框后，光标的位置设置，文本的末尾
+        QTextCursor cursor = this->textCursor();
+        cursor.movePosition(QTextCursor::End, QTextCursor::MoveAnchor, 1);
+        this->setTextCursor(cursor);
+    }
+    //当输入文字高于文本框时
+    if (m_fontHeight > boundingRect().height())
+    {
+        qreal adjust = metrics.height();
+        this->setRect(QRectF(boundingRect().x(), boundingRect().y(), boundingRect().width(), m_fontHeight + adjust));
+        // this->setFont(m_font);
+        this->setPlainText(m_text);
+        QTextCursor cursor = this->textCursor();
+        cursor.movePosition(QTextCursor::End, QTextCursor::MoveAnchor, 1);
+        this->setTextCursor(cursor);
+    }
 }
 
 void MyGraphicsTextItem::setText(QString text)
 {
-	m_text = text;
-	updateFontInfo();
+    m_text = text;
+    updateFontInfo();
 }
 
+QRectF MyGraphicsTextItem::getBoundingRect()
+{
+    return boundingRect();
+}
+
+qreal MyGraphicsTextItem::getScale()
+{
+    return scale();
+}
+
+QString MyGraphicsTextItem::getStrText()
+{
+    return toPlainText();
+}
 
 void MyGraphicsTextItem::focusInEvent(QFocusEvent* e)
 {
-	//qDebug() << "focus in";
+    // qDebug() << "focus in";
 
-	setCursor(Qt::IBeamCursor);
-	QGraphicsTextItem::focusInEvent(e);
+    setCursor(Qt::IBeamCursor);
+    QGraphicsTextItem::focusInEvent(e);
 }
 
 void MyGraphicsTextItem::focusOutEvent(QFocusEvent* e)
 {
 
-	qDebug() << "focusOut";
-	if (this->toPlainText().isNull() || this->toPlainText().isEmpty()) {
-		emit sig_loseFocusText(this);
-		return;
-	}
-	int width = document()->size().width();
-	int height = document()->size().height();
-	setRect(QRectF(boundingRect().x(), boundingRect().y(), width, height));
-	//setTextInteractionFlags(Qt::NoTextInteraction);
-	setSelected(false);
-	//QTextCursor cursor = textCursor();
-	//cursor.clearSelection();
-	emit(sig_needSceneUpdate());
-	emit(sig_hideRectMouse(false));
-	setFlag(QGraphicsItem::ItemStopsFocusHandling);
-	setCursor(Qt::ArrowCursor);
+    // qDebug() << "focusOut";
+    if (this->toPlainText().isNull() || this->toPlainText().isEmpty())
+    {
+        emit sig_loseFocusText(this);
+        return;
+    }
+    int width = document()->size().width();
+    int height = document()->size().height();
+    setRect(QRectF(boundingRect().x(), boundingRect().y(), width, height));
+    // setTextInteractionFlags(Qt::NoTextInteraction);
+    setSelected(false);
+    // QTextCursor cursor = textCursor();
+    // cursor.clearSelection();
+    emit(sig_needSceneUpdate());
+    emit(sig_hideRectMouse(true));
+    setFlag(QGraphicsItem::ItemStopsFocusHandling);
+    setCursor(Qt::ArrowCursor);
 
-	QGraphicsTextItem::focusOutEvent(e);
+    QGraphicsTextItem::focusOutEvent(e);
 }
 
 QVariant MyGraphicsTextItem::itemChange(GraphicsItemChange change, const QVariant& value)
 {
-	if (change == ItemPositionChange && scene()) // 控件发生移动
-	{
-		QPointF newPos = value.toPointF(); //即将要移动的位置
-		//QRectF rect(0, 0, scene()->width(), scene()->height());
-		QRectF rect(0, 0, scene()->width() - scale() * boundingRect().width(), scene()->height() - scale() * boundingRect().height());
-
-		if (!rect.contains(newPos)) // 是否在区域内
-		{
-			newPos.setX(qMin(rect.right(), qMax(newPos.x(), rect.left())));
-			newPos.setY(qMin(rect.bottom(), qMax(newPos.y(), rect.top())));
-			return newPos;
-		}
-	}
-	return QGraphicsItem::itemChange(change, value);
+    if (m_isExpand)
+    {
+        return QGraphicsTextItem::itemChange(change, value);
+    }
+    else
+    {
+        if (change == ItemPositionChange && scene()) // 控件发生移动
+        {
+            QPointF newPos = value.toPointF(); //即将要移动的位置
+            // QRectF rect(0, 0, scene()->width(), scene()->height());
+            // QRectF rect(0, 0, scene()->width() - scale() * boundingRect().width(), scene()->height() - scale() * boundingRect().height());
+            QRectF rect = scene()->sceneRect();
+            qDebug() << "text scene()->sceneRect()固定范围: " << rect;
+            if (!rect.contains(newPos)) // 是否在区域内
+            {
+                newPos.setX(qMin(rect.right(), qMax(newPos.x(), rect.left())));
+                newPos.setY(qMin(rect.bottom(), qMax(newPos.y(), rect.top())));
+                qDebug() << "text newPos: ";
+                return newPos;
+            }
+        }
+        return QGraphicsTextItem::itemChange(change, value);
+    }
 }
 
 void MyGraphicsTextItem::paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget)
 {
-	//qDebug() << "paint and setText";
+    // qDebug() << "paint and setText";
 
-	if (hasFocus()) {
-		//painter->setRenderHint(QPainter::SmoothPixmapTransform);
-		//painter->setRenderHint(QPainter::Antialiasing);
-		painter->drawRect(boundingRect());
+    if (hasFocus())
+    {
+        // painter->setRenderHint(QPainter::SmoothPixmapTransform);
+        // painter->setRenderHint(QPainter::Antialiasing);
+        painter->drawRect(boundingRect());
 
-		QString text = toPlainText();
-		setText(text);
-		QGraphicsTextItem::paint(painter, option, widget);
-	}
-	else {
-		QGraphicsTextItem::paint(painter, option, widget);
-	}
-
-
+        QString text = toPlainText();
+        setText(text);
+        QGraphicsTextItem::paint(painter, option, widget);
+    }
+    else
+    {
+        QGraphicsTextItem::paint(painter, option, widget);
+    }
 }
 
 QRectF MyGraphicsTextItem::boundingRect() const
 {
-	return QRectF(m_rect.x(), m_rect.y(), m_rect.width(), m_rect.height());
+    return QRectF(m_rect.x(), m_rect.y(), m_rect.width(), m_rect.height());
 }
 
 int MyGraphicsTextItem::type() const
 {
-	return UserType + 5;
+    return QGraphicsTextItem::Type;
 }
-
 
 void MyGraphicsTextItem::mousePressEvent(QGraphicsSceneMouseEvent* event)
 {
-	//qDebug() << "press";
-	if (hasFocus()) {
-		QGraphicsTextItem::mousePressEvent(event);
-	}
-	else {
-		m_isMousePress = true;
-		m_startPos = event->scenePos();
-		//qDebug() << "m_startPos" << m_startPos;
-		setTextInteractionFlags(Qt::NoTextInteraction);
+    // qDebug() << "press";
+    if (hasFocus())
+    {
+        QGraphicsTextItem::mousePressEvent(event);
+    }
+    else
+    {
+        m_isMousePress = true;
+        m_startPos = event->scenePos();
+        // qDebug() << "m_startPos" << m_startPos;
+        setTextInteractionFlags(Qt::NoTextInteraction);
 
-		//隐藏场景的鼠标滑动形成的框架
-		emit sig_hideRectMouse(true);
-		//m_timeId = startTimer(800);
-		QGraphicsTextItem::mousePressEvent(event);
-	}
-
+        //隐藏场景的鼠标滑动形成的框架
+        // qDebug() << "hideRect";
+        emit sig_hideRectMouse(true);
+        QGraphicsTextItem::mousePressEvent(event);
+    }
 }
 
 void MyGraphicsTextItem::mouseReleaseEvent(QGraphicsSceneMouseEvent* event)
 {
-	//qDebug() << "release";
-	//killTimer(m_timeId);
-	m_isMousePress = false;
-	emit sig_hideRectMouse(false);
-	QGraphicsTextItem::mouseReleaseEvent(event);
+    // qDebug() << "release";
+    // killTimer(m_timeId);
+    m_isMousePress = false;
+    emit sig_hideRectMouse(true);
+    QGraphicsTextItem::mouseReleaseEvent(event);
 }
 
 void MyGraphicsTextItem::mouseMoveEvent(QGraphicsSceneMouseEvent* event)
 {
-	if (hasFocus()) {
-		emit sig_hideRectMouse(true);
-		//QGraphicsTextItem::mouseMoveEvent(event);
-	}
-	else if (m_isMousePress) {
-		//qDebug() << "scenePos: " << event->scenePos();
-		//emit sig_hideRectMouse(true);
-		//moveBy(event->scenePos().rx() - m_startPos.rx(), event->scenePos().ry() - m_startPos.ry());
-	/*	QList<QGraphicsItem*>list = scene()->collidingItems(this);
-		if (!list.isEmpty()) {
-			for (QGraphicsItem* item : list) {
+    if (hasFocus())
+    {
+        emit sig_hideRectMouse(false);
+        //  QGraphicsTextItem::mouseMoveEvent(event);
+    }
+    else if (m_isMousePress)
+    {
+        emit sig_hideRectMouse(false);
+    }
+    if (m_isRepeat == false)
+    { //不重复
+        QList<QGraphicsItem*> list = collidingItems();
+        for (QGraphicsItem* item : list)
+        { //比较坐标
+            qDebug() << "item->pos(): " << item->pos();
+            qDebug() << "pos(): " << pos();
 
-			}
-		}*/
-	}
+            if (item->pos().x() < pos().x() && item->pos().y() < pos().y())
+            {
 
-	QGraphicsTextItem::mouseMoveEvent(event);
+                item->setPos(item->pos().x() - 2.5, item->pos().y() - 2.5);
+            }
+
+            if (item->pos().x() < pos().x() && item->pos().y() > pos().y())
+            {
+                item->setPos(item->pos().x() - 2.5, item->pos().y() + 2.5);
+            }
+
+            if (item->pos().x() > pos().x() && item->pos().y() > pos().y())
+            {
+                item->setPos(item->pos().x() + 2.5, item->pos().y() + 2.5);
+            }
+
+            if (item->pos().x() > pos().x() && item->pos().y() < pos().y())
+            {
+                item->setPos(item->pos().x() + 2.5, item->pos().y() - 2.5);
+            }
+
+            if (item->pos().x() == pos().x() && item->pos().y() < pos().y())
+            {
+                item->setPos(item->pos().x(), item->pos().y() - 2.5);
+            }
+
+            if (item->pos().x() == pos().x() && item->pos().y() > pos().y())
+            {
+                item->setPos(item->pos().x(), item->pos().y() + 2.5);
+            }
+
+            if (item->pos().x() > pos().x() && item->pos().y() == pos().y())
+            {
+                item->setPos(item->pos().x() + 2.5, item->pos().y());
+            }
+
+            if (item->pos().x() < pos().x() && item->pos().y() == pos().y())
+            {
+                item->setPos(item->pos().x() - 2.5, item->pos().y());
+            }
+        }
+    }
+
+    QGraphicsTextItem::mouseMoveEvent(event);
 }
-
 
 QPainterPath MyGraphicsTextItem::shape() const
 {
-	//qDebug() << "shape";
-	QPainterPath path;
-	path.addRect(boundingRect());
-	return path;
+    // qDebug() << "shape";
+    QPainterPath path;
+    path.addRect(boundingRect());
+    return path;
 }
 
 void MyGraphicsTextItem::mouseDoubleClickEvent(QGraphicsSceneMouseEvent* e)
 {
 
-	if (e->button() == Qt::LeftButton) {
-		//qDebug() << "double Mouse";
-		setTextInteractionFlags(Qt::TextEditorInteraction);
-		//setTextInteractionFlags(Qt::TextSelectableByMouse);
-		setFocus();
-		//setSelected(true);
-		QGraphicsTextItem::mouseDoubleClickEvent(e);
-		//return;
-	}
-	//emit sig_hideRectMouse(false);
-	//textCursor().clearSelection();
-	//QGraphicsTextItem::mouseDoubleClickEvent(e);
+    if (e->button() == Qt::LeftButton)
+    {
+        // qDebug() << "double Mouse";
+        setTextInteractionFlags(Qt::TextEditorInteraction);
+        setFocus();
+    }
+    QGraphicsTextItem::mouseDoubleClickEvent(e);
+}
+
+void MyGraphicsTextItem::slot_repeat(bool flag)
+{
+    m_isRepeat = flag;
+}
+
+void MyGraphicsTextItem::slot_expand(bool flag)
+{
+    m_isExpand = flag;
 }
