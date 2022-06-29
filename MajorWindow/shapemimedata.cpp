@@ -2,6 +2,7 @@
 
 ShapeMimeData::ShapeMimeData(QList<QGraphicsItem*> items)
 {
+
     m_items = items;
 }
 

@@ -28,6 +28,11 @@ QGraphicsItem* AbstractShape::copy()
         tmpItem->setPos(item->pos());
         return tmpItem;
     }
+    else
+    {
+
+        return nullptr;
+    }
 }
 
 int AbstractShape::type() const
@@ -48,6 +53,7 @@ int AbstractShape::type() const
 
 AbstractShape::AbstractShape(QObject* parent)
 {
+    Q_UNUSED(parent)
 }
 
 AbstractShape::~AbstractShape()

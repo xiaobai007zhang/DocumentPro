@@ -15,7 +15,7 @@
 
 #include "ToolDefine.h"
 #include "abstractshape.h"
-#include "centerwidget.h"
+
 #include "mygraphicspixmapitem.h"
 #include "mygraphicsscene.h"
 #include "mygraphicstextitem.h"
@@ -39,7 +39,6 @@ public:
     ~CMajor();
 
     //=================测试====================//
-    void getJson();
 
     void setJson(const QString& fileName);
 
@@ -54,6 +53,8 @@ signals:
     void sig_repeat(bool);
 
 private:
+    void readJson(const QString& fileName);
+
     void initMenuBar();
 
     void initToolBar();
@@ -67,6 +68,8 @@ private:
     void initTableWidget();
 
     void initGraphics();
+
+    void loadJsonObj(const QJsonObject& obj, const QString& type);
 
     //!普通成员函数
 private:
@@ -246,9 +249,6 @@ private:
     //记录默认字体,用于恢复字体
     QFont m_font;
 
-    //中心部件的对象，也就是文档对象
-    CenterWidget* m_wid;
-
     QGraphicsView* m_view;
     // MyGraphicsView* m_view;
 
@@ -271,7 +271,7 @@ private:
 
     int m_curHeight;
 
-    QUndoStack* undoStack;
+    // QUndoStack* undoStack;
 
     bool m_isExpand;
 

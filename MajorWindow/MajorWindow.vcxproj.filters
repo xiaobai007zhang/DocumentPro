@@ -47,9 +47,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="centerwidget.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="cmajor.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -73,9 +70,6 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <QtMoc Include="centerwidget.h">
-      <Filter>Header Files</Filter>
-    </QtMoc>
     <QtMoc Include="cmajor.h">
       <Filter>Header Files</Filter>
     </QtMoc>
@@ -118,25 +112,13 @@
     <None Include="App.pri">
       <Filter>Distribution Files</Filter>
     </None>
-    <None Include="CenterWidget.pri">
-      <Filter>Distribution Files</Filter>
-    </None>
-    <None Include="Find.pri">
-      <Filter>Distribution Files</Filter>
-    </None>
     <None Include="Major.pri">
-      <Filter>Distribution Files</Filter>
-    </None>
-    <None Include="MyHightLighter.pri">
       <Filter>Distribution Files</Filter>
     </None>
     <None Include="PixmapGraphics.pri">
       <Filter>Distribution Files</Filter>
     </None>
     <None Include="SceneGraphics.pri">
-      <Filter>Distribution Files</Filter>
-    </None>
-    <None Include="Table.pri">
       <Filter>Distribution Files</Filter>
     </None>
     <None Include="TextItemGraphics.pri">
@@ -146,6 +128,9 @@
       <Filter>Distribution Files</Filter>
     </None>
     <None Include="ShapeMimeData.pri">
+      <Filter>Distribution Files</Filter>
+    </None>
+    <None Include="MimeData.pri">
       <Filter>Distribution Files</Filter>
     </None>
   </ItemGroup>

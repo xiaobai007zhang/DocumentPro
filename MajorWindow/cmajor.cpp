@@ -131,10 +131,45 @@ void CMajor::isLoadPlugin()
 	}
 	else
 	{
+		stream<<time;
 		stream << TR("插件加载成功");
 		stream << endl;
 		file.close();
 	}
+}
+
+void CMajor::readJson(const QString & fileName)
+{
+	QFile file(fileName);
+	file.open(QIODevice::ReadOnly);
+	if (!file.isOpen()){
+		// QMessageBox::information(nullptr,"Tips","打开文件失败!");
+		if(logFile != nullptr)
+		logFile->errorLog(QString("打开 ”%1“ 文件失败!").arg(m_curFileName));
+	}
+	QByteArray byte = file.readAll();
+	QJsonDocument doc (QJsonDocument::fromJson(byte));
+	QJsonObject obj = doc.object();
+	QJsonArray textArr = obj.value("text").toArray();
+	QJsonArray pixArr = obj.value("pixmap").toArray();
+	
+	//写一个函数，来加载出不同的元素信息(json对象,type)
+	for (QJsonValue value : textArr) {
+		QJsonObject obj = value.toObject();
+		loadJsonObj(obj,"text");
+	}
+
+	for (QJsonValue value : pixArr) {
+		QJsonObject obj = value.toObject();
+		loadJsonObj(obj,"pixmap");
+	}
+
+	//==============TABLE=================//
+	// 
+	// 
+	//====================================//
+
+	file.close();
 }
 
 void CMajor::initMenuBar()
@@ -265,9 +300,9 @@ void CMajor::initToolBar()
 	QAction* copy = new QAction(TR("复制"));
 	QAction* paste = new QAction(TR("粘贴"));
 	//QAction* textFrame = new QAction(TR("文本框"));
-	QAction* remove = new QAction(TR("删除"));
+	
 
-	m_tool = new QToolButton(this);
+	m_tool = new QToolButton;
 	m_tool->setText(TR("文本框"));
 	m_tool->setObjectName("tool");
 	m_tool->setCheckable(true);
@@ -333,7 +368,7 @@ void CMajor::initTableWidget()
 void CMajor::initGraphics()
 {
 	m_view = new QGraphicsView;
-	m_scene = new MyGraphicsScene;
+	m_scene = new MyGraphicsScene(width(),height());
 	//m_view->setDragMode(QGraphicsView::RubberBandDrag);
 	//m_scene->setSceneRect
 
@@ -341,9 +376,11 @@ void CMajor::initGraphics()
 	connect(m_view,SIGNAL(customContextMenuRequested(const QPoint &)),this,SLOT(slot_rightMenu(const QPoint &)));
 	//connect(m_scene,SIGNAL(sceneRectChanged(const QRectF &)),this,SLOT(slot_sceneRectChanged(const QRectF&)));
 	
+	m_view->setResizeAnchor(QGraphicsView::AnchorViewCenter);
 	m_view->setContextMenuPolicy(Qt::CustomContextMenu);
 	m_view->setScene(m_scene);
-	m_view->setViewportUpdateMode(QGraphicsView::BoundingRectViewportUpdate);
+	m_view->setViewportUpdateMode(QGraphicsView::FullViewportUpdate);
+	
 	//qDebug()<<m_scene->width()<<" "<<m_scene->height();
 	//m_scene->addRect(QRectF(0,0,m_scene->width(),m_scene->height()))->setBrush(Qt::gray);
 	
@@ -353,6 +390,96 @@ void CMajor::initGraphics()
 
 	//m_view->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
 	//m_view->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+
+}
+
+void CMajor::loadJsonObj(const QJsonObject & obj, const QString & type)
+{
+	if (type == TR("text")) {
+	//文本: x、y、宽、高、缩放、内容、颜色、字体大小、加粗、倾斜、下划线，中划线、字体
+	int x = obj.value("x").toInt();
+	int y = obj.value("y").toInt();
+	int width = obj.value("width").toInt();
+	int height = obj.value("height").toInt();
+	qreal scale = obj.value("scale").toDouble();
+	QString contents = obj.value("contents").toString();
+	int red = obj.value("fontColorRed").toInt();
+	int green = obj.value("fontColorGreen").toInt();
+	int blue = obj.value("fontColorBlue").toInt();
+	QColor color(red,green,blue);
+	int fontSize = obj.value("fontSize").toInt();
+	bool bold = obj.value("fontBold").toBool();
+	bool italic = obj.value("fontItalic").toBool();
+	bool underLine = obj.value("fontUnderLine").toBool();
+	bool strikeout = obj.value("fontStrikeout").toBool();
+	QString family = obj.value("fontFamily").toString();
+
+	QFont font;
+	font.setBold(bold);
+	font.setItalic(italic);
+	font.setFamily(family);
+	font.setUnderline(underLine);
+	font.setStrikeOut(strikeout);
+	font.setPointSize(fontSize);
+	qDebug()<<x<<","<<y;
+	//QPointF point = m_view->mapFromScene(x,y);
+	QPoint point(x,y);
+	qDebug()<<point;
+	
+	//MyGraphicsTextItem* myItem = new MyGraphicsTextItem(QRectF(point.x(),point.y(),width,height));
+	
+	MyGraphicsTextItem* myItem = new MyGraphicsTextItem(QRectF(0,0,width,height));
+	myItem->setFlag(QGraphicsItem::ItemIsFocusable);
+
+	//myItem->setText(contents);
+	//QGraphicsTextItem* myItem = new QGraphicsTextItem(contents);
+
+	myItem->setPlainText(contents) ;
+	myItem->setFont(font);
+	myItem->setDefaultTextColor(color);
+
+	myItem->setScale(scale);
+	//myItem->setPos(0,0);
+	connect(myItem, SIGNAL(sig_hideRectMouse(bool)), m_scene, SLOT(slot_hideRectMouse(bool)));
+	connect(this,SIGNAL(sig_expand(bool)),myItem,SLOT(slot_expand(bool)));
+	connect(this,SIGNAL(sig_repeat(bool)),myItem,SLOT(slot_repeat(bool)));
+	connect(myItem, SIGNAL(sig_loseFocusText(QGraphicsTextItem*)), this, SLOT(slot_eraseTextFrame(QGraphicsTextItem*)));
+	connect(myItem, SIGNAL(sig_needSceneUpdate()), this, SLOT(slot_sceneUpdate()));
+	myItem->setSelected(true);
+	//connect(myItem, SIGNAL(sig_deleteKey()), this, SLOT(slot_remove()));
+
+	m_scene->addItem(myItem);
+
+	}
+	else if (type == TR("pixmap")) {
+		//图片：x、y、宽、高、比例、图片路径、
+		int x = obj.value("x").toInt();
+		int y = obj.value("y").toInt();
+		//qDebug()<<"load x: "<<x<<",load y: "<<y;
+		
+		//QPoint point = m_view->mapFromScene(x,y);
+		QPoint point(x,y);
+		
+		//qDebug()<<"load MapfromScene: "<<point;
+		int width = obj.value("width").toInt();
+		int height = obj.value("height").toInt();
+		qreal scale = obj.value("scale").toDouble();
+		QString imgPth = obj.value("imagePth").toString();
+		
+		//MyGraphicsPixmapItem *myItem = new MyGraphicsPixmapItem(QRectF(point.x(),point.y(),width,height));
+		MyGraphicsPixmapItem *myItem = new MyGraphicsPixmapItem(QRectF(point.x()-(width*(1 - scale)),point.y()-(height*(1 - scale)),width,height));
+		
+		myItem->setScale(scale);
+		myItem->setImage(imgPth);
+
+		connect(myItem, SIGNAL(sig_hideRectMouse(bool)), m_scene, SLOT(slot_hideRectMouse(bool)));
+		connect(this,SIGNAL(sig_expand(bool)),myItem,SLOT(slot_expand(bool)));
+		connect(this,SIGNAL(sig_repeat(bool)),myItem,SLOT(slot_repeat(bool)));
+		m_scene->addItem(myItem);
+	}
+	else if(type == TR("table")){
+
+	}
 
 }
 
@@ -408,88 +535,7 @@ BASE* BASE::New(int type)
 	printf("type:%d\n", type);
 	return nullptr;
 }
-void CMajor::getJson()
-{
-	QFile file("./zjx.json");
-	file.open(QIODevice::ReadOnly);
-	if (!file.isOpen())
-	{
-		logFile->errorLog("json file open failed!");
-		return;
-	}
-	QTextStream stream(&file);
-	stream.setCodec("UTF-8");
-	QString strFile = stream.readAll();
 
-	//====================================================
-	//测试接口功能
-	//CHILD1 child1;
-	//CHILD2 child2;
-	//CHILD3 child3;
-	//PARENT parent;
-	//BASE base;
-
-	//base.New(10);
-
-	//for (int i = 0; i < 10; i++)
-	//{
-	//	child1.intArray.Add(i);
-	//}
-	//child1.boolArray.Add(true);
-	//child1.boolArray.Add(false);
-	//child1.boolArray.Add(false);
-
-	//child1.fixString[0] = child1.fixString.Count();
-	//child1.fixString.Set(L"zhang", strlen("zhang"));
-
-	//// child2
-	//child2.doubleArray.Add(1.1234);
-	//child2.doubleArray.Add(2.1234);
-	//child2.obj = child1;
-	//double* dou = new double(10.5);
-	//child2.fixDouble.Set(dou, 1);
-
-	//// child3
-	//child3.str.Add(L'a');
-	//child3.strArray.Add(L"奥里给");
-	//child3.strArray.Add(L"兄弟们");
-	//////parent
-
-	//parent.iInt = 10;
-	//parent.iInt.SetName(L"整形");
-	//parent.obj = child3;
-	//parent.objArray1.Add(std::move(child1));
-
-	//parent.objArray3.Add(std::move(child3));
-	//// child3.SetName(L"child4");
-	//parent.objArray2.Add(std::move(child2));
-	//// parent.objArray3.Add(std::move(child3));
-	//parent.objArray1.Add(std::move(child1));
-
-	//json_save(L"./test.json", parent, true);
-
-	/*if (json_save(L"./test.json", child3, true) == true) {
-		m_wid->m_textEdit->setText("success");
-	}
-	else {
-		m_wid->m_textEdit->setText("failed");
-	}*/
-	//=====================================================
-
-	// QJsonParseError error;
-
-	// QJsonDocument doc = QJsonDocument::fromJson(strFile.toUtf8(), &error);
-	//  logFile->errorLog("");
-	// QJsonObject root = doc.object();
-	// QJsonValue zhangjiaxu = root.value("zhangjiaxu");
-	// if (zhangjiaxu.type() == QJsonValue::Object)
-	//{
-	//	QJsonObject obj = zhangjiaxu.toObject();
-	//	qDebug() << obj.value("name").toString();
-	//	qDebug() << obj.value("age").toString();
-	//	qDebug() << obj.value("sex").toString();
-	// }
-}
 
 void CMajor::setJson(const QString& fileName)
 {
@@ -498,6 +544,7 @@ void CMajor::setJson(const QString& fileName)
 
 	if (!file.isOpen())
 	{
+		if(logFile != nullptr)
 		logFile->errorLog("Json File to failed!");
 		return;
 	}
@@ -651,6 +698,8 @@ void CMajor::dragEnterEvent(QDragEnterEvent* event)
 	QStringList FileTypes;
 	FileTypes.append("jpg");
 	FileTypes.append("png");
+	FileTypes.append("txt");
+	FileTypes.append("json");
 	//FileTypes.append("gif");
 	if (event->mimeData()->hasUrls() && event->mimeData()->urls().count() == 1) {
 
@@ -670,7 +719,20 @@ void CMajor::dropEvent(QDropEvent* event)
 {
 	//读取图片的信息
 	//qDebug()<<"pos: "<<pos();
+
+
 	QFileInfo file(event->mimeData()->urls().at(0).toLocalFile());
+	QString fileName = event->mimeData()->urls().at(0).toLocalFile();
+	if (fileName.contains("txt") || fileName.contains("json")) {
+	
+		for (QGraphicsItem* item : m_scene->items()) {
+		m_scene->removeItem(item);
+		}
+		readJson(fileName);
+		setFilePathAName(fileName);
+		setWindowTitle(m_curFileName);
+	}
+	else {
 	QPixmap pixmap(file.absoluteFilePath());
 	
 	QPointF point = m_view->mapToScene(cursor().pos().x() - pos().x(),cursor().pos().y() - pos().y());
@@ -683,6 +745,7 @@ void CMajor::dropEvent(QDropEvent* event)
 	connect(this,SIGNAL(sig_expand(bool)),item,SLOT(slot_expand(bool)));
 	connect(this,SIGNAL(sig_repeat(bool)),item,SLOT(slot_repeat(bool)));
 	connect(item, SIGNAL(sig_hideRectMouse(bool)), m_scene, SLOT(slot_hideRectMouse(bool)));
+	}
 	
 	QMainWindow::dropEvent(event);
 }
@@ -764,27 +827,24 @@ bool CMajor::slot_openFile()
 {
 	//添加功能，在读取json的时候需要固定住大小
 	//=======================================
+	for (QGraphicsItem* item : m_scene->items()) {
+		m_scene->removeItem(item);
+	}
 
-	//QString fileName = QFileDialog::getOpenFileName(nullptr, "Tips", "./");
+	//刷新一次
+	slot_sceneUpdate();
 
-	////从文件路径中获取文件名称,并显示到窗口上
-	//setFilePathAName(fileName);
+	QString fileName = QFileDialog::getOpenFileName(nullptr, "Tips", "./");
 
-	//QFile file(m_curFilePath);
-	//file.open(QIODevice::ReadOnly);
-	//if (!file.isOpen())
-	//{
-	//	// QMessageBox::information(nullptr,"Tips","打开文件失败!");
-	//	return false;
-	//}
+	//从文件路径中获取文件名称,并显示到窗口上
+	setFilePathAName(fileName);
 
-	//QTextStream stream(&file);
-	//m_wid->m_textEdit->setText(stream.readAll());
-
-	//file.close();
-	//setWindowTitle(m_curFileName);
+	readJson(fileName);
+	
+	setWindowTitle(m_curFileName);
 
 	////记录日志
+	if(logFile != nullptr)
 	logFile->PrintLog(QString("打开文件:{文件名:%1,文件路径:%2").arg(m_curFileName).arg(m_curFilePath));
 
 	return true;
@@ -796,8 +856,98 @@ bool CMajor::slot_otherSave()
 
 	QString fileName = QFileDialog::getSaveFileName(nullptr, "Tips", "./");
 	QFile file(fileName);
+	file.open(QIODevice::WriteOnly);
 
-	if (fileName.contains("png")) {
+	QJsonObject scene;
+	QJsonArray textArr;
+	QJsonArray pixmapArr;
+	QJsonArray tableArr;
+	QJsonObject oo;
+	
+	QJsonObject root;
+
+	QList<QGraphicsItem*>list = m_scene->items();
+	for (QGraphicsItem* item : list) {
+		QJsonObject obj;
+		if (item->type() == QGraphicsTextItem::Type) {
+			MyGraphicsTextItem* myItem = dynamic_cast<MyGraphicsTextItem*>(item);
+			//文本: x、y、宽、高、缩放、内容、颜色、字体大小、加粗、倾斜、下划线，中划线、字体
+			obj.insert("x",myItem->pos().x());
+			obj.insert("y",myItem->pos().y());
+			obj.insert("width",myItem->getBoundingRect().width());
+			obj.insert("height",myItem->getBoundingRect().height());
+			obj.insert("scale",myItem->scale());
+			obj.insert("contents",myItem->getStrText());
+			//读取颜色的RGB值，并保存为字符串
+			QColor color = myItem->defaultTextColor();
+			
+			int red = color.red();
+			int green = color.green();
+			int blue = color.blue();
+
+			//读取字体大小、加粗、倾斜、下划线，中划线、字体
+			QFont font = myItem->font();
+			int fontSize = font.pointSize();
+			bool fontBold = font.bold();
+			bool fontItalic = font.italic();
+			bool fontUnderLine = font.underline();
+			bool fontStrikeout = font.strikeOut();
+			QString fontFamily = font.family();
+
+			obj.insert("fontColorRed",red);
+			obj.insert("fontColorGreen",green);
+			obj.insert("fontColorBlue",blue);
+			obj.insert("fontSize",fontSize);
+			obj.insert("fontBold",fontBold);
+			obj.insert("fontItalic",fontItalic);
+			obj.insert("fontUnderLine",fontUnderLine);
+			obj.insert("fontStrikeout",fontStrikeout);
+			obj.insert("fontFamily",fontFamily);
+
+			//obj.insert("")
+			textArr.append(obj);
+		}
+		else if (item->type() == QGraphicsPixmapItem::Type) {
+			MyGraphicsPixmapItem* myItem = dynamic_cast<MyGraphicsPixmapItem*>(item);
+			//图片：x、y、宽、高、比例、图片路径、
+			//现在用的坐标是场景坐标
+			//QPoint point = m_view->mapFromScene(myItem->scenePos().rx(),myItem->scenePos().ry());
+			QPoint point(myItem->pos().x(),myItem->pos().y());
+			obj.insert("x",point.x());
+			obj.insert("y",point.y());
+			obj.insert("width",myItem->getBoundingRect().width());
+			obj.insert("height",myItem->getBoundingRect().height());
+			obj.insert("scale",myItem->scale());
+			obj.insert("imagePth",myItem->getImagePth());
+			pixmapArr.append(obj);
+
+			//qDebug()<<"save pos x: "<<myItem->pos().x()<<",pos y: "<<myItem->pos().y();
+			//qDebug()<<"save scenePos x: "<<myItem->scenePos().x()<<",y: "<<myItem->scenePos().y();
+			//qDebug()<<"save point: "<<point;
+			//qDebug()<<"save item point: "<<item->mapRectFromItem(item->pos());
+		}
+		
+	}
+
+
+	//========================SCENE======================//
+	scene.insert("width",m_scene->itemsBoundingRect().width());
+	scene.insert("height",m_scene->itemsBoundingRect().height());
+	
+	//===================================================//
+	root.insert("scene",scene);
+	root.insert("text",textArr);
+	root.insert("pixmap",pixmapArr);
+	root.insert("table",tableArr);
+	
+	QJsonDocument doc(root);
+	
+	
+	file.write(doc.toJson());
+
+	file.close();
+
+	/*if (fileName.contains("png")) {
 		file.remove();
 
 		QPixmap pix = m_view->grab();
@@ -807,7 +957,7 @@ bool CMajor::slot_otherSave()
 		QDataStream stream(&file);
 
 		file.close();
-	}
+	}*/
 
 	QMessageBox::information(nullptr, "Tips", TR("保存成功!"));
 
@@ -817,6 +967,7 @@ bool CMajor::slot_otherSave()
 
 
 	//记录日志
+	if(logFile != nullptr)
 	logFile->PrintLog(QString("另存为:{文件名:%1,文件路径:%2").arg(m_curFileName).arg(m_curFilePath));
 
 	return true;
@@ -909,6 +1060,7 @@ void CMajor::slot_shear()
 
 	for (QGraphicsItem* item : m_scene->selectedItems()) {
 		m_scene->removeItem(item);
+		item = nullptr;
 	}
 }
 
@@ -928,6 +1080,8 @@ void CMajor::slot_paste()
 				connect(myItem, SIGNAL(sig_hideRectMouse(bool)), m_scene, SLOT(slot_hideRectMouse(bool)));
 				connect(this,SIGNAL(sig_expand(bool)),myItem,SLOT(slot_expand(bool)));
 				connect(this,SIGNAL(sig_repeat(bool)),myItem,SLOT(slot_repeat(bool)));
+				connect(myItem, SIGNAL(sig_loseFocusText(QGraphicsTextItem*)), this, SLOT(slot_eraseTextFrame(QGraphicsTextItem*)));
+				connect(myItem, SIGNAL(sig_needSceneUpdate()), this, SLOT(slot_sceneUpdate()));
 			}
 			else if (sp->type() == QGraphicsPixmapItem::Type) {
 				MyGraphicsPixmapItem* myItem = dynamic_cast<MyGraphicsPixmapItem*>(copy);
@@ -956,17 +1110,19 @@ void CMajor::slot_remove()
 	if (item) {
 		if (item->textCursor().selectedText().isNull() || item->textCursor().selectedText().isEmpty()) {
 			m_scene->removeItem(item);
+			item = nullptr;
 		}
 		else {
 			item->textCursor().removeSelectedText();
-
+			
 		}
 	}
 	else {
 		//第二种情况就是选中状态，而非焦点状态
 		QList<QGraphicsItem*>list = m_scene->selectedItems();
-		for (const auto& value : list) {
+		for (QGraphicsItem* value : list) {
 			m_scene->removeItem(value);
+			value = nullptr;
 		}
 	}
 	m_scene->update();
@@ -1015,22 +1171,28 @@ void CMajor::slot_typeface()
 	QFont font = QFontDialog::getFont(&ok);
 
 	//先暂定为只要是焦点的都可以改变字体,后期在区分各种不同的结构
+
 	QGraphicsItem* itemTmp = m_scene->focusItem();
 	MyGraphicsTextItem* item = dynamic_cast<MyGraphicsTextItem*>(itemTmp);
 	//ASSERT(item);
 
+	//如果为真证明是焦点窗口
 	if (item) {
 		//区分选中和未选中两种
 		if (item->textCursor().selectedText().isEmpty() || item->textCursor().selectedText().isNull()) {
+			QColor color = item->defaultTextColor();
+			
 			item->setFont(font);
+			item->setDefaultTextColor(color);
 			item->setText(item->toPlainText());
 		}
 		else {
 			QTextCharFormat fmt;        //文本字符格式
 			fmt.setFont(font);
 			QTextCursor cursor = item->textCursor();
-			cursor.setCharFormat(fmt);
-			item->setTextCursor(cursor);
+			//cursor.setCharFormat(fmt);
+			cursor.mergeCharFormat(fmt);
+			
 		}
 
 	}
@@ -1044,7 +1206,10 @@ void CMajor::slot_typeface()
 
 		for (QGraphicsItem* tmp : list) {
 			MyGraphicsTextItem* item = dynamic_cast<MyGraphicsTextItem*>(tmp);
+			QColor color = item->defaultTextColor();
+			item->setDefaultTextColor(color);
 			item->setFont(font);
+
 			item->setText(item->toPlainText());
 		}
 
@@ -1062,14 +1227,102 @@ void CMajor::slot_save()
 	}
 	else
 	{
-		QFile file(m_curFilePath);
-		file.remove();
+	QFile file(m_curFilePath);
+	file.open(QIODevice::WriteOnly);
 
-		QPixmap pix = m_view->grab();
-		pix.save(m_curFilePath, "PNG");
-		// QMessageBox::information(nullptr,"Tips","保存成功!");
-		m_curFileName.remove("*");
-		setWindowTitle(m_curFileName);
+	QJsonObject scene;
+	QJsonArray textArr;
+	QJsonArray pixmapArr;
+	QJsonArray tableArr;
+	QJsonObject oo;
+	
+	QJsonObject root;
+
+	QList<QGraphicsItem*>list = m_scene->items();
+	for (QGraphicsItem* item : list) {
+		QJsonObject obj;
+		if (item->type() == QGraphicsTextItem::Type) {
+			MyGraphicsTextItem* myItem = dynamic_cast<MyGraphicsTextItem*>(item);
+			
+			QPointF point(myItem->pos().x(),myItem->pos().y());
+			//文本: x、y、宽、高、缩放、内容、颜色、字体大小、加粗、倾斜、下划线，中划线、字体
+			obj.insert("x",point.x());
+			obj.insert("y",point.y());
+			obj.insert("width",myItem->getBoundingRect().width());
+			obj.insert("height",myItem->getBoundingRect().height());
+			obj.insert("scale",myItem->scale());
+			obj.insert("contents",myItem->toPlainText());
+			//读取颜色的RGB值，并保存为字符串
+			QColor color = myItem->defaultTextColor();
+			QString colorStr = QString("%1,%2,%3").arg(color.red()).arg(color.green()).arg(color.blue());
+
+			int red = color.red();
+			int green = color.green();
+			int blue = color.blue();
+
+
+			QColor();
+			//读取字体大小、加粗、倾斜、下划线，中划线、字体
+			QFont font = myItem->font();
+			int fontSize = font.pointSize();
+			bool fontBold = font.bold();
+			bool fontItalic = font.italic();
+			bool fontUnderLine = font.underline();
+			bool fontStrikeout = font.strikeOut();
+			QString fontFamily = font.family();
+			
+			obj.insert("fontColorRed",red);
+			obj.insert("fontColorGreen",green);
+			obj.insert("fontColorBlue",blue);
+
+			obj.insert("fontSize",fontSize);
+			obj.insert("fontBold",fontBold);
+			obj.insert("fontItalic",fontItalic);
+			obj.insert("fontUnderLine",fontUnderLine);
+			obj.insert("fontStrikeout",fontStrikeout);
+			obj.insert("fontFamily",fontFamily);
+
+			//obj.insert("")
+			textArr.append(obj);
+		}
+		else if (item->type() == QGraphicsPixmapItem::Type) {
+			MyGraphicsPixmapItem* myItem = dynamic_cast<MyGraphicsPixmapItem*>(item);
+			//图片：x、y、宽、高、比例、图片路径、
+			//现在用的坐标是场景坐标
+			//QPoint point = m_view->mapFromScene(myItem->pos().x(),myItem->pos().y());
+			//QPoint point(myItem->scenePos().x(),myItem->scenePos().y());
+			QPoint point(myItem->pos().x(),myItem->pos().y());
+			obj.insert("x",point.x());
+			obj.insert("y",point.y());
+			obj.insert("width",myItem->getBoundingRect().width());
+			obj.insert("height",myItem->getBoundingRect().height());
+			obj.insert("scale",myItem->scale());
+			obj.insert("imagePth",myItem->getImagePth());
+
+			pixmapArr.append(obj);
+			qDebug()<<"save point: "<<point;
+			//qDebug()<<"save item point: "<<item->mapRectFromItem(item->pos());
+		}
+		
+	}
+
+	//========================SCENE======================//
+	scene.insert("width",m_scene->itemsBoundingRect().width());
+	scene.insert("height",m_scene->itemsBoundingRect().height());
+	
+	//===================================================//
+	root.insert("scene",scene);
+	root.insert("text",textArr);
+	root.insert("pixmap",pixmapArr);
+	root.insert("table",tableArr);
+	QJsonDocument doc(root);
+	
+	file.write(doc.toJson());
+	
+	file.close();
+
+	m_curFileName.remove("*");
+	setWindowTitle(m_curFileName);
 	}
 }
 
@@ -1162,8 +1415,7 @@ void CMajor::slot_color()
 			QTextCharFormat format;
 			format.setForeground(color);
 			QTextCursor cursor = item->textCursor();
-			cursor.setCharFormat(format);
-			//item->setTextCursor(cursor);
+			cursor.mergeCharFormat(format);
 		}
 	}
 	else {
@@ -1222,7 +1474,7 @@ void CMajor::slot_textFrame()
 void CMajor::slot_eraseTextFrame(QGraphicsTextItem* item)
 {
 	m_scene->removeItem(item);
-
+	item = nullptr;
 }
 
 void CMajor::slot_rectFrame(QSize size, QPointF point, bool flag)
@@ -1251,7 +1503,7 @@ void CMajor::slot_rectFrame(QSize size, QPointF point, bool flag)
 		}
 		connect(item, SIGNAL(sig_loseFocusText(QGraphicsTextItem*)), this, SLOT(slot_eraseTextFrame(QGraphicsTextItem*)));
 		connect(item, SIGNAL(sig_needSceneUpdate()), this, SLOT(slot_sceneUpdate()));
-		connect(item, SIGNAL(sig_deleteKey()), this, SLOT(slot_remove()));
+		//connect(item, SIGNAL(sig_deleteKey()), this, SLOT(slot_remove()));
 		connect(item, SIGNAL(sig_hideRectMouse(bool)), m_scene, SLOT(slot_hideRectMouse(bool)));
 		//emit item->sig_hideRectMouse(true);
 		m_tool->setCheckable(false);

@@ -10,6 +10,6 @@ public:
     int type() const override;
 
 public:
-    AbstractShape(QObject* parent);
+    AbstractShape(QObject* parent = nullptr);
     ~AbstractShape();
 };

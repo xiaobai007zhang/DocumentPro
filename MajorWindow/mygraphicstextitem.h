@@ -21,7 +21,7 @@ public:
     //根据键值对来区分json文件中的各个模块
     void setName(const int& key, const QString& name);
 
-    const QString& getName(const int& key);
+    // const QString& getName(const int& key);
 
     void setRect(const QRectF& rect);
 
@@ -67,7 +67,7 @@ signals:
     void sig_needSceneUpdate();
 
     //删除键上传
-    void sig_deleteKey();
+    // void sig_deleteKey();
 
     //隐藏鼠标移动形成的框
     void sig_hideRectMouse(bool);

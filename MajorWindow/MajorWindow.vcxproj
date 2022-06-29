@@ -69,7 +69,7 @@
   </PropertyGroup>
   <PropertyGroup Label="QtSettings" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <QtInstall>5.14.2_msvc2017_64</QtInstall>
-    <QtModules>core;gui;widgets;printsupport</QtModules>
+    <QtModules>core;gui;widgets</QtModules>
   </PropertyGroup>
   <ImportGroup Condition="Exists('$(QtMsBuild)\qt.props')">
     <Import Project="$(QtMsBuild)\qt.props" />
@@ -96,8 +96,8 @@
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>ysbase.lib;D:\QtProject\document\DocumentPro\ysbase\lib\ysbase.lib;shell32.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>C:\Users\13030\Desktop;D:\QtProject\document\DocumentPro\ysbase\lib;C:\openssl\lib;C:\Utils\my_sql\mysql-5.7.25-winx64\lib;C:\Utils\postgresql\pgsql\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>ysbase.lib;shell32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>C:\Users\13030\Desktop;D:\QtProject\DocumentPro\ysbase\lib;C:\openssl\lib;C:\Utils\my_sql\mysql-5.7.25-winx64\lib;C:\Utils\postgresql\pgsql\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalOptions>"/MANIFESTDEPENDENCY:type='win32' name='Microsoft.Windows.Common-Controls' version='6.0.0.0' publicKeyToken='6595b64144ccf1df' language='*' processorArchitecture='*'" %(AdditionalOptions)</AdditionalOptions>
       <DataExecutionPrevention>true</DataExecutionPrevention>
       <GenerateDebugInformation>false</GenerateDebugInformation>
@@ -186,7 +186,6 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="abstractshape.cpp" />
-    <ClCompile Include="centerwidget.cpp" />
     <ClCompile Include="cmajor.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="mygraphicspixmapitem.cpp" />
@@ -197,8 +196,6 @@
   <ItemGroup>
     <ClInclude Include="ToolDefine.h" />
     <QtMoc Include="shapemimedata.h" />
-    <QtMoc Include="centerwidget.h">
-    </QtMoc>
     <QtMoc Include="cmajor.h">
     </QtMoc>
     <QtMoc Include="mygraphicspixmapitem.h" />
@@ -239,14 +236,11 @@
   <ItemGroup>
     <None Include="AbstractShape.pri" />
     <None Include="App.pri" />
-    <None Include="CenterWidget.pri" />
-    <None Include="Find.pri" />
     <None Include="Major.pri" />
-    <None Include="MyHightLighter.pri" />
+    <None Include="MimeData.pri" />
     <None Include="PixmapGraphics.pri" />
     <None Include="SceneGraphics.pri" />
     <None Include="ShapeMimeData.pri" />
-    <None Include="Table.pri" />
     <None Include="TextItemGraphics.pri" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

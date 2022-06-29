@@ -34,10 +34,12 @@ void MyGraphicsTextItem::setName(const int& key, const QString& name)
     setData(key, name);
 }
 
-const QString& MyGraphicsTextItem::getName(const int& key)
-{
-    return data(key).toString();
-}
+// const QString& MyGraphicsTextItem::getName(const int& key)
+//{
+//     Q_UNUSED(key)
+//     // return data(key).toString();
+//     return nullptr;
+// }
 
 void MyGraphicsTextItem::setRect(const QRectF& rect)
 {
@@ -49,12 +51,13 @@ void MyGraphicsTextItem::updateFontInfo()
     m_fontWidth = document()->size().width();
     m_fontHeight = document()->size().height();
     QFontMetrics metrics(font());
-
+    // setPlainText(m_text);
     //当输入文字长于文本框时
     if (m_fontWidth > boundingRect().width())
     {
-        qreal adjust = metrics.width("张");
+        qreal adjust = metrics.width("中");
         this->setRect(QRectF(boundingRect().x(), boundingRect().y(), m_fontWidth + adjust, boundingRect().height()));
+        // setRect(QRectF(boundingRect().x(), boundingRect().y(), m_fontWidth + adjust, boundingRect().height()));
         // this->setFont(m_font);
         this->setPlainText(m_text);
 
@@ -100,7 +103,7 @@ QString MyGraphicsTextItem::getStrText()
 void MyGraphicsTextItem::focusInEvent(QFocusEvent* e)
 {
     // qDebug() << "focus in";
-
+    // setTextInteractionFlags(Qt::TextEditorInteraction);
     setCursor(Qt::IBeamCursor);
     QGraphicsTextItem::focusInEvent(e);
 }
@@ -143,12 +146,12 @@ QVariant MyGraphicsTextItem::itemChange(GraphicsItemChange change, const QVarian
             // QRectF rect(0, 0, scene()->width(), scene()->height());
             // QRectF rect(0, 0, scene()->width() - scale() * boundingRect().width(), scene()->height() - scale() * boundingRect().height());
             QRectF rect = scene()->sceneRect();
-            qDebug() << "text scene()->sceneRect()固定范围: " << rect;
+            // qDebug() << "text scene()->sceneRect(): " << rect;
             if (!rect.contains(newPos)) // 是否在区域内
             {
                 newPos.setX(qMin(rect.right(), qMax(newPos.x(), rect.left())));
                 newPos.setY(qMin(rect.bottom(), qMax(newPos.y(), rect.top())));
-                qDebug() << "text newPos: ";
+                // qDebug() << "text newPos: ";
                 return newPos;
             }
         }
@@ -158,20 +161,24 @@ QVariant MyGraphicsTextItem::itemChange(GraphicsItemChange change, const QVarian
 
 void MyGraphicsTextItem::paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget)
 {
-    // qDebug() << "paint and setText";
 
     if (hasFocus())
     {
         // painter->setRenderHint(QPainter::SmoothPixmapTransform);
-        // painter->setRenderHint(QPainter::Antialiasing);
+        painter->setRenderHint(QPainter::Antialiasing);
         painter->drawRect(boundingRect());
 
         QString text = toPlainText();
-        setText(text);
+        // painter->drawText(this->pos(), text);
+        // painter->drawText(m_rect, text);
+        // setPlainText(text);
+        // setText(text);
         QGraphicsTextItem::paint(painter, option, widget);
     }
     else
     {
+        // qDebug() << "paint and setText";
+        // painter->drawText(m_rect, m_text);
         QGraphicsTextItem::paint(painter, option, widget);
     }
 }
@@ -221,7 +228,7 @@ void MyGraphicsTextItem::mouseMoveEvent(QGraphicsSceneMouseEvent* event)
     if (hasFocus())
     {
         emit sig_hideRectMouse(false);
-        //  QGraphicsTextItem::mouseMoveEvent(event);
+        // QGraphicsTextItem::mouseMoveEvent(event);
     }
     else if (m_isMousePress)
     {

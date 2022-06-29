@@ -122,7 +122,7 @@ QVariant MyGraphicsPixmapItem::itemChange(GraphicsItemChange change, const QVari
 
             // QRectF rect(0, 0, scene()->width() - scale() * boundingRect().width(), scene()->height() - scale() * boundingRect().height());
             QRectF rect = scene()->sceneRect();
-            qDebug() << "pix scene()->sceneRect()固定范围: " << rect;
+            qDebug() << "pix scene()->sceneRect(): " << rect;
             // qDebug() << "scene rect: " << rect;
             // QRectF rect(0, 0, 800, 600); // 你要限制的区域
             // qDebug() << "rect.left()" << rect.left();
