@@ -1,7 +1,7 @@
 HEADERS +=\
-    abstracthape.h\
+    abstractshape.h\
     shapemimedata.h
 
 SOURCES +=\
-    abstracthape.cpp\
+    abstractshape.cpp\
     shapemimedata.cpp

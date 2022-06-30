@@ -15,7 +15,8 @@ include(Major.pri)
 include(PixmapGraphics.pri)
 include(SceneGraphics.pri)
 include(TextItemGraphics.pri)
-
+include(MimeData.pri)
+#include (AbstractShape.pri)
 
 #INCLUDEPATH += ../ysbase/include/
 #LIBS += -LD:\QtProject\DocumentPro\ysbase\ -lysbase

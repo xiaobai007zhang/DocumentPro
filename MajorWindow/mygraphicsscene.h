@@ -9,10 +9,11 @@ class MyGraphicsScene : public QGraphicsScene
 
 public:
     MyGraphicsScene(const int& width, const int& height, QObject* parent = nullptr);
+    MyGraphicsScene(QRectF rect, QObject* parent = nullptr);
     MyGraphicsScene(QObject* parent = nullptr);
     ~MyGraphicsScene();
 
-private:
+public:
     void setWidHei(const int& width, const int& height);
 
 protected:
@@ -34,4 +35,7 @@ private:
     QGraphicsRectItem* m_rectMouse;
     //等于1的话就证明要拖动了，等于零就代表执行默认操作
     bool m_textItemFlag;
+
+    //解决 0xcdcdcdcd野指针
+    bool initFlag;
 };

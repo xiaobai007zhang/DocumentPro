@@ -92,18 +92,20 @@ void MyGraphicsPixmapItem::mouseMoveEvent(QGraphicsSceneMouseEvent* event)
             }
         }
     }
+
     QGraphicsPixmapItem::mouseMoveEvent(event);
 }
 
 void MyGraphicsPixmapItem::paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget)
 {
     // qDebug() << "paint";
-    painter->save();
-    // painter->begin();
+
+    painter->setRenderHints(QPainter::Antialiasing | QPainter::SmoothPixmapTransform);
+
     painter->drawPixmap(m_rect.toRect(), m_pixmap);
 
-    // painter->end();
-    painter->restore();
+    // m_rect = QRectF(scenePos(), QSizeF(m_rect.width(), m_rect.height()));
+
     QGraphicsPixmapItem::paint(painter, option, widget);
 }
 
@@ -123,6 +125,7 @@ QVariant MyGraphicsPixmapItem::itemChange(GraphicsItemChange change, const QVari
             // QRectF rect(0, 0, scene()->width() - scale() * boundingRect().width(), scene()->height() - scale() * boundingRect().height());
             QRectF rect = scene()->sceneRect();
             qDebug() << "pix scene()->sceneRect(): " << rect;
+
             // qDebug() << "scene rect: " << rect;
             // QRectF rect(0, 0, 800, 600); // 你要限制的区域
             // qDebug() << "rect.left()" << rect.left();

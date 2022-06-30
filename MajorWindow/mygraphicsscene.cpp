@@ -10,14 +10,20 @@
 
 MyGraphicsScene::MyGraphicsScene(const int& width, const int& height, QObject* parent) : QGraphicsScene(parent), m_isPress(false), m_textItemFlag(true), m_rectMouse(nullptr)
 {
-    setWidHei(width, height);
 
-    // m_rectMouse = new QGraphicsRectItem;
-    // m_rectMouse->setBrush(Qt::blue);
+    setWidHei(width, height);
+    initFlag = false;
+}
+
+MyGraphicsScene::MyGraphicsScene(QRectF rect, QObject* parent) : QGraphicsScene(parent)
+{
+    setSceneRect(rect);
+    initFlag = false;
 }
 
 MyGraphicsScene::MyGraphicsScene(QObject* parent) : QGraphicsScene(parent)
 {
+    initFlag = false;
 }
 
 MyGraphicsScene::~MyGraphicsScene()
@@ -32,13 +38,15 @@ void MyGraphicsScene::setWidHei(const int& width, const int& height)
 void MyGraphicsScene::mousePressEvent(QGraphicsSceneMouseEvent* event)
 {
     // qDebug() << "My mouse press event";
-    // qDebug() << "mouse press: " << ;
+    qDebug() << "scene mouse pos: " << event->pos();
+    qDebug() << "scene scenePos pos: " << event->scenePos();
     if (event->button() == Qt::LeftButton)
     {
+
         m_rectMouse = new QGraphicsRectItem;
-
+        // m_rectMouse->setPos(0, 0);
+        // m_rectMouse->setBrush(Qt::blue);
         addItem(m_rectMouse);
-
         m_isPress = true;
         m_curPos = event->scenePos();
         QGraphicsScene::mousePressEvent(event);
@@ -52,7 +60,7 @@ void MyGraphicsScene::mousePressEvent(QGraphicsSceneMouseEvent* event)
 void MyGraphicsScene::mouseMoveEvent(QGraphicsSceneMouseEvent* event)
 {
     //只有点击了才会做处理
-    if (m_isPress)
+    if (m_isPress && initFlag == false)
     {
         int width = event->scenePos().x() - m_curPos.x();
         int height = event->scenePos().y() - m_curPos.y();
@@ -115,44 +123,40 @@ void MyGraphicsScene::mouseReleaseEvent(QGraphicsSceneMouseEvent* event)
 
 void MyGraphicsScene::wheelEvent(QGraphicsSceneWheelEvent* event)
 {
-    // qDebug() << "scene wheel event";
-    QList<QGraphicsItem*> list = selectedItems();
-    if (!list.isEmpty())
-    {
-        for (QGraphicsItem* item : list)
-        {
 
-            if (event->delta() > 0)
-            {
-                // qDebug() << QStringLiteral("大于零");
-                item->setScale(item->scale() + 0.02);
-                // item->setPos((item->pos().x() - item->boundingRect().width() * 0.02), (item->pos().y() - item->boundingRect().height() * 0.02));
-                //  item->setPos(item->pos().x() - item->pos().x() * 0.02, item->pos().y() - item->pos().y() * 0.02);
-            }
-            else
-            {
-                if (item->scale() - 0.01 <= 0.02)
-                {
-                    continue;
-                }
-                else
-                {
-                    item->setScale(item->scale() - 0.02);
-                }
-                // qDebug() << QStringLiteral("小于零");
-                // item->setPos((item->pos().x() + item->boundingRect().width() * 0.02), (item->pos().y() + item->boundingRect().height() * 0.02));
-                // item->setPos(item->pos().x() - item->pos().x() * 0.02, item->pos().y() - item->pos().y() * 0.02);
-            }
-        }
-
-        event->accept();
-    }
-    else
-    {
-        QGraphicsScene::wheelEvent(event);
-    }
+    qDebug() << "scene wheel event";
+    // QList<QGraphicsItem*> list = selectedItems();
+    // if (list.isEmpty())
+    //{
+    //     QGraphicsScene::wheelEvent(event);
+    //     return;
+    // }
+    // else
+    //{
+    //     for (QGraphicsItem* item : list)
+    //     {
+    //         if (event->delta() > 0)
+    //         {
+    //             item->setScale(item->scale() + 0.01);
+    //             // item->setPos((item->pos().x() - item->boundingRect().width() * 0.1), (item->pos().y() - item->boundingRect().height() * 0.1));
+    //         }
+    //         else
+    //         {
+    //             if (item->scale() - 0.1 <= 0)
+    //             {
+    //                 continue;
+    //             }
+    //             else
+    //             {
+    //                 item->setScale(item->scale() - 0.01);
+    //                 // item->setPos((item->pos().x() + item->boundingRect().width() * 0.1), (item->pos().y() + item->boundingRect().height() * 0.1));
+    //             }
+    //         }
+    //     }
+    //     event->accept();
+    // }
+    QGraphicsScene::wheelEvent(event);
 }
-
 void MyGraphicsScene::slot_hideRectMouse(bool flag)
 {
     m_textItemFlag = flag;

@@ -19,6 +19,7 @@
 #include "mygraphicspixmapitem.h"
 #include "mygraphicsscene.h"
 #include "mygraphicstextitem.h"
+#include "mygraphicsview.h"
 #include "plugin.h"
 #include "shapemimedata.h"
 
@@ -39,8 +40,6 @@ public:
     ~CMajor();
 
     //=================测试====================//
-
-    void setJson(const QString& fileName);
 
     //=========================================//
 
@@ -158,8 +157,6 @@ private slots:
     //恢复默认
     void slot_defaulted();
 
-    void slot_findBtnClicked(QString);
-
     void slot_color();
     //改变光标形状,改变标志位
     void slot_textFrame();
@@ -249,8 +246,8 @@ private:
     //记录默认字体,用于恢复字体
     QFont m_font;
 
-    QGraphicsView* m_view;
-    // MyGraphicsView* m_view;
+    // QGraphicsView* m_view;
+    MyGraphicsView* m_view;
 
     // QGraphicsScene* m_scene;
     MyGraphicsScene* m_scene;

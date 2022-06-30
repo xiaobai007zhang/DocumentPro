@@ -11,7 +11,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{7AF88A9B-C364-3C08-855D-D80AB47230B4}</ProjectGuid>
+    <ProjectGuid>{CF6C32AE-C4C2-3BE2-AA58-15F137A05C2C}</ProjectGuid>
     <RootNamespace>MajorWindow</RootNamespace>
     <Keyword>QtVS_v304</Keyword>
     <WindowsTargetPlatformVersion>10.0.19041.0</WindowsTargetPlatformVersion>
@@ -69,7 +69,7 @@
   </PropertyGroup>
   <PropertyGroup Label="QtSettings" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <QtInstall>5.14.2_msvc2017_64</QtInstall>
-    <QtModules>core;gui;widgets</QtModules>
+    <QtModules>core;gui;widgets;printsupport</QtModules>
   </PropertyGroup>
   <ImportGroup Condition="Exists('$(QtMsBuild)\qt.props')">
     <Import Project="$(QtMsBuild)\qt.props" />
@@ -191,19 +191,22 @@
     <ClCompile Include="mygraphicspixmapitem.cpp" />
     <ClCompile Include="mygraphicsscene.cpp" />
     <ClCompile Include="mygraphicstextitem.cpp" />
+    <ClCompile Include="mygraphicsview.cpp" />
     <ClCompile Include="shapemimedata.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="ToolDefine.h" />
-    <QtMoc Include="shapemimedata.h" />
+    <ClInclude Include="abstractshape.h" />
+    <QtMoc Include="mygraphicsview.h" />
     <QtMoc Include="cmajor.h">
     </QtMoc>
-    <QtMoc Include="mygraphicspixmapitem.h" />
+    <QtMoc Include="mygraphicspixmapitem.h">
+    </QtMoc>
     <QtMoc Include="mygraphicsscene.h">
     </QtMoc>
     <QtMoc Include="mygraphicstextitem.h">
     </QtMoc>
-    <ClInclude Include="abstractshape.h" />
+    <QtMoc Include="shapemimedata.h">
+    </QtMoc>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="debug\moc_predefs.h.cbt">
@@ -224,23 +227,18 @@
     </CustomBuild>
   </ItemGroup>
   <ItemGroup>
-    <QtUic Include="centerwidget.ui">
-    </QtUic>
-    <QtUic Include="cfind.ui">
-    </QtUic>
     <QtUic Include="cmajor.ui">
-    </QtUic>
-    <QtUic Include="ctable.ui">
     </QtUic>
   </ItemGroup>
   <ItemGroup>
-    <None Include="AbstractShape.pri" />
     <None Include="App.pri" />
+    <None Include="CenterWidget.pri" />
+    <None Include="Find.pri" />
     <None Include="Major.pri" />
-    <None Include="MimeData.pri" />
+    <None Include="MyHightLighter.pri" />
     <None Include="PixmapGraphics.pri" />
     <None Include="SceneGraphics.pri" />
-    <None Include="ShapeMimeData.pri" />
+    <None Include="Table.pri" />
     <None Include="TextItemGraphics.pri" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

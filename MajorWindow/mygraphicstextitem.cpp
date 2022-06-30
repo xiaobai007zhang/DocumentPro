@@ -8,7 +8,7 @@
 #include <QStyleOptionGraphicsItem>
 #include <qtextdocument.h>
 
-MyGraphicsTextItem::MyGraphicsTextItem(const QRectF& rt, QGraphicsItem* parent) : QGraphicsTextItem(parent), m_isExpand(true)
+MyGraphicsTextItem::MyGraphicsTextItem(const QRectF& rt, QGraphicsItem* parent) : QGraphicsTextItem(parent), m_isMousePress(false), m_isRepeat(true), m_isExpand(true)
 {
     //设置属性，并初始化基本信息
     m_rect = rt;
@@ -117,6 +117,8 @@ void MyGraphicsTextItem::focusOutEvent(QFocusEvent* e)
         emit sig_loseFocusText(this);
         return;
     }
+    // setFlag(QGraphicsItem::ItemStopsFocusHandling);
+
     int width = document()->size().width();
     int height = document()->size().height();
     setRect(QRectF(boundingRect().x(), boundingRect().y(), width, height));
@@ -126,9 +128,9 @@ void MyGraphicsTextItem::focusOutEvent(QFocusEvent* e)
     // cursor.clearSelection();
     emit(sig_needSceneUpdate());
     emit(sig_hideRectMouse(true));
-    setFlag(QGraphicsItem::ItemStopsFocusHandling);
-    setCursor(Qt::ArrowCursor);
 
+    setCursor(Qt::ArrowCursor);
+    setFlag(QGraphicsItem::ItemStopsFocusHandling);
     QGraphicsTextItem::focusOutEvent(e);
 }
 
@@ -146,6 +148,8 @@ QVariant MyGraphicsTextItem::itemChange(GraphicsItemChange change, const QVarian
             // QRectF rect(0, 0, scene()->width(), scene()->height());
             // QRectF rect(0, 0, scene()->width() - scale() * boundingRect().width(), scene()->height() - scale() * boundingRect().height());
             QRectF rect = scene()->sceneRect();
+            // QRectF rect = scene()->itemsBoundingRect();
+            qDebug() << "scene()->sceneRect()" << rect;
             // qDebug() << "text scene()->sceneRect(): " << rect;
             if (!rect.contains(newPos)) // 是否在区域内
             {
@@ -164,21 +168,15 @@ void MyGraphicsTextItem::paint(QPainter* painter, const QStyleOptionGraphicsItem
 
     if (hasFocus())
     {
-        // painter->setRenderHint(QPainter::SmoothPixmapTransform);
-        painter->setRenderHint(QPainter::Antialiasing);
-        painter->drawRect(boundingRect());
+        // painter->setRenderHints(QPainter::SmoothPixmapTransform | QPainter::Antialiasing);
 
+        painter->drawRect(boundingRect());
         QString text = toPlainText();
-        // painter->drawText(this->pos(), text);
-        // painter->drawText(m_rect, text);
-        // setPlainText(text);
-        // setText(text);
+        setText(text);
         QGraphicsTextItem::paint(painter, option, widget);
     }
     else
     {
-        // qDebug() << "paint and setText";
-        // painter->drawText(m_rect, m_text);
         QGraphicsTextItem::paint(painter, option, widget);
     }
 }
@@ -196,6 +194,7 @@ int MyGraphicsTextItem::type() const
 void MyGraphicsTextItem::mousePressEvent(QGraphicsSceneMouseEvent* event)
 {
     // qDebug() << "press";
+    setSelected(true);
     if (hasFocus())
     {
         QGraphicsTextItem::mousePressEvent(event);
@@ -204,9 +203,8 @@ void MyGraphicsTextItem::mousePressEvent(QGraphicsSceneMouseEvent* event)
     {
         m_isMousePress = true;
         m_startPos = event->scenePos();
-        // qDebug() << "m_startPos" << m_startPos;
         setTextInteractionFlags(Qt::NoTextInteraction);
-
+        // qDebug() << "m_startPos" << m_startPos;
         //隐藏场景的鼠标滑动形成的框架
         // qDebug() << "hideRect";
         emit sig_hideRectMouse(true);
@@ -225,26 +223,22 @@ void MyGraphicsTextItem::mouseReleaseEvent(QGraphicsSceneMouseEvent* event)
 
 void MyGraphicsTextItem::mouseMoveEvent(QGraphicsSceneMouseEvent* event)
 {
-    if (hasFocus())
+    if (hasFocus() || m_isMousePress)
     {
         emit sig_hideRectMouse(false);
         // QGraphicsTextItem::mouseMoveEvent(event);
     }
-    else if (m_isMousePress)
-    {
-        emit sig_hideRectMouse(false);
-    }
+
     if (m_isRepeat == false)
     { //不重复
         QList<QGraphicsItem*> list = collidingItems();
         for (QGraphicsItem* item : list)
         { //比较坐标
-            qDebug() << "item->pos(): " << item->pos();
-            qDebug() << "pos(): " << pos();
+            // qDebug() << "item->pos(): " << item->pos();
+            // qDebug() << "pos(): " << pos();
 
             if (item->pos().x() < pos().x() && item->pos().y() < pos().y())
             {
-
                 item->setPos(item->pos().x() - 2.5, item->pos().y() - 2.5);
             }
 
@@ -284,7 +278,6 @@ void MyGraphicsTextItem::mouseMoveEvent(QGraphicsSceneMouseEvent* event)
             }
         }
     }
-
     QGraphicsTextItem::mouseMoveEvent(event);
 }
 

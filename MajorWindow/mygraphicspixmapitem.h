@@ -40,9 +40,12 @@ public slots:
 private:
     bool m_isMousePress = false;
     QPointF m_startPos;
-    QRectF m_rect;
+
     QPixmap m_pixmap;
     QString m_imagePth;
     bool m_isExpand;
     bool m_isRepeat;
+
+public:
+    QRectF m_rect;
 };
