@@ -6,18 +6,6 @@ CONFIG += c++11
 INCLUDEPATH += ../Journal
 INCLUDEPATH += ../ysbase/include
 
-include(CenterWidget.pri)
-include(Find.pri)
-include(Table.pri)
-include(MyHightLighter.pri)
-include(App.pri)
-include(Major.pri)
-include(PixmapGraphics.pri)
-include(SceneGraphics.pri)
-include(TextItemGraphics.pri)
-include(MimeData.pri)
-#include (AbstractShape.pri)
-
 #INCLUDEPATH += ../ysbase/include/
 #LIBS += -LD:\QtProject\DocumentPro\ysbase\ -lysbase
 
@@ -37,17 +25,6 @@ qnx: target.path = /tmp/$${TARGET}/bin
 else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
 
-DISTFILES += \
-    App.pri \
-    CenterWidget.pri \
-    Find.pri \
-    Major.pri \
-    MyHightLighter.pri \
-    PixmapGraphics.pri \
-    SceneGraphics.pri \
-    Table.pri \
-    TextItemGraphics.pri
-
 
 LIBS += -LC:/Users/13030/Desktop/ -lysbase
 
@@ -55,3 +32,30 @@ win32: LIBS += -L$$PWD/../ysbase/lib/ -lysbase
 
 INCLUDEPATH += $$PWD/../ysbase/lib
 DEPENDPATH += $$PWD/../ysbase/lib
+
+FORMS += \
+    Major/cmajor.ui \
+    ManagerTableInfo/managertableinfo.ui
+
+HEADERS += \
+    AbstractShape/abstractshape.h \
+    Major/cmajor.h \
+    ManagerTableInfo/managertableinfo.h \
+    MyTable/mytable.h \
+    PixmapGraphics/mygraphicspixmapitem.h \
+    SceneGraphics/mygraphicsscene.h \
+    ShapeMimeData/shapemimedata.h \
+    TextItemGraphics/mygraphicstextitem.h \
+    ViewGraphics/mygraphicsview.h
+
+SOURCES += \
+    AbstractShape/abstractshape.cpp \
+    App/main.cpp \
+    Major/cmajor.cpp \
+    ManagerTableInfo/managertableinfo.cpp \
+    MyTable/mytable.cpp \
+    PixmapGraphics/mygraphicspixmapitem.cpp \
+    SceneGraphics/mygraphicsscene.cpp \
+    ShapeMimeData/shapemimedata.cpp \
+    TextItemGraphics/mygraphicstextitem.cpp \
+    ViewGraphics/mygraphicsview.cpp
