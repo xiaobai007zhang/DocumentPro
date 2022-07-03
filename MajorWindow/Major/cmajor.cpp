@@ -160,9 +160,9 @@ void CMajor::readJson(const QString & fileName)
 	QJsonArray pixArr = obj.value("pixmap").toArray();
 	QJsonObject scene = obj.value("scene").toObject();
 	//先设置好场景的大小
-	//int width = scene.value("width").toInt();
-	//int height = scene.value("height").toInt();
-
+	qreal width = scene.value("width").toDouble();
+	qreal height = scene.value("height").toDouble();
+	m_scene->setSceneRect(0, 0, width, height);
 	
 	//写一个函数，来加载出不同的元素信息(json对象,type)
 	for (QJsonValue value : textArr) {
@@ -391,8 +391,9 @@ void CMajor::initGraphics()
 	//m_view = new QGraphicsView;
 	m_view = new MyGraphicsView;
 	m_scene = new MyGraphicsScene;
-
-
+	//m_view->setAlignment(Qt::AlignLeft | Qt::AlignTop);
+	
+	//qDebug() << "m_view viewport pos: " << m_view->viewport()->pos();
 
 	//m_scene = new MyGraphicsScene(m_view->viewport()->width(),m_view->viewport()->height());
 	//m_scene = new MyGraphicsScene(m_view->viewport()->width(),m_view->viewport()->height());
@@ -440,8 +441,8 @@ void CMajor::loadJsonObj(const QJsonObject & obj, const QString & type)
 	//文本: x、y、宽、高、缩放、内容、颜色、字体大小、加粗、倾斜、下划线，中划线、字体
 	int x = obj.value("x").toInt();
 	int y = obj.value("y").toInt();
-	int width = obj.value("width").toInt();
-	int height = obj.value("height").toInt();
+	qreal width = obj.value("width").toDouble();
+	qreal height = obj.value("height").toDouble();
 	qreal scale = obj.value("scale").toDouble();
 	QString contents = obj.value("contents").toString();
 	int red = obj.value("fontColorRed").toInt();
@@ -461,13 +462,15 @@ void CMajor::loadJsonObj(const QJsonObject & obj, const QString & type)
 	font.setUnderline(underLine);
 	font.setStrikeOut(strikeout);
 	font.setPointSize(fontSize);
-	QPointF point = m_view->mapToScene(x,y);
-
+	//QPointF point = m_view->mapToScene(x,y);
+	QPointF point(x, y);
 	//MyGraphicsTextItem* myItem = new MyGraphicsTextItem(QRectF(point.x(),point.y(),width,height));
 	
 	//MyGraphicsTextItem* myItem = new MyGraphicsTextItem(QRectF(point.x(),point.y(),width,height));
 	MyGraphicsTextItem* myItem = new MyGraphicsTextItem(QRectF(0,0,width,height));
 	myItem->setPos(point.x(),point.y());
+
+	
 	//myItem->setFlag(QGraphicsItem::ItemIsFocusable);
 	//myItem->setFlag(QGraphicsItem::ItemStopsFocusHandling);
 	
@@ -486,7 +489,7 @@ void CMajor::loadJsonObj(const QJsonObject & obj, const QString & type)
 	connect(myItem, SIGNAL(sig_needSceneUpdate()), this, SLOT(slot_sceneUpdate()));
 	myItem->setSelected(true);
 	//connect(myItem, SIGNAL(sig_deleteKey()), this, SLOT(slot_remove()));
-
+	myItem->setTextInteractionFlags(Qt::NoTextInteraction);
 	m_scene->addItem(myItem);
 
 	}
@@ -495,26 +498,32 @@ void CMajor::loadJsonObj(const QJsonObject & obj, const QString & type)
 		int x = obj.value("x").toInt();
 		int y = obj.value("y").toInt();
 		//qDebug()<<"load x: "<<x<<",load y: "<<y;
-		
-		//QPoint point = m_view->mapFromScene(x,y);
-		QPointF point(m_view->mapToScene(x,y));
-		
+	
+
+
+		//QPointF point(m_view->mapToScene(x,y));
+		QPointF point(x, y);
 		//QPoint point(x,y);
-		int width = obj.value("width").toInt();
-		int height = obj.value("height").toInt();
+		qreal width = obj.value("width").toDouble();
+		qreal height = obj.value("height").toDouble();
 		qreal scale = obj.value("scale").toDouble();
 		QString imgPth = obj.value("imagePth").toString();
 
-		MyGraphicsPixmapItem *myItem = new MyGraphicsPixmapItem(QRectF(point.x(),point.y(),width,height));
+		MyGraphicsPixmapItem *myItem = new MyGraphicsPixmapItem(QRectF(0,0,width,height));
 		//MyGraphicsPixmapItem *myItem = new MyGraphicsPixmapItem(QRectF(point.x()-(width*(1 - scale)),point.y()-(height*(1 - scale)),width,height));
+		myItem->setPos(point.x(), point.y());
 		
+		qDebug() << QStringLiteral("========打开========");
+		qDebug() << "myItem->pos(): " << point;
+		//qDebug() << "mapFromScene(myItem->scenePos()): " << point;
+		myItem->pos();
 		myItem->setScale(scale);
 		myItem->setImage(imgPth);
 
-		qDebug()<<QStringLiteral("========打开: 现在使用的是scenePos========");
-		//qDebug()<<"myItem->pos(): "<<myItem->pos();
-		qDebug()<<"read pos(): "<<point;
-		qDebug()<<"========================";
+		//qDebug()<<QStringLiteral("========打开: 现在使用的是scenePos========");
+		////qDebug()<<"myItem->pos(): "<<myItem->pos();
+		//qDebug()<<"read pos(): "<<point;
+		//qDebug()<<"========================";
 
 		connect(myItem, SIGNAL(sig_hideRectMouse(bool)), m_scene, SLOT(slot_hideRectMouse(bool)));
 		connect(this,SIGNAL(sig_expand(bool)),myItem,SLOT(slot_expand(bool)));
@@ -525,6 +534,10 @@ void CMajor::loadJsonObj(const QJsonObject & obj, const QString & type)
 
 	}
 
+	//qDebug() <<"m_scene->itemsBoundingRect(); " << m_scene->itemsBoundingRect();
+	//qDebug() <<"m_scene->itemsBoundingRect(); " << m_scene->sceneRect();
+	//m_scene->setSceneRect(QRectF(0, 0, m_scene->itemsBoundingRect().width(), m_scene->itemsBoundingRect().height()));
+	//m_scene->addRect(0, 0, 100, 100)->setBrush(Qt::blue);
 }
 
 //!实时更新状态栏的 光标 行列数
@@ -577,12 +590,15 @@ void CMajor::initCMajor()
 
 void CMajor::resizeEvent(QResizeEvent * event)
 {	//qDebug()<<"viewport size: "<<m_view->viewport()->size();
-	qDebug()<<"size: "<<m_view->size();
+	//qDebug()<<"size: "<<m_view->size();
 	Q_UNUSED(event)
 	if (m_isExpand) {
 		//允许扩展
 		m_scene->setSceneRect(QRectF());
+		m_view->setAlignment(Qt::AlignLeft | Qt::AlignTop);
 		this->resize(width(),height());
+		m_scene->update();
+		m_view->update();
 		emit(sig_expand(true));
 	}
 	else {
@@ -590,7 +606,10 @@ void CMajor::resizeEvent(QResizeEvent * event)
 		this->resize(m_curWidth,m_curHeight);
 		QRectF rect = m_scene->sceneRect();
 		m_scene->setSceneRect(rect);
+		m_scene->update();
+		m_view->update();
 		emit(sig_expand(false));
+
 	}
 
 }
@@ -717,6 +736,8 @@ void CMajor::dropEvent(QDropEvent* event)
 	
 		for (QGraphicsItem* item : m_scene->items()) {
 		m_scene->removeItem(item);
+		delete item; 
+		item = nullptr;
 		}
 		readJson(fileName);
 		setFilePathAName(fileName);
@@ -728,8 +749,8 @@ void CMajor::dropEvent(QDropEvent* event)
 	//QPointF point = m_view->mapToScene(cursor().pos().x() - pos().x(),cursor().pos().y() - pos().y());
 	
 	QPoint point = cursor().pos() - pos();
-	qDebug()<<pos();
-	qDebug()<<"frame: "<<frameGeometry().topLeft();
+	//qDebug()<<pos();
+	//qDebug()<<"frame: "<<frameGeometry().topLeft();
 	MyGraphicsPixmapItem* item = new MyGraphicsPixmapItem(QRectF(point.x(),point.y(), pixmap.width(), pixmap.height()));
 	//MyGraphicsPixmapItem* item = new MyGraphicsPixmapItem(QRectF(0,0,pixmap.width(), pixmap.height()));
 	item->setImage(file.absoluteFilePath());
@@ -737,9 +758,14 @@ void CMajor::dropEvent(QDropEvent* event)
 	connect(this,SIGNAL(sig_expand(bool)),item,SLOT(slot_expand(bool)));
 	connect(this,SIGNAL(sig_repeat(bool)),item,SLOT(slot_repeat(bool)));
 	connect(item, SIGNAL(sig_hideRectMouse(bool)), m_scene, SLOT(slot_hideRectMouse(bool)));
+	//解决了根据当前视图按照比例缩放
+	if(pixmap.width() > m_view->viewport()->width() || pixmap.height() > m_view->viewport()->height())
+	m_view->fitInView(item,Qt::KeepAspectRatio);
+	
 	emit(sig_expand(true));
 	}
 	
+
 	QMainWindow::dropEvent(event);
 }
 void CMajor::slot_creatDocument()
@@ -801,6 +827,8 @@ bool CMajor::slot_openFile()
 	//=======================================
 	for (QGraphicsItem* item : m_scene->items()) {
 		m_scene->removeItem(item);
+		delete item;
+		item = nullptr;
 	}
 
 	//刷新一次
@@ -844,7 +872,9 @@ bool CMajor::slot_otherSave()
 			MyGraphicsTextItem* myItem = dynamic_cast<MyGraphicsTextItem*>(item);
 			//文本: x、y、宽、高、缩放、内容、颜色、字体大小、加粗、倾斜、下划线，中划线、字体
 			
-			QPoint point(m_view->mapFromScene(myItem->scenePos()));
+			//QPoint point(m_view->mapFromScene(myItem->scenePos()));
+			
+			QPointF point(myItem->pos());
 			obj.insert("x",point.x());
 			obj.insert("y",point.y());
 			obj.insert("width",myItem->getBoundingRect().width());
@@ -883,15 +913,18 @@ bool CMajor::slot_otherSave()
 			MyGraphicsPixmapItem* myItem = dynamic_cast<MyGraphicsPixmapItem*>(item);
 			//图片：x、y、宽、高、比例、图片路径、
 			//现在用的坐标是场景坐标
-			QPoint point = m_view->mapFromScene(myItem->scenePos());
+			qDebug() << "myItem->pos(): " << myItem->pos();
+			//qDebug() << "mapFromScene(myItem->scenePos()): " << m_view->mapFromScene(myItem->scenePos());
+			//QPoint point = m_view->mapFromScene(myItem->pos());
+			QPointF point = myItem->pos();
 			//QPoint point(myItem->pos().x(),myItem->pos().y());
 			//QPoint point(myItem->scenePos().toPoint());
 			
-			qDebug()<<QStringLiteral("========另存为: 现在使用的是scenePos========");
-			qDebug()<<"scene pos(): "<<myItem->scenePos();
-			qDebug()<<"scene to view pos(): "<<point;
-			//qDebug()<<"transform view pos: "<<m_view->mapFromScene(myItem->scenePos());
-			qDebug()<<"========================";
+			qDebug()<<TR("========另存为========");
+			qDebug()<<"pos(): "<<myItem->pos();
+			//qDebug()<<"scene to view pos(): "<<point;
+			////qDebug()<<"transform view pos: "<<m_view->mapFromScene(myItem->scenePos());
+			//qDebug()<<"========================";
 			obj.insert("x",point.x());
 			obj.insert("y",point.y());
 			obj.insert("width",myItem->getBoundingRect().width());
@@ -997,7 +1030,19 @@ void CMajor::slot_exitDocument()
 void CMajor::slot_copy()
 {
 	
-	//m_scene->addRect(QRectF(0,0,200,200))->setFlags(QGraphicsItem::ItemIsMovable|QGraphicsItem::ItemIsSelectable);
+	//qDebug() << "m_view viewport pos: " << m_view->viewport()->pos();
+	
+	//m_view->setAlignment(Qt::AlignLeft | Qt::AlignTop);
+	
+	//qDebug() << "scene top left: " << m_scene->sceneRect().topLeft();
+	
+	//m_view->centerOn(m_scene->sceneRect().x(), m_scene->sceneRect().y());
+	
+	//QGraphicsRectItem* item = m_scene->addRect(QRectF(m_scene->sceneRect().center().x(), m_scene->sceneRect().center().y(),100,100));
+	
+	//item->setFlags(QGraphicsItem::ItemIsMovable | QGraphicsItem::ItemIsSelectable);
+	//item->setBrush(Qt::blue);
+	//qDebug() << "m_view maptoScene: " << m_view->mapToScene(QPoint(0, 0));
 	ShapeMimeData *data = new ShapeMimeData( m_scene->selectedItems() );
     QApplication::clipboard()->setMimeData(data);
 	//qDebug()<<pos();
@@ -1020,9 +1065,14 @@ void CMajor::slot_shear()
 	}
 }
 
-//复制
+//粘贴
 void CMajor::slot_paste()
 {
+
+	//m_scene->addRect(0, 0, 100, 100)->setBrush(Qt::blue);
+
+	//m_view->setAlignment(Qt::AlignLeft | Qt::AlignTop);
+
 	//m_scene->addRect(QRectF(0,0,m_view->viewport()->width(),m_view->viewport()->height()))->setFlag(QGraphicsItem::ItemIsMovable);
 	//m_scene->addRect(QRectF(0,0,100,100))->setFlags(QGraphicsItem::ItemIsMovable|QGraphicsItem::ItemIsSelectable);
 	QMimeData * mp = const_cast<QMimeData *>(QApplication::clipboard()->mimeData()) ;
@@ -1070,7 +1120,8 @@ void CMajor::slot_remove()
 	if (item) {
 		if (item->textCursor().selectedText().isNull() || item->textCursor().selectedText().isEmpty()) {
 			m_scene->removeItem(item);
-			
+			delete item;
+			item = nullptr;
 		}
 		else {
 			item->textCursor().removeSelectedText();
@@ -1081,9 +1132,11 @@ void CMajor::slot_remove()
 		QList<QGraphicsItem*>list = m_scene->selectedItems();
 		for (QGraphicsItem* value : list) {
 			m_scene->removeItem(value);
+			delete value;
 			value = nullptr;
 		}
 	}
+
 	m_scene->update();
 	m_view->update();
 }
@@ -1109,6 +1162,11 @@ void CMajor::slot_insertImage()
 	connect(this,SIGNAL(sig_expand(bool)),pixmap,SLOT(slot_expand(bool)));
 	connect(this,SIGNAL(sig_repeat(bool)),pixmap,SLOT(slot_repeat(bool)));
 	connect(pixmap, SIGNAL(sig_hideRectMouse(bool)), m_scene, SLOT(slot_hideRectMouse(bool)));
+	
+	
+	if (pix.width() > m_view->viewport()->width() || pix.height() > m_view->viewport()->height())
+	m_view->fitInView(pixmap, Qt::KeepAspectRatio);
+	
 	emit(sig_expand(true));
 }
 
@@ -1188,14 +1246,20 @@ void CMajor::slot_save()
 	QJsonArray tableArr;
 	
 	QJsonObject root;
-
+	
+	
 	QList<QGraphicsItem*>list = m_scene->items();
 	for (QGraphicsItem* item : list) {
 		QJsonObject obj;
 		if (item->type() == QGraphicsTextItem::Type) {
 			MyGraphicsTextItem* myItem = dynamic_cast<MyGraphicsTextItem*>(item);
 			
-			QPoint point(m_view->mapFromScene(myItem->scenePos()));
+			//QPoint point(m_view->mapFromScene(myItem->scenePos()));
+
+			QPointF point(myItem->pos());
+
+			//qDebug() << "m_view viewport pos: " << m_view->viewport()->pos();
+
 			//文本: x、y、宽、高、缩放、内容、颜色、字体大小、加粗、倾斜、下划线，中划线、字体
 			obj.insert("x",point.x());
 			obj.insert("y",point.y());
@@ -1203,6 +1267,7 @@ void CMajor::slot_save()
 			obj.insert("height",myItem->getBoundingRect().height());
 			obj.insert("scale",myItem->scale());
 			obj.insert("contents",myItem->toPlainText());
+
 			//读取颜色的RGB值，并保存为字符串
 			QColor color = myItem->defaultTextColor();
 			QString colorStr = QString("%1,%2,%3").arg(color.red()).arg(color.green()).arg(color.blue());
@@ -1236,18 +1301,20 @@ void CMajor::slot_save()
 		}
 		else if (item->type() == QGraphicsPixmapItem::Type) {
 			MyGraphicsPixmapItem* myItem = dynamic_cast<MyGraphicsPixmapItem*>(item);
+
+
 			//图片：x、y、宽、高、比例、图片路径、
 			//现在用的坐标是场景坐标
-			//QPoint point = m_view->mapFromScene(myItem->pos().x(),myItem->pos().y());
-			//QPoint point(myItem->scenePos().x(),myItem->scenePos().y());
+			QPointF point(myItem->pos());
+
+			qDebug() << TR("========保存========");
+			qDebug() << "myItem->pos(): " << point;
 			
-			//QPoint point(m_view->mapFromScene(myItem->m_rect.x(),myItem->m_rect.y()));
-			QPoint point(m_view->mapFromScene(myItem->scenePos()));
-			qDebug()<<"rect"<<myItem->getBoundingRect();
-			qDebug()<<QStringLiteral("========保存: ========");
-			qDebug()<<"scene pos(): "<<myItem->scenePos();
-			qDebug()<<"scene to view pos(): "<<point;
-			qDebug()<<"========================";
+			//qDebug() << "myItem->scenePos(): " << myItem->scenePos();
+			//qDebug() << "mapFromScene(): " << m_view->mapFromScene(myItem->pos());
+			
+
+			//qDebug() << "mapFromScene(myItem->scenePos()): " << m_view->mapFromScene(myItem->pos());
 			
 			obj.insert("x",point.x());
 			obj.insert("y",point.y());
@@ -1425,6 +1492,7 @@ void CMajor::slot_textFrame()
 void CMajor::slot_eraseTextFrame(QGraphicsTextItem* item)
 {
 	m_scene->removeItem(item);
+	delete item;
 	item = nullptr;
 }
 
@@ -1697,8 +1765,9 @@ void CMajor::slot_expand()
 		expand->setIcon(QIcon(""));
 		resizeEvent(nullptr);
 		m_timer->start();
-		//emit sig_expand(true);
-		//m_scene->update();
+		//setWindowFlags(windowFlags() & ~Qt::WindowMaximizeButtonHint);
+		//show();
+
 	}
 	else {
 		m_isExpand = true;
@@ -1709,7 +1778,8 @@ void CMajor::slot_expand()
 		//m_scene->update();
 		//emit sig_expand(false);
 		m_timer->stop();
-		
+		//setWindowFlags(windowFlags() & Qt::WindowMaximizeButtonHint);
+		//show();
 	}
 	
 	

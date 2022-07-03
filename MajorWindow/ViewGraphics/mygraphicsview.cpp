@@ -2,6 +2,7 @@
 #include <QDebug>
 #include <QScrollBar>
 #include <QWheelEvent>
+#include <QKeyEvent>
 
 MyGraphicsView::MyGraphicsView(QWidget* parent) : m_isCtrlPress(false), QGraphicsView(parent), m_isFlag(true)
 {
@@ -61,7 +62,10 @@ void MyGraphicsView::wheelEvent(QWheelEvent* event)
 void MyGraphicsView::keyPressEvent(QKeyEvent* event)
 {
     // qDebug() << "view keyPress";
-    m_isCtrlPress = true;
+    if (event->key() == Qt::Key_Control) {
+        m_isCtrlPress = true;
+    }
+    
     QGraphicsView::keyPressEvent(event);
 }
 
@@ -84,6 +88,6 @@ void MyGraphicsView::paintEvent(QPaintEvent* event)
 
 void MyGraphicsView::mousePressEvent(QMouseEvent* event)
 {
-    qDebug() << "view mouse pos: " << event->pos();
+    //qDebug() << "view pos: " << event->pos();
     QGraphicsView::mousePressEvent(event);
 }

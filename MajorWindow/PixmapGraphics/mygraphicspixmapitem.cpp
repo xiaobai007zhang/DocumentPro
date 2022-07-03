@@ -138,18 +138,11 @@ QVariant MyGraphicsPixmapItem::itemChange(GraphicsItemChange change, const QVari
 
             // QRectF rect(0, 0, scene()->width() - scale() * boundingRect().width(), scene()->height() - scale() * boundingRect().height());
             QRectF rect = scene()->sceneRect();
-            qDebug() << "pix scene()->sceneRect(): " << rect;
-
-            // qDebug() << "scene rect: " << rect;
-            // QRectF rect(0, 0, 800, 600); // 你要限制的区域
-            // qDebug() << "rect.left()" << rect.left();
-            // qDebug() << "rect.right()" << rect.right();
-            // qDebug() << "rect.top()" << rect.top();
-            // qDebug() << "rect.bottom()" << rect.bottom();
-            // qDebug() << "newPos: " << newPos;
 
             if (!rect.contains(newPos)) // 是否在区域内
             {
+                qDebug() << "scene rect: " << rect;
+                qDebug() << "newPos : " << newPos;
                 newPos.setX(qMin(rect.right(), qMax(newPos.x(), rect.left())));
                 newPos.setY(qMin(rect.bottom(), qMax(newPos.y(), rect.top())));
                 // qDebug() << "newPos: " << newPos;

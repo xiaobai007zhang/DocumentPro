@@ -146,11 +146,9 @@ QVariant MyGraphicsTextItem::itemChange(GraphicsItemChange change, const QVarian
         {
             QPointF newPos = value.toPointF(); //即将要移动的位置
             // QRectF rect(0, 0, scene()->width(), scene()->height());
-            // QRectF rect(0, 0, scene()->width() - scale() * boundingRect().width(), scene()->height() - scale() * boundingRect().height());
             QRectF rect = scene()->sceneRect();
-            // QRectF rect = scene()->itemsBoundingRect();
             qDebug() << "scene()->sceneRect()" << rect;
-            // qDebug() << "text scene()->sceneRect(): " << rect;
+
             if (!rect.contains(newPos)) // 是否在区域内
             {
                 newPos.setX(qMin(rect.right(), qMax(newPos.x(), rect.left())));

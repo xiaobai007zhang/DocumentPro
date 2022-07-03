@@ -40,9 +40,10 @@ void MyGraphicsScene::setWidHei(const int& width, const int& height)
 
 void MyGraphicsScene::mousePressEvent(QGraphicsSceneMouseEvent* event)
 {
+    
     // qDebug() << "My mouse press event";
-    qDebug() << "scene mouse pos: " << event->pos();
-    qDebug() << "scene scenePos pos: " << event->scenePos();
+    qDebug() << "scene pos: " << event->pos();
+    //qDebug() << "scene scenePos pos: " << event->scenePos();
     if (event->button() == Qt::LeftButton)
     {
 
@@ -127,37 +128,37 @@ void MyGraphicsScene::mouseReleaseEvent(QGraphicsSceneMouseEvent* event)
 void MyGraphicsScene::wheelEvent(QGraphicsSceneWheelEvent* event)
 {
 
-    qDebug() << "scene wheel event";
-    // QList<QGraphicsItem*> list = selectedItems();
-    // if (list.isEmpty())
-    //{
-    //     QGraphicsScene::wheelEvent(event);
-    //     return;
-    // }
-    // else
-    //{
-    //     for (QGraphicsItem* item : list)
-    //     {
-    //         if (event->delta() > 0)
-    //         {
-    //             item->setScale(item->scale() + 0.01);
-    //             // item->setPos((item->pos().x() - item->boundingRect().width() * 0.1), (item->pos().y() - item->boundingRect().height() * 0.1));
-    //         }
-    //         else
-    //         {
-    //             if (item->scale() - 0.1 <= 0)
-    //             {
-    //                 continue;
-    //             }
-    //             else
-    //             {
-    //                 item->setScale(item->scale() - 0.01);
-    //                 // item->setPos((item->pos().x() + item->boundingRect().width() * 0.1), (item->pos().y() + item->boundingRect().height() * 0.1));
-    //             }
-    //         }
-    //     }
-    //     event->accept();
-    // }
+    //qDebug() << "scene wheel event";
+     QList<QGraphicsItem*> list = selectedItems();
+     if (list.isEmpty())
+    {
+         QGraphicsScene::wheelEvent(event);
+         return;
+     }
+     else
+    {
+         for (QGraphicsItem* item : list)
+         {
+             if (event->delta() > 0)
+             {
+                 item->setScale(item->scale() + 0.01);
+                 // item->setPos((item->pos().x() - item->boundingRect().width() * 0.1), (item->pos().y() - item->boundingRect().height() * 0.1));
+             }
+             else
+             {
+                 if (item->scale() - 0.1 <= 0)
+                 {
+                     continue;
+                 }
+                 else
+                 {
+                     item->setScale(item->scale() - 0.01);
+                     // item->setPos((item->pos().x() + item->boundingRect().width() * 0.1), (item->pos().y() + item->boundingRect().height() * 0.1));
+                 }
+             }
+         }
+         event->accept();
+     }
     QGraphicsScene::wheelEvent(event);
 }
 void MyGraphicsScene::slot_hideRectMouse(bool flag)
