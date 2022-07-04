@@ -1,3 +1,6 @@
 debug
 release
 Makefile
+Journal.vcxproj
+Journal.vcxproj.filters
+Journal.vcxproj.user

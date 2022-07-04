@@ -56,6 +56,9 @@ void ManagerTableInfo::initTableInfo()
 
 void ManagerTableInfo::initConnection()
 {
-    connect(m_okBtn, &QPushButton::clicked, [=] { emit sig_okClicked(m_row->value(), m_col->value()); });
+    connect(m_okBtn, &QPushButton::clicked, [=] {
+        emit sig_okClicked(m_row->value(), m_col->value());
+        close();
+    });
     connect(m_cancelBtn, SIGNAL(clicked()), this, SIGNAL(sig_cancelClicked()));
 }

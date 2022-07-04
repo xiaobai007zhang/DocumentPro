@@ -204,7 +204,7 @@ void MyGraphicsTextItem::mousePressEvent(QGraphicsSceneMouseEvent* event)
         m_isMousePress = true;
         m_startPos = event->scenePos();
         setTextInteractionFlags(Qt::NoTextInteraction);
-        // qDebug() << "m_startPos" << m_startPos;
+
         //隐藏场景的鼠标滑动形成的框架
         // qDebug() << "hideRect";
         emit sig_hideRectMouse(true);

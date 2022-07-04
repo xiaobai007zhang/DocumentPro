@@ -2,3 +2,7 @@ debug
 release
 Makefile
 x64
+WatchLog.txt
+MajorWindow.vcxproj
+MajorWindow.vcxproj.filters
+MajorWindow.vcxproj.user

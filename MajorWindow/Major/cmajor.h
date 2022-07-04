@@ -19,6 +19,7 @@
 #include "../SceneGraphics/mygraphicsscene.h"
 #include "ToolDefine.h"
 //#include "mygraphicstable.h"
+#include "../MyTable/mytable.h"
 #include "../ShapeMimeData/shapemimedata.h"
 #include "../TextItemGraphics/mygraphicstextitem.h"
 #include "../ViewGraphics/mygraphicsview.h"
@@ -258,7 +259,14 @@ private:
     // QGraphicsScene* m_scene;
     MyGraphicsScene* m_scene;
 
+    //文本框标志位
     bool m_textEnable;
+
+    //表格框标志位
+    bool m_tableEnable;
+
+    //表格的行列
+    int m_tableRow, m_tableCol;
 
     QPoint m_startPos;
 

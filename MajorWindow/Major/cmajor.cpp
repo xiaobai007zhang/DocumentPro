@@ -91,7 +91,7 @@
 //};
 
 CMajor::CMajor(QWidget* parent) : QMainWindow(parent),m_imageStartPos(QPoint(0,0))
-,ui(new Ui::CMajor), m_textEnable(false),m_isExpand(true),m_isRepeat(true) ,tableInfo(nullptr){
+,ui(new Ui::CMajor), m_textEnable(false),m_isExpand(true),m_isRepeat(true) ,tableInfo(nullptr),m_tableEnable(false){
 	ui->setupUi(this);
 
 	loadStyleSheet("./Action.qss");
@@ -159,11 +159,14 @@ void CMajor::readJson(const QString & fileName)
 	QJsonArray textArr = obj.value("text").toArray();
 	QJsonArray pixArr = obj.value("pixmap").toArray();
 	QJsonObject scene = obj.value("scene").toObject();
+	
+	
 	//先设置好场景的大小
 	qreal width = scene.value("width").toDouble();
 	qreal height = scene.value("height").toDouble();
 	m_scene->setSceneRect(0, 0, width, height);
-	
+	resizeEvent(nullptr);
+
 	//写一个函数，来加载出不同的元素信息(json对象,type)
 	for (QJsonValue value : textArr) {
 		QJsonObject obj = value.toObject();
@@ -180,6 +183,7 @@ void CMajor::readJson(const QString & fileName)
 	// 
 	//====================================//
 	
+	//m_scene->setSceneRect(QRectF());
 	file.close();
 }
 
@@ -439,8 +443,8 @@ void CMajor::loadJsonObj(const QJsonObject & obj, const QString & type)
 {
 	if (type == TR("text")) {
 	//文本: x、y、宽、高、缩放、内容、颜色、字体大小、加粗、倾斜、下划线，中划线、字体
-	int x = obj.value("x").toInt();
-	int y = obj.value("y").toInt();
+	qreal x = obj.value("x").toDouble();
+	qreal y = obj.value("y").toDouble();
 	qreal width = obj.value("width").toDouble();
 	qreal height = obj.value("height").toDouble();
 	qreal scale = obj.value("scale").toDouble();
@@ -495,8 +499,8 @@ void CMajor::loadJsonObj(const QJsonObject & obj, const QString & type)
 	}
 	else if (type == TR("pixmap")) {
 		//图片：x、y、宽、高、比例、图片路径、
-		int x = obj.value("x").toInt();
-		int y = obj.value("y").toInt();
+		qreal x = obj.value("x").toDouble();
+		qreal y = obj.value("y").toDouble();
 		//qDebug()<<"load x: "<<x<<",load y: "<<y;
 	
 
@@ -1120,8 +1124,8 @@ void CMajor::slot_remove()
 	if (item) {
 		if (item->textCursor().selectedText().isNull() || item->textCursor().selectedText().isEmpty()) {
 			m_scene->removeItem(item);
-			delete item;
-			item = nullptr;
+			//delete item;
+			//item = nullptr;
 		}
 		else {
 			item->textCursor().removeSelectedText();
@@ -1132,8 +1136,8 @@ void CMajor::slot_remove()
 		QList<QGraphicsItem*>list = m_scene->selectedItems();
 		for (QGraphicsItem* value : list) {
 			m_scene->removeItem(value);
-			delete value;
-			value = nullptr;
+			//delete value;
+			//value = nullptr;
 		}
 	}
 
@@ -1177,53 +1181,89 @@ void CMajor::slot_insertForm()
 
 void CMajor::slot_typeface()
 {
+		//先暂定为只要是焦点的都可以改变字体,后期在区分各种不同的结构
 	bool ok;
 	QFont font = QFontDialog::getFont(&ok);
 
-	//先暂定为只要是焦点的都可以改变字体,后期在区分各种不同的结构
-
-	QGraphicsItem* itemTmp = m_scene->focusItem();
-	MyGraphicsTextItem* item = dynamic_cast<MyGraphicsTextItem*>(itemTmp);
-	//ASSERT(item);
-
-	//如果为真证明是焦点窗口
-	if (item) {
-		//区分选中和未选中两种
-		if (item->textCursor().selectedText().isEmpty() || item->textCursor().selectedText().isNull()) {
-			QColor color = item->defaultTextColor();
-			
-			item->setFont(font);
-			item->setDefaultTextColor(color);
-			item->setText(item->toPlainText());
-		}
-		else {
-			QTextCharFormat fmt;        //文本字符格式
-			fmt.setFont(font);
-			QTextCursor cursor = item->textCursor();
-			//cursor.setCharFormat(fmt);
-			cursor.mergeCharFormat(fmt);
-			
-		}
-
-	}
-	else {
-
-		//还有一种是选中状态的字体
+		//不是焦点的处理
 		QList<QGraphicsItem*> list = m_scene->selectedItems();
 		if (list.isEmpty()) {
 			return;
 		}
 
+		
+
 		for (QGraphicsItem* tmp : list) {
 			MyGraphicsTextItem* item = dynamic_cast<MyGraphicsTextItem*>(tmp);
+			
+			if (item) {
 			QColor color = item->defaultTextColor();
 			item->setDefaultTextColor(color);
 			item->setFont(font);
 
 			item->setText(item->toPlainText());
+			}
+			else {
+				MyTable *table = dynamic_cast<MyTable*>(tmp);
+				QColor color = table->defaultTextColor();
+				table->setDefaultTextColor(color);
+				table->setFont(font);
+				table->setPlainText(table->toPlainText());
+			
+			}
+
+			
 		}
 
-	}
+
+
+
+	//QGraphicsItem* itemTmp = m_scene->focusItem();
+	//MyGraphicsTextItem* item = dynamic_cast<MyGraphicsTextItem*>(itemTmp);
+	//ASSERT(item);
+
+	
+
+
+	//如果为真证明是焦点窗口
+	//if (item) {
+	//	//区分选中和未选中两种
+	//	if (item->textCursor().selectedText().isEmpty() || item->textCursor().selectedText().isNull()) {
+	//		QColor color = item->defaultTextColor();
+	//		
+	//		item->setFont(font);
+	//		item->setDefaultTextColor(color);
+	//		item->setText(item->toPlainText());
+	//	}
+	//	else {
+	//		QTextCharFormat fmt;        //文本字符格式
+	//		fmt.setFont(font);
+	//		QTextCursor cursor = item->textCursor();
+	//		//cursor.setCharFormat(fmt);
+	//		cursor.mergeCharFormat(fmt);
+	//		
+	//	}
+
+	//}
+	//else {
+
+	//	//不是焦点的处理
+	//	QList<QGraphicsItem*> list = m_scene->selectedItems();
+	//	if (list.isEmpty()) {
+	//		return;
+	//	}
+
+	//	for (QGraphicsItem* tmp : list) {
+	//		MyGraphicsTextItem* item = dynamic_cast<MyGraphicsTextItem*>(tmp);
+	//		
+	//		QColor color = item->defaultTextColor();
+	//		item->setDefaultTextColor(color);
+	//		item->setFont(font);
+
+	//		item->setText(item->toPlainText());
+	//	}
+
+	//}
 
 }
 
@@ -1521,6 +1561,7 @@ void CMajor::slot_rectFrame(QSize size, QPointF point, bool flag)
 		if (size.width() < 0 && size.height() > 0) {
 			item->moveBy(point.rx(), point.ry() - abs(size.height()));
 		}
+
 		connect(item, SIGNAL(sig_loseFocusText(QGraphicsTextItem*)), this, SLOT(slot_eraseTextFrame(QGraphicsTextItem*)));
 		connect(item, SIGNAL(sig_needSceneUpdate()), this, SLOT(slot_sceneUpdate()));
 		//connect(item, SIGNAL(sig_deleteKey()), this, SLOT(slot_remove()));
@@ -1531,7 +1572,26 @@ void CMajor::slot_rectFrame(QSize size, QPointF point, bool flag)
 		update();
 
 	}
-	else if(flag) {
+	else if(m_tableEnable){
+		MyTable *table = new MyTable(m_tableRow,m_tableCol,QRectF(0, 0, abs(size.width()), abs(size.height())));
+		m_scene->addItem(table);
+		connect(table,SIGNAL(sig_hideRectMouse(bool)),m_scene,SLOT(slot_hideRectMouse(bool)));
+		m_tableEnable = false;
+	if (size.height() < 0 && size.width() < 0) {
+			table->moveBy(point.rx(), point.ry());
+		}
+		if (size.height() < 0 && size.width() > 0) {
+			table->moveBy(point.rx() - abs(size.width()), point.ry());
+		}
+
+		if (size.height() > 0 && size.width() > 0)
+			table->moveBy(point.rx() - size.width(), point.ry() - size.height());
+
+		if (size.width() < 0 && size.height() > 0) {
+			table->moveBy(point.rx(), point.ry() - abs(size.height()));
+		}
+	}else if(flag) {
+		
 		if (size.height() > 0 && size.width() > 0) {
 			QRect rect(point.toPoint() - QPoint(size.width(), size.height()), size);
 			QPainterPath path;
@@ -1622,6 +1682,14 @@ void CMajor::slot_setTableInfo()
 		connect(tableInfo,SIGNAL(sig_cancelClicked()),this,SLOT(slot_cancelClicked()));
 	}
 	
+	if (m_tableEnable == false) {
+		m_tableEnable = true;
+
+	}
+	else if (m_tableEnable == true) {
+		m_tableEnable = false;
+	}
+
 	tableInfo->show();
 	tableInfo->move(pos()+QPoint(width()/2,height()/2));
 }
@@ -1718,12 +1786,9 @@ void CMajor::slot_repeatTime()
 	}
 }
 void CMajor::slot_okClicked(int row,int col)
-{
-	//qDebug()<<"slot_okClicked";
-	//qDebug()<<"row and col: "<<row<<"and "<<col;
-
-	//MyTableWidget *table = new MyTableWidget(row,col,QRectF(0,0,200,200));
-
+{	
+	m_tableCol = col;
+	m_tableRow = row;
 
 	//connect(table,SIGNAL(void sig_hideRectMouse(bool)),m_scene,SLOT(slot_hideRectMouse()));
 	//connect(this,SIGNAL(sig_expand(bool)),table,SLOT(slot_expand(bool)));

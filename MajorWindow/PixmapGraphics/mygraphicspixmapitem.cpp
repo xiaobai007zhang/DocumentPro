@@ -19,9 +19,9 @@ MyGraphicsPixmapItem::~MyGraphicsPixmapItem()
 
 void MyGraphicsPixmapItem::mousePressEvent(QGraphicsSceneMouseEvent* event)
 {
-    qDebug() << zValue();
-    // m_zValue = zValue();
-    // setZValue(1);
+    // qDebug() << zValue();
+    //  m_zValue = zValue();
+    //  setZValue(1);
     m_isMousePress = true;
     m_startPos = event->scenePos();
 

@@ -24,7 +24,7 @@ protected:
     // void contextMenuEvent(QGraphicsSceneContextMenuEvent* contextMenuEvent) override;
 
 signals:
-    void sig_rectFrame(QSize size, QPointF point, bool);
+    void sig_rectFrame(QSize, QPointF, bool);
 
 public slots:
     void slot_hideRectMouse(bool);

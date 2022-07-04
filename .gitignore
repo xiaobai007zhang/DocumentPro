@@ -5,3 +5,5 @@ MyDocument.pro.user
 Makefile
 output
 bin
+LogFile
+ysbase
