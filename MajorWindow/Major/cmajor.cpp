@@ -1578,12 +1578,39 @@ void CMajor::slot_rectFrame(QSize size, QPointF point, bool flag)
 		connect(table,SIGNAL(sig_hideRectMouse(bool)),m_scene,SLOT(slot_hideRectMouse(bool)));
 		m_scene->addItem(table);
 		
-		for (int i = 0; i < table->getRow(); ++i) {
+		if (table->getCol() > table->getRow()) {
 			for (int j = 0; j < table->getCol(); ++j) {
-				MyTableText *item  = new MyTableText(QRectF(0,0,table->getIntervalW(),table->getIntervalH()),table);
-				item->moveBy(i*table->getIntervalW(),j*table->getIntervalH());
-				connect(item,SIGNAL(sig_hideRectMouse(bool)),m_scene,SLOT(slot_hideRectMouse(bool)));
-				
+				for (int i = 0; i < table->getRow(); ++i) {
+					MyTableText* item = new MyTableText(QRectF(0, 0, table->getIntervalW(), table->getIntervalH()), table);
+					item->moveBy(j * table->getIntervalW(), i * table->getIntervalH());
+					connect(item, SIGNAL(sig_hideRectMouse(bool)), m_scene, SLOT(slot_hideRectMouse(bool)));
+					table->m_tableText.push_back(item);
+					//qDebug() << item << endl;
+				}
+			}
+		}
+		else if (table->getCol() < table->getRow()) {
+			for (int i = 0; i < table->getRow(); ++i) {
+				for (int j = 0; j < table->getCol(); ++j) {
+					MyTableText* item = new MyTableText(QRectF(0, 0, table->getIntervalW(), table->getIntervalH()), table);
+					item->moveBy(j * table->getIntervalW(), i * table->getIntervalH());
+					connect(item, SIGNAL(sig_hideRectMouse(bool)), m_scene, SLOT(slot_hideRectMouse(bool)));
+					//table->m_tableText[i * j + j] = item;
+					table->m_tableText.push_back(item);
+					//qDebug() << item << endl;
+				}
+			}
+		}
+		else {
+			for (int i = 0; i < table->getRow(); ++i) {
+				for (int j = 0; j < table->getCol(); ++j) {
+					MyTableText* item = new MyTableText(QRectF(0, 0, table->getIntervalW(), table->getIntervalH()), table);
+					item->moveBy(i * table->getIntervalW(), j * table->getIntervalH());
+					connect(item, SIGNAL(sig_hideRectMouse(bool)), m_scene, SLOT(slot_hideRectMouse(bool)));
+					//table->m_tableText[i*j+j] = item;
+					table->m_tableText.push_back(item);
+					//qDebug() << item << endl;
+				}
 			}
 		}
 		

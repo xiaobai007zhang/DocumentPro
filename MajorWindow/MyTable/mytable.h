@@ -3,7 +3,9 @@
 #include "ToolDefine.h"
 #include <QGraphicsRectItem>
 #include <QObject>
+#include <vector>
 
+class MyTableText;
 class MyTable : public QObject, public QGraphicsItem
 {
     Q_OBJECT
@@ -61,12 +63,17 @@ private:
 
     bool m_isPress;
 
-    //结构体数组
-    MyTableText** m_tableText;
+
 
 public:
     MyTable(int row, int col, QRectF rect);
     ~MyTable();
+
+public:
+    //结构体数组
+    //MyTableText** m_tableText;
+    std::vector<MyTableText*> m_tableText;
+
 };
 
 //=========================================================================================
@@ -111,15 +118,16 @@ private:
 signals:
     void sig_hideRectMouse(bool);
 
+
+public:
+    qreal intervalW;
+    qreal intervalH;
+
 private:
     // QGraphicsProxyWidget* m_proxy;
 
     //记录行列
     int m_row;
     int m_col;
-
-    qreal intervalW;
-    qreal intervalH;
-
     QRectF m_rect;
 };

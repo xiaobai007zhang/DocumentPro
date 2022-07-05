@@ -1,4 +1,4 @@
-#include "shapemimedata.h"
+﻿#include "shapemimedata.h"
 
 ShapeMimeData::ShapeMimeData(QList<QGraphicsItem*> items)
 {

@@ -1,5 +1,5 @@
-#include "mytable.h"
-#include <QCursor>
+ï»¿#include "mytable.h"
+
 #include <QDebug>
 #include <QGraphicsItem>
 #include <QGraphicsSceneMouseEvent>
@@ -8,20 +8,43 @@
 #include <QStyleOptionGraphicsItem>
 #include <QTextCursor>
 #include <QTextDocument>
-#include <QTextTable>
-#include <QTextTableFormat>
+
 
 void MyTable::paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget)
 {
 
-    //½øĞĞ»æ»­³ö¶ÔÓ¦µÄ±í¸ñ
-    //ÔİÊ±¾ö¶¨£¬½«Êó±ê¾Û½¹·Åµ½¶ÔÓ¦µÄÎ»ÖÃ½øĞĞË«»÷»á³öÏÖ±à¼­¿ò
-
+    //è¿›è¡Œç»˜ç”»å‡ºå¯¹åº”çš„è¡¨æ ¼
+    //æš‚æ—¶å†³å®šï¼Œå°†é¼ æ ‡èšç„¦æ”¾åˆ°å¯¹åº”çš„ä½ç½®è¿›è¡ŒåŒå‡»ä¼šå‡ºç°ç¼–è¾‘æ¡†
+    qDebug() << "interval H: " << intervalH;
+   
     painter->drawRect(m_rect);
-    for (int i = 1; i < m_row; ++i)
-    {
-        painter->drawLine(0, i * intervalH, 0 + m_rect.width(), i * intervalH);
+    int val = 1;
+    //int flags = m_tableText.size() / m_col;
+    //ç”»çº¿æ¡éœ€è¦åˆ¤æ–­æ¯ä¸€è¡Œæœ€é•¿çš„é«˜åº¦æ¥å†³å®š
+    int maxVal = m_tableText[0]->intervalH;
+    for (int i = 0; i < m_tableText.size(); ++i) {
+        if (i % m_col != 0 ) {
+            if (maxVal < m_tableText[i]->intervalH) {
+                maxVal = m_tableText[i]->intervalH;
+            }
+        }
+        else if(i != 0){
+            //æ¯”è¾ƒå®Œæˆä¸€è½®äº†ï¼Œå¼€å§‹ç»˜ç”»
+            painter->drawLine(0, val*maxVal, m_rect.width(), val*maxVal);
+            maxVal = 0;
+            val++;
+
+            //è¿˜éœ€è¦å†æ¬¡æ¯”è¾ƒä¸€æ¬¡
+            if (maxVal < m_tableText[i]->intervalH) {
+                maxVal = m_tableText[i]->intervalH;
+            }
+        }
     }
+
+    //for (int i = 1; i < m_row; ++i)
+    //{
+    //    painter->drawLine(0, i * intervalH, 0 + m_rect.width(), i * intervalH);
+    //}
 
     for (int i = 1; i < m_col; ++i)
     {
@@ -105,7 +128,7 @@ void MyTable::updateHeight()
     //    intervalH = m_rect.height() / m_row;
     //    // this->setPlainText(toPlainText());
 
-    //    //µ±¸üĞÂÎÄ±¾¿òºó£¬¹â±êµÄÎ»ÖÃÉèÖÃ£¬ÎÄ±¾µÄÄ©Î²
+    //    //å½“æ›´æ–°æ–‡æœ¬æ¡†åï¼Œå…‰æ ‡çš„ä½ç½®è®¾ç½®ï¼Œæ–‡æœ¬çš„æœ«å°¾
     //    QTextCursor cursor = this->textCursor();
     //    cursor.movePosition(QTextCursor::End, QTextCursor::MoveAnchor, 1);
     //    this->setTextCursor(cursor);
@@ -127,7 +150,7 @@ MyTable::MyTable(int row, int col, QRectF rect) : m_isPress(false), intervalW(0)
     // setFocus();
     initTableWidget();
 
-    m_tableText = new MyTableText*[m_col * m_row];
+    //m_tableText = new MyTableText*[m_col * m_row];
 }
 
 MyTable::~MyTable()
@@ -166,7 +189,7 @@ void MyTableText::paint(QPainter* painter, const QStyleOptionGraphicsItem* optio
 {
 
     {
-        // Ô­À´Ê²Ã´ÊôĞÔ¾ÍÒªÊ²Ã´ÊôĞÔ,Ö»²»¹ıÈ¥µô¶àÓàµÄÑ¡ÖĞ×´Ì¬
+        // åŸæ¥ä»€ä¹ˆå±æ€§å°±è¦ä»€ä¹ˆå±æ€§,åªä¸è¿‡å»æ‰å¤šä½™çš„é€‰ä¸­çŠ¶æ€
         QStyleOptionGraphicsItem op;
         op.initFrom(widget);
         op.state = QStyle::State_None;
@@ -264,7 +287,7 @@ void MyTableText::updateHeight()
         intervalH = m_rect.height() / m_row;
         // this->setPlainText(toPlainText());
 
-        //µ±¸üĞÂÎÄ±¾¿òºó£¬¹â±êµÄÎ»ÖÃÉèÖÃ£¬ÎÄ±¾µÄÄ©Î²
+        //å½“æ›´æ–°æ–‡æœ¬æ¡†åï¼Œå…‰æ ‡çš„ä½ç½®è®¾ç½®ï¼Œæ–‡æœ¬çš„æœ«å°¾
         QTextCursor cursor = this->textCursor();
         cursor.movePosition(QTextCursor::End, QTextCursor::MoveAnchor, 1);
         this->setTextCursor(cursor);
@@ -277,4 +300,5 @@ void MyTableText::initMyTableText()
     intervalW = m_rect.width();
     // setTextInteractionFlags(Qt::TextEditorInteraction);
     document()->setTextWidth(intervalW);
+    setPlainText("123");
 }

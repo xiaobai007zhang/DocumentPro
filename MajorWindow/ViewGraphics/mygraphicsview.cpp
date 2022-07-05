@@ -54,7 +54,6 @@ void MyGraphicsView::wheelEvent(QWheelEvent* event)
     }
     else
     {
-
         QGraphicsView::wheelEvent(event);
     }
 }
