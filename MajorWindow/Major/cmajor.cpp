@@ -17,7 +17,7 @@
 #include <QJsonValue>
 #include <QMenu>
 #include <QMessageBox>
-#include <QTableView>
+#include <QScrollBar>
 
 //#include <QMetaClassInfo>
 //#include <QMetaObject>
@@ -1205,10 +1205,10 @@ void CMajor::slot_typeface()
 			}
 			else {
 				MyTable *table = dynamic_cast<MyTable*>(tmp);
-				QColor color = table->defaultTextColor();
+				/*QColor color = table->defaultTextColor();
 				table->setDefaultTextColor(color);
 				table->setFont(font);
-				table->setPlainText(table->toPlainText());
+				table->setPlainText(table->toPlainText());*/
 			
 			}
 
@@ -1573,9 +1573,55 @@ void CMajor::slot_rectFrame(QSize size, QPointF point, bool flag)
 
 	}
 	else if(m_tableEnable){
+		
 		MyTable *table = new MyTable(m_tableRow,m_tableCol,QRectF(0, 0, abs(size.width()), abs(size.height())));
-		m_scene->addItem(table);
 		connect(table,SIGNAL(sig_hideRectMouse(bool)),m_scene,SLOT(slot_hideRectMouse(bool)));
+		m_scene->addItem(table);
+		
+		for (int i = 0; i < table->getRow(); ++i) {
+			for (int j = 0; j < table->getCol(); ++j) {
+				MyTableText *item  = new MyTableText(QRectF(0,0,table->getIntervalW(),table->getIntervalH()),table);
+				item->moveBy(i*table->getIntervalW(),j*table->getIntervalH());
+				connect(item,SIGNAL(sig_hideRectMouse(bool)),m_scene,SLOT(slot_hideRectMouse(bool)));
+				
+			}
+		}
+		
+
+
+		//QTextTableFormat format;
+		//format.setWidth(abs(size.width()-10));
+		//format.setHeight(abs(size.height()-10));
+		////format.setCellPadding(0);
+		////format.setMargin(0);
+		////format.setBorder(1);
+		//format.setBorderCollapse(true);
+		////format.setCellSpacing(0);
+		////format.setPosition(QTextFrameFormat::FloatLeft);
+		////format.setPadding(0);
+		//QVector<QTextLength> colLength = format.columnWidthConstraints();
+		//
+		//for (int i = 0; i < table->getCol(); ++i) {
+		//	colLength.append(QTextLength(QTextLength::FixedLength,format.width().rawValue()/table->getCol()));
+		//}
+		//format.setBorderStyle(QTextFrameFormat::BorderStyle_Solid);
+		//format.setColumnWidthConstraints(colLength);
+		////format.setHeight
+	
+		//QTableWidget *wid = new QTableWidget;
+		//wid->setRowCount(3);
+		//wid->setColumnCount(3);
+		
+		
+
+		//QTextTable* table2 = table->textCursor().insertTable(table->getRow(), table->getCol(),format);
+		
+
+		/*connect(table->document(),SIGNAL(contentsChanged()),this,SLOT(slot_TableContentsChanged()));
+
+		connect(table,SIGNAL(sig_hideRectMouse(bool)),m_scene,SLOT(slot_hideRectMouse(bool)));
+		*/
+		
 		m_tableEnable = false;
 	if (size.height() < 0 && size.width() < 0) {
 			table->moveBy(point.rx(), point.ry());
@@ -1790,35 +1836,44 @@ void CMajor::slot_okClicked(int row,int col)
 	m_tableCol = col;
 	m_tableRow = row;
 
+
 	//connect(table,SIGNAL(void sig_hideRectMouse(bool)),m_scene,SLOT(slot_hideRectMouse()));
 	//connect(this,SIGNAL(sig_expand(bool)),table,SLOT(slot_expand(bool)));
 	//connect(this,SIGNAL(sig_repeat(bool)),table,SLOT(slot_repeat(bool)));
 
 	//connect(table,SIGNAL(itemChanged(QTableWidgetItem* )),table,SLOT(resizeRowsToContents()));
-	//QGraphicsProxyWidget* wid = m_scene->addWidget(table);	
-	//wid->setFlags(QGraphicsItem::ItemIsFocusable|QGraphicsItem::ItemIsMovable|QGraphicsItem::ItemIsSelectable);
+	/*QTableWidget *table = new QTableWidget;
+	QGraphicsProxyWidget* wid = m_scene->addWidget(table);	
+	wid->setFlags(QGraphicsItem::ItemIsFocusable|QGraphicsItem::ItemIsMovable|QGraphicsItem::ItemIsSelectable);
 
 		
-	/*table->setFrameRect(QRect(0,0,400,400));
+	table->setFrameRect(QRect(0,0,400,400));
 	table->setRowCount(row);
 	table->setColumnCount(col);
 	table->horizontalHeader()->hide();
 	table->verticalHeader()->hide();
 	table->verticalScrollBar()->hide();
 	table->horizontalScrollBar()->hide();
-	table->horizontalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
-	table->verticalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);*/
+	table->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
+	table->verticalHeader()->setSectionResizeMode(QHeaderView::Stretch);
 	
-	//table->adjustSize();
-	//m_scene->addItem(wid);
+	table->adjustSize();
+	m_scene->addItem(wid);*/
 	
 }
 void CMajor::slot_cancelClicked()
 {
 	//qDebug()<<"slot_okClicked";
+	m_tableEnable = false;
 	tableInfo->deleteLater();
 	tableInfo->close();
 	tableInfo = nullptr;
+}
+void CMajor::slot_TableContentsChanged()
+{
+	//这个信号应该传递table 的矩形大小,然后动态的改变大小
+	qDebug()<<"slot_TableContentsChanged()";
+
 }
 //是否允许扩展
 void CMajor::slot_expand()

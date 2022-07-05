@@ -43,7 +43,7 @@ void MyGraphicsScene::mousePressEvent(QGraphicsSceneMouseEvent* event)
 {
 
     // qDebug() << "My mouse press event";
-    qDebug() << "scene pos: " << event->pos();
+    //qDebug() << "scene pos: " << event->pos();
     // qDebug() << "scene scenePos pos: " << event->scenePos();
     if (event->button() == Qt::LeftButton)
     {

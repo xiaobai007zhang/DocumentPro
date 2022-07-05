@@ -1,10 +1,10 @@
 #pragma once
 
 #include "ToolDefine.h"
-#include <QGraphicsItem>
+#include <QGraphicsRectItem>
 #include <QObject>
 
-class MyTable : public QGraphicsTextItem
+class MyTable : public QObject, public QGraphicsItem
 {
     Q_OBJECT
     Q_INTERFACES(QGraphicsItem)
@@ -15,28 +15,32 @@ protected:
 
     QPainterPath shape() const override;
 
-    int type() const override;
-
     void mousePressEvent(QGraphicsSceneMouseEvent* event) override;
 
     void mouseReleaseEvent(QGraphicsSceneMouseEvent* event) override;
 
     void mouseMoveEvent(QGraphicsSceneMouseEvent* event) override;
 
-    void mouseDoubleClickEvent(QGraphicsSceneMouseEvent* event);
+    void mouseDoubleClickEvent(QGraphicsSceneMouseEvent* event) override;
 
-    void focusInEvent(QFocusEvent* event) override;
+public:
+    qreal getIntervalW();
 
-    void focusOutEvent(QFocusEvent* event) override;
+    qreal getIntervalH();
 
-    void keyPressEvent(QKeyEvent* event) override;
+public:
+    QRectF getRect();
+
+    int getRow();
+
+    int getCol();
+
+    void setRect(QRectF rect);
 
 private:
     void initTableWidget();
 
     void updateHeight();
-
-    void setRect(QRectF rect);
 
 signals:
     void sig_hideRectMouse(bool);
@@ -55,17 +59,26 @@ private:
     qreal intervalW;
     qreal intervalH;
 
+    bool m_isPress;
+
+    //结构体数组
+    MyTableText** m_tableText;
+
 public:
     MyTable(int row, int col, QRectF rect);
     ~MyTable();
 };
 
+//=========================================================================================
 class MyTableText : public QGraphicsTextItem
 {
     Q_OBJECT
 public:
-    MyTableText(int row, int col, QRectF rect);
+    MyTableText(QRectF rect, QGraphicsItem* parent = nullptr);
     ~MyTableText();
+    MyTableText()
+    {
+    }
 
 protected:
     void paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget) override;
@@ -80,11 +93,20 @@ protected:
 
     void mouseMoveEvent(QGraphicsSceneMouseEvent* event) override;
 
-    void mouseDoubleClickEvent(QGraphicsSceneMouseEvent* event);
+    void mouseDoubleClickEvent(QGraphicsSceneMouseEvent* event) override;
 
     // void focusInEvent(QFocusEvent* event) override;
 
     // void focusOutEvent(QFocusEvent* event) override;
+    bool eventFilter(QObject* obj, QEvent* event) override;
+
+private:
+    //初始化基本信息
+    void initMyTableText();
+
+    void updateHeight();
+
+    void setRect(QRectF rect);
 
 signals:
     void sig_hideRectMouse(bool);
@@ -95,6 +117,9 @@ private:
     //记录行列
     int m_row;
     int m_col;
+
+    qreal intervalW;
+    qreal intervalH;
 
     QRectF m_rect;
 };

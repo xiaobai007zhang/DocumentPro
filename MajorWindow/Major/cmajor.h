@@ -198,6 +198,8 @@ private slots:
 
     void slot_cancelClicked();
 
+    void slot_TableContentsChanged();
+
     //!成员变量
 private:
     //! 文件功能 动作
