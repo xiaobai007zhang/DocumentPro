@@ -53,6 +53,9 @@ signals:
     void sig_expand(bool);
     void sig_repeat(bool);
 
+    //发送给单元格一个矩形
+    void sig_MyTable(QRectF);
+
 private:
     void readJson(const QString& fileName);
 
@@ -103,6 +106,7 @@ protected:
     void keyPressEvent(QKeyEvent* event) override;
     void dragEnterEvent(QDragEnterEvent* event) override;
     void dropEvent(QDropEvent* event) override;
+
     // void wheelEvent(QWheelEvent* event)override;
 
     // void drawEnterEvent(QDragEnterEvent* event)override;
@@ -235,6 +239,8 @@ private:
     QAction* expand;
 
     QAction* repeat;
+
+    QAction* joinTable;
 
     //缩放
     QMenu* scale;

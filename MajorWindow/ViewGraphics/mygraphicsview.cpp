@@ -4,7 +4,7 @@
 #include <QScrollBar>
 #include <QWheelEvent>
 
-MyGraphicsView::MyGraphicsView(QWidget* parent) : m_isCtrlPress(false), QGraphicsView(parent), m_isFlag(true)
+MyGraphicsView::MyGraphicsView(QWidget* parent) : m_isCtrlPress(false), m_isAltPress(false), QGraphicsView(parent), m_isFlag(true)
 {
 }
 
@@ -71,12 +71,16 @@ void MyGraphicsView::keyPressEvent(QKeyEvent* event)
 
 void MyGraphicsView::keyReleaseEvent(QKeyEvent* event)
 {
-    m_isCtrlPress = false;
+    if (event->key() == Qt::Key_Control)
+    {
+        m_isCtrlPress = false;
+    }
+
     QGraphicsView::keyReleaseEvent(event);
 }
 
 void MyGraphicsView::mousePressEvent(QMouseEvent* event)
 {
-    // qDebug() << "view pos: " << event->pos();
+    // qDebug() << "view mouse press pos: " << event->pos();
     QGraphicsView::mousePressEvent(event);
 }

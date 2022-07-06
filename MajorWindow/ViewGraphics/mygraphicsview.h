@@ -14,6 +14,7 @@ public:
 private:
     bool m_isCtrlPress;
     bool m_isFlag;
+    bool m_isAltPress;
 
 protected:
     void wheelEvent(QWheelEvent* event) override;

@@ -165,7 +165,7 @@ void CMajor::readJson(const QString & fileName)
 	qreal width = scene.value("width").toDouble();
 	qreal height = scene.value("height").toDouble();
 	m_scene->setSceneRect(0, 0, width, height);
-	resizeEvent(nullptr);
+	//resizeEvent(nullptr);
 
 	//写一个函数，来加载出不同的元素信息(json对象,type)
 	for (QJsonValue value : textArr) {
@@ -284,7 +284,8 @@ void CMajor::initMenuBar()
 	//! 功能区
 	expand = new QAction(TR("扩展窗口"));
 	repeat = new QAction(TR("重叠"));
-	
+	joinTable = new QAction(TR("合并单元格"));
+
 	connect(repeat,SIGNAL(triggered()),this,SLOT(slot_repeat()));
 	connect(expand,SIGNAL(triggered()),this,SLOT(slot_expand()));
 	
@@ -458,7 +459,11 @@ void CMajor::loadJsonObj(const QJsonObject & obj, const QString & type)
 	bool italic = obj.value("fontItalic").toBool();
 	bool underLine = obj.value("fontUnderLine").toBool();
 	bool strikeout = obj.value("fontStrikeout").toBool();
+	qreal zValue = obj.value("zValue").toDouble();
+
 	QString family = obj.value("fontFamily").toString();
+	
+	
 	QFont font;
 	font.setBold(bold);
 	font.setItalic(italic);
@@ -466,26 +471,20 @@ void CMajor::loadJsonObj(const QJsonObject & obj, const QString & type)
 	font.setUnderline(underLine);
 	font.setStrikeOut(strikeout);
 	font.setPointSize(fontSize);
-	//QPointF point = m_view->mapToScene(x,y);
-	QPointF point(x, y);
-	//MyGraphicsTextItem* myItem = new MyGraphicsTextItem(QRectF(point.x(),point.y(),width,height));
 	
-	//MyGraphicsTextItem* myItem = new MyGraphicsTextItem(QRectF(point.x(),point.y(),width,height));
+
+	QPointF point(x, y);
+	
 	MyGraphicsTextItem* myItem = new MyGraphicsTextItem(QRectF(0,0,width,height));
 	myItem->setPos(point.x(),point.y());
 
-	
-	//myItem->setFlag(QGraphicsItem::ItemIsFocusable);
-	//myItem->setFlag(QGraphicsItem::ItemStopsFocusHandling);
-	
-	//QGraphicsTextItem* myItem = new QGraphicsTextItem(contents);
-
+	myItem->setZValue(zValue);
 	myItem->setPlainText(contents) ;
 	myItem->setFont(font);
 	myItem->setDefaultTextColor(color);
 
 	myItem->setScale(scale);
-	//myItem->setPos(0,0);
+
 	connect(myItem, SIGNAL(sig_hideRectMouse(bool)), m_scene, SLOT(slot_hideRectMouse(bool)));
 	connect(this,SIGNAL(sig_expand(bool)),myItem,SLOT(slot_expand(bool)));
 	connect(this,SIGNAL(sig_repeat(bool)),myItem,SLOT(slot_repeat(bool)));
@@ -505,16 +504,16 @@ void CMajor::loadJsonObj(const QJsonObject & obj, const QString & type)
 	
 
 
-		//QPointF point(m_view->mapToScene(x,y));
+
 		QPointF point(x, y);
-		//QPoint point(x,y);
+
 		qreal width = obj.value("width").toDouble();
 		qreal height = obj.value("height").toDouble();
 		qreal scale = obj.value("scale").toDouble();
 		QString imgPth = obj.value("imagePth").toString();
-
+		qreal zValue = obj.value("zValue").toDouble();
 		MyGraphicsPixmapItem *myItem = new MyGraphicsPixmapItem(QRectF(0,0,width,height));
-		//MyGraphicsPixmapItem *myItem = new MyGraphicsPixmapItem(QRectF(point.x()-(width*(1 - scale)),point.y()-(height*(1 - scale)),width,height));
+		
 		myItem->setPos(point.x(), point.y());
 		
 		qDebug() << QStringLiteral("========打开========");
@@ -523,11 +522,7 @@ void CMajor::loadJsonObj(const QJsonObject & obj, const QString & type)
 		myItem->pos();
 		myItem->setScale(scale);
 		myItem->setImage(imgPth);
-
-		//qDebug()<<QStringLiteral("========打开: 现在使用的是scenePos========");
-		////qDebug()<<"myItem->pos(): "<<myItem->pos();
-		//qDebug()<<"read pos(): "<<point;
-		//qDebug()<<"========================";
+		myItem->setZValue(zValue);
 
 		connect(myItem, SIGNAL(sig_hideRectMouse(bool)), m_scene, SLOT(slot_hideRectMouse(bool)));
 		connect(this,SIGNAL(sig_expand(bool)),myItem,SLOT(slot_expand(bool)));
@@ -702,6 +697,7 @@ void CMajor::keyPressEvent(QKeyEvent* event)
 		}
 
 	}
+
 	QMainWindow::keyPressEvent(event);
 }
 
@@ -885,6 +881,7 @@ bool CMajor::slot_otherSave()
 			obj.insert("height",myItem->getBoundingRect().height());
 			obj.insert("scale",myItem->scale());
 			obj.insert("contents",myItem->getStrText());
+			obj.insert("zValue",myItem->zValue());
 			//读取颜色的RGB值，并保存为字符串
 			QColor color = myItem->defaultTextColor();
 			
@@ -910,7 +907,7 @@ bool CMajor::slot_otherSave()
 			obj.insert("fontUnderLine",fontUnderLine);
 			obj.insert("fontStrikeout",fontStrikeout);
 			obj.insert("fontFamily",fontFamily);
-
+			
 			textArr.append(obj);
 		}
 		else if (item->type() == QGraphicsPixmapItem::Type) {
@@ -935,6 +932,7 @@ bool CMajor::slot_otherSave()
 			obj.insert("height",myItem->getBoundingRect().height());
 			obj.insert("scale",myItem->scale());
 			obj.insert("imagePth",myItem->getImagePth());
+			obj.insert("zValue",myItem->zValue());
 			pixmapArr.append(obj);
 			//m_view->viewportTransform().m11();
 			
@@ -1307,7 +1305,7 @@ void CMajor::slot_save()
 			obj.insert("height",myItem->getBoundingRect().height());
 			obj.insert("scale",myItem->scale());
 			obj.insert("contents",myItem->toPlainText());
-
+			obj.insert("zValue",myItem->zValue());
 			//读取颜色的RGB值，并保存为字符串
 			QColor color = myItem->defaultTextColor();
 			QString colorStr = QString("%1,%2,%3").arg(color.red()).arg(color.green()).arg(color.blue());
@@ -1362,7 +1360,7 @@ void CMajor::slot_save()
 			obj.insert("height",myItem->getBoundingRect().height());
 			obj.insert("scale",myItem->scale());
 			obj.insert("imagePth",myItem->getImagePth());
-
+			obj.insert("zValue",myItem->zValue());
 			pixmapArr.append(obj);
 			//qDebug()<<"save point: "<<point;
 			//qDebug()<<"save item point: "<<item->mapRectFromItem(item->pos());
@@ -1573,49 +1571,64 @@ void CMajor::slot_rectFrame(QSize size, QPointF point, bool flag)
 
 	}
 	else if(m_tableEnable){
+		MyTable *table;
+		if (size.width() <= 100) {
+			table = new MyTable(m_tableRow,m_tableCol,QRectF(0, 0, 300, 100));
+		}
+		else {
+
+			table = new MyTable(m_tableRow,m_tableCol,QRectF(0, 0, abs(size.width()), abs(size.height())));
+		}
 		
-		MyTable *table = new MyTable(m_tableRow,m_tableCol,QRectF(0, 0, abs(size.width()), abs(size.height())));
 		connect(table,SIGNAL(sig_hideRectMouse(bool)),m_scene,SLOT(slot_hideRectMouse(bool)));
+		connect(this,SIGNAL(sig_MyTable(QRectF)),table,SLOT(slot_MyTable(QRectF)));
 		m_scene->addItem(table);
 		
 		if (table->getCol() > table->getRow()) {
-			for (int j = 0; j < table->getCol(); ++j) {
-				for (int i = 0; i < table->getRow(); ++i) {
-					MyTableText* item = new MyTableText(QRectF(0, 0, table->getIntervalW(), table->getIntervalH()), table);
-					item->moveBy(j * table->getIntervalW(), i * table->getIntervalH());
-					connect(item, SIGNAL(sig_hideRectMouse(bool)), m_scene, SLOT(slot_hideRectMouse(bool)));
-					table->m_tableText.push_back(item);
-					//qDebug() << item << endl;
-				}
-			}
-		}
-		else if (table->getCol() < table->getRow()) {
 			for (int i = 0; i < table->getRow(); ++i) {
 				for (int j = 0; j < table->getCol(); ++j) {
 					MyTableText* item = new MyTableText(QRectF(0, 0, table->getIntervalW(), table->getIntervalH()), table);
 					item->moveBy(j * table->getIntervalW(), i * table->getIntervalH());
 					connect(item, SIGNAL(sig_hideRectMouse(bool)), m_scene, SLOT(slot_hideRectMouse(bool)));
-					//table->m_tableText[i * j + j] = item;
+					connect(item->document(),SIGNAL(contentsChanged()),table,SLOT(slot_contentsChanged()));
+					item->setData(Qt::UserRole + 1,i);
+					qDebug()<<"j: "<<j;
+					qDebug()<<"i: "<<i;
 					table->m_tableText.push_back(item);
-					//qDebug() << item << endl;
+					//item->setPlainText(TR("%1").arg(j));
 				}
 			}
 		}
-		else {
+		else if (table->getCol() <= table->getRow()) {
 			for (int i = 0; i < table->getRow(); ++i) {
 				for (int j = 0; j < table->getCol(); ++j) {
 					MyTableText* item = new MyTableText(QRectF(0, 0, table->getIntervalW(), table->getIntervalH()), table);
-					item->moveBy(i * table->getIntervalW(), j * table->getIntervalH());
+					item->moveBy(j * table->getIntervalW(), i * table->getIntervalH());
+					item->setData(Qt::UserRole + 1,i);
+
 					connect(item, SIGNAL(sig_hideRectMouse(bool)), m_scene, SLOT(slot_hideRectMouse(bool)));
-					//table->m_tableText[i*j+j] = item;
+					connect(item->document(),SIGNAL(contentsChanged()),table,SLOT(slot_contentsChanged()));
+					
 					table->m_tableText.push_back(item);
-					//qDebug() << item << endl;
+					
 				}
 			}
 		}
-		
 
 
+		//else {
+		//	for (int i = 0; i < table->getRow(); ++i) {
+		//		for (int j = 0; j < table->getCol(); ++j) {
+		//			MyTableText* item = new MyTableText(QRectF(0, 0, table->getIntervalW(), table->getIntervalH()), table);
+		//			item->moveBy(i * table->getIntervalW(), j * table->getIntervalH());
+		//			connect(item, SIGNAL(sig_hideRectMouse(bool)), m_scene, SLOT(slot_hideRectMouse(bool)));
+		//			//table->m_tableText[i*j+j] = item;
+		//			table->m_tableText.push_back(item);
+		//			//qDebug() << item << endl;
+		//		}
+		//	}
+		//}
+	
 		//QTextTableFormat format;
 		//format.setWidth(abs(size.width()-10));
 		//format.setHeight(abs(size.height()-10));
@@ -1703,6 +1716,7 @@ void CMajor::slot_rectFrame(QSize size, QPointF point, bool flag)
 
 	}
 
+	emit sig_MyTable(QRectF(point,size));
 	m_textEnable = false;
 }
 
@@ -1713,6 +1727,7 @@ void CMajor::slot_rightMenu(const QPoint &point)
 	QMenu *menu = new QMenu();
 	menu->addAction(expand);
 	menu->addAction(repeat);
+	menu->addAction(joinTable);
 	//menu->move(point);
 	//qDebug()<<point;
 	menu->exec(cursor().pos());

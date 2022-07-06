@@ -42,9 +42,9 @@ void MyGraphicsScene::setWidHei(const int& width, const int& height)
 void MyGraphicsScene::mousePressEvent(QGraphicsSceneMouseEvent* event)
 {
 
-    // qDebug() << "My mouse press event";
-    //qDebug() << "scene pos: " << event->pos();
-    // qDebug() << "scene scenePos pos: " << event->scenePos();
+    // qDebug() << "scene mouse press pos: " << event->scenePos();
+    //  qDebug() << "scene pos: " << event->pos();
+    //  qDebug() << "scene scenePos pos: " << event->scenePos();
     if (event->button() == Qt::LeftButton)
     {
 
@@ -105,8 +105,8 @@ void MyGraphicsScene::mouseMoveEvent(QGraphicsSceneMouseEvent* event)
 
 void MyGraphicsScene::mouseReleaseEvent(QGraphicsSceneMouseEvent* event)
 {
-    // qDebug() << "MyScene mouse event";
-    // QSize size = QSize(abs(event->scenePos().x() - m_curPos.x()), (abs(event->scenePos().y() - m_curPos.y())));
+    // qDebug() << "scene mouse release: " << event->scenePos();
+    //  QSize size = QSize(abs(event->scenePos().x() - m_curPos.x()), (abs(event->scenePos().y() - m_curPos.y())));
 
     QSize size = QSize(event->scenePos().x() - m_curPos.x(), (event->scenePos().y() - m_curPos.y()));
 
@@ -124,7 +124,7 @@ void MyGraphicsScene::mouseReleaseEvent(QGraphicsSceneMouseEvent* event)
         m_rectMouse = nullptr;
     }
 
-    QGraphicsScene::mouseReleaseEvent(event);
+    return QGraphicsScene::mouseReleaseEvent(event);
 }
 
 void MyGraphicsScene::wheelEvent(QGraphicsSceneWheelEvent* event)
