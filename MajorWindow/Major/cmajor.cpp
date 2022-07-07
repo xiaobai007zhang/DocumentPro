@@ -102,8 +102,6 @@ CMajor::CMajor(QWidget* parent) : QMainWindow(parent),m_imageStartPos(QPoint(0,0
 	initMenuBar();
 	initToolBar();
 	
-	//initFindWidget();
-	//initTableWidget();
 	initConnection();
 	setAcceptDrops(true);
 	m_view->setAcceptDrops(false);
@@ -158,6 +156,8 @@ void CMajor::readJson(const QString & fileName)
 	QJsonObject obj = doc.object();
 	QJsonArray textArr = obj.value("text").toArray();
 	QJsonArray pixArr = obj.value("pixmap").toArray();
+	QJsonArray tableArr = obj.value("table").toArray();
+
 	QJsonObject scene = obj.value("scene").toObject();
 	
 	
@@ -176,6 +176,13 @@ void CMajor::readJson(const QString & fileName)
 	for (QJsonValue value : pixArr) {
 		QJsonObject obj = value.toObject();
 		loadJsonObj(obj,"pixmap");
+	}
+
+
+	for (QJsonValue value : tableArr) {
+		//json对象中包括一个基本的信息，还有一个数组，数组记录着所有的单元格信息
+		QJsonObject obj = value.toObject();
+		loadJsonObj(obj,"table");
 	}
 
 	//==============TABLE=================//
@@ -269,12 +276,12 @@ void CMajor::initMenuBar()
 
 	//! 插入
 	insertImage = new QAction(TR("插入图片"));
-	insertForm = new QAction(TR("插入表格"));
+	//insertForm = new QAction(TR("插入表格"));
 	insert->addAction(insertImage);
-	insert->addAction(insertForm);
+	//insert->addAction(insertForm);
 
 	connect(insertImage, SIGNAL(triggered()), this, SLOT(slot_insertImage()));
-	connect(insertForm, SIGNAL(triggered()), this, SLOT(slot_insertForm()));
+	//connect(insertForm, SIGNAL(triggered()), this, SLOT(slot_insertForm()));
 
 	//!设置
 	size = new QAction(TR("任务栏字体"));
@@ -288,7 +295,9 @@ void CMajor::initMenuBar()
 
 	connect(repeat,SIGNAL(triggered()),this,SLOT(slot_repeat()));
 	connect(expand,SIGNAL(triggered()),this,SLOT(slot_expand()));
-	
+	connect(joinTable,SIGNAL(triggered()),this,SLOT(slot_joinTable()));
+
+
 	domain->addAction(expand);
 	domain->addAction(repeat);
 
@@ -378,7 +387,7 @@ void CMajor::initConnection()
 
 	//connect(m_findWid, SIGNAL(sig_findText(QString)), this, SLOT(slot_findBtnClicked(QString)));
 
-	connect(insertForm, SIGNAL(triggered()), this, SLOT(slot_tableRowColumn()));
+	//connect(insertForm, SIGNAL(triggered()), this, SLOT(slot_tableRowColumn()));
 }
 
 void CMajor::initFindWidget()
@@ -501,9 +510,6 @@ void CMajor::loadJsonObj(const QJsonObject & obj, const QString & type)
 		qreal x = obj.value("x").toDouble();
 		qreal y = obj.value("y").toDouble();
 		//qDebug()<<"load x: "<<x<<",load y: "<<y;
-	
-
-
 
 		QPointF point(x, y);
 
@@ -516,8 +522,8 @@ void CMajor::loadJsonObj(const QJsonObject & obj, const QString & type)
 		
 		myItem->setPos(point.x(), point.y());
 		
-		qDebug() << QStringLiteral("========打开========");
-		qDebug() << "myItem->pos(): " << point;
+		//qDebug() << QStringLiteral("========打开========");
+		//qDebug() << "myItem->pos(): " << point;
 		//qDebug() << "mapFromScene(myItem->scenePos()): " << point;
 		myItem->pos();
 		myItem->setScale(scale);
@@ -530,13 +536,25 @@ void CMajor::loadJsonObj(const QJsonObject & obj, const QString & type)
 		m_scene->addItem(myItem);
 	}
 	else if(type == TR("table")){
+		qreal x = obj.value("x").toDouble();
+		qreal y = obj.value("y").toDouble();
+		qreal scale = obj.value("scale").toDouble();
+		int col = obj.value("col").toInt();
+		int row = obj.value("row").toInt();
+		qreal height = obj.value("height").toDouble();
+		qreal width = obj.value("width").toDouble();
+		
+		//接下来该读取单元格的信息了
+		QJsonArray textArr  = obj.value("tableText").toArray();
+		MyTable *table = new MyTable(row,col,QRectF(x,y,width,height));
 
-	}
+		for (QJsonValue value : textArr) {
+			QJsonObject tmpObj = value.toObject();
+			loadTableText(tmpObj,table);
+		}
+		m_scene->addItem(table);	
+}
 
-	//qDebug() <<"m_scene->itemsBoundingRect(); " << m_scene->itemsBoundingRect();
-	//qDebug() <<"m_scene->itemsBoundingRect(); " << m_scene->sceneRect();
-	//m_scene->setSceneRect(QRectF(0, 0, m_scene->itemsBoundingRect().width(), m_scene->itemsBoundingRect().height()));
-	//m_scene->addRect(0, 0, 100, 100)->setBrush(Qt::blue);
 }
 
 //!实时更新状态栏的 光标 行列数
@@ -584,6 +602,19 @@ void CMajor::initCMajor()
 	//qDebug() << "width: " << width() << ",height: " << height();
 	m_curWidth = width();
 	m_curHeight = height();
+}
+
+void CMajor::loadTableText(QJsonObject obj,MyTable* parent)
+{
+	 QString contents = obj.value("contents").toString();
+	 qreal intervalH = obj.value("intervalH").toDouble();
+	 qreal intervalW = obj.value("intervalW").toDouble();
+	 qreal x = obj.value("x").toDouble();
+	 qreal y = obj.value("y").toDouble();
+
+	 MyTableText* text = new MyTableText(QRect(x,y,intervalW,intervalH),parent);
+	 text->setPlainText(contents);
+
 }
 
 
@@ -873,7 +904,6 @@ bool CMajor::slot_otherSave()
 			//文本: x、y、宽、高、缩放、内容、颜色、字体大小、加粗、倾斜、下划线，中划线、字体
 			
 			//QPoint point(m_view->mapFromScene(myItem->scenePos()));
-			
 			QPointF point(myItem->pos());
 			obj.insert("x",point.x());
 			obj.insert("y",point.y());
@@ -914,15 +944,15 @@ bool CMajor::slot_otherSave()
 			MyGraphicsPixmapItem* myItem = dynamic_cast<MyGraphicsPixmapItem*>(item);
 			//图片：x、y、宽、高、比例、图片路径、
 			//现在用的坐标是场景坐标
-			qDebug() << "myItem->pos(): " << myItem->pos();
+			//qDebug() << "myItem->pos(): " << myItem->pos();
 			//qDebug() << "mapFromScene(myItem->scenePos()): " << m_view->mapFromScene(myItem->scenePos());
 			//QPoint point = m_view->mapFromScene(myItem->pos());
 			QPointF point = myItem->pos();
 			//QPoint point(myItem->pos().x(),myItem->pos().y());
 			//QPoint point(myItem->scenePos().toPoint());
 			
-			qDebug()<<TR("========另存为========");
-			qDebug()<<"pos(): "<<myItem->pos();
+			//qDebug()<<TR("========另存为========");
+			//qDebug()<<"pos(): "<<myItem->pos();
 			//qDebug()<<"scene to view pos(): "<<point;
 			////qDebug()<<"transform view pos: "<<m_view->mapFromScene(myItem->scenePos());
 			//qDebug()<<"========================";
@@ -934,13 +964,44 @@ bool CMajor::slot_otherSave()
 			obj.insert("imagePth",myItem->getImagePth());
 			obj.insert("zValue",myItem->zValue());
 			pixmapArr.append(obj);
-			//m_view->viewportTransform().m11();
 			
-			//qDebug()<<"save pos x: "<<myItem->pos().x()<<",pos y: "<<myItem->pos().y();
-			//qDebug()<<"save scenePos x: "<<myItem->scenePos().x()<<",y: "<<myItem->scenePos().y();
-			//qDebug()<<"save point: "<<point;
-			//qDebug()<<"save item point: "<<item->mapRectFromItem(item->pos());
-		}
+		}else if (item->type() == TABLE_TYPE) {
+			MyTable* myItem = dynamic_cast<MyTable*>(item);
+			if (myItem) {
+			QPointF point(myItem->pos());
+			obj.insert("x",point.x());
+			obj.insert("y",point.y());
+			obj.insert("width",myItem->getRect().width());
+			obj.insert("height",myItem->getRect().height());
+			obj.insert("row",myItem->getRow());
+			obj.insert("col",myItem->getCol());
+			obj.insert("scale",myItem->scale());
+			
+			QJsonArray tmpArr;
+			QJsonObject tmpObj;
+			for(int i = 0 ; i < myItem->m_tableText.size();++i)
+			{
+				//后期可以增加每个文本框的字体，颜色，倾斜等等信息
+				tmpObj.insert("x",myItem->m_tableText.at(i)->x());
+				tmpObj.insert("y",myItem->m_tableText.at(i)->y());
+				tmpObj.insert("intervalW",myItem->m_tableText.at(i)->intervalW);
+				tmpObj.insert("intervalH",myItem->m_tableText.at(i)->intervalH);
+				tmpObj.insert("contents",myItem->m_tableText.at(i)->toPlainText());
+				tmpArr.append(tmpObj);
+			}
+			//qDebug()<<tmpArr;
+			obj.insert("tableText",tmpArr);
+			
+			tableArr.append(obj);
+			//tableArr.append("aaaaaaaaaaaaaaaaaaaa");
+			
+			}
+			else {
+				continue;
+			}
+
+		
+	}
 		
 	}
 
@@ -1032,22 +1093,8 @@ void CMajor::slot_exitDocument()
 void CMajor::slot_copy()
 {
 	
-	//qDebug() << "m_view viewport pos: " << m_view->viewport()->pos();
-	
-	//m_view->setAlignment(Qt::AlignLeft | Qt::AlignTop);
-	
-	//qDebug() << "scene top left: " << m_scene->sceneRect().topLeft();
-	
-	//m_view->centerOn(m_scene->sceneRect().x(), m_scene->sceneRect().y());
-	
-	//QGraphicsRectItem* item = m_scene->addRect(QRectF(m_scene->sceneRect().center().x(), m_scene->sceneRect().center().y(),100,100));
-	
-	//item->setFlags(QGraphicsItem::ItemIsMovable | QGraphicsItem::ItemIsSelectable);
-	//item->setBrush(Qt::blue);
-	//qDebug() << "m_view maptoScene: " << m_view->mapToScene(QPoint(0, 0));
 	ShapeMimeData *data = new ShapeMimeData( m_scene->selectedItems() );
     QApplication::clipboard()->setMimeData(data);
-	//qDebug()<<pos();
 }
 
 void CMajor::slot_revoke()
@@ -1071,12 +1118,7 @@ void CMajor::slot_shear()
 void CMajor::slot_paste()
 {
 
-	//m_scene->addRect(0, 0, 100, 100)->setBrush(Qt::blue);
-
-	//m_view->setAlignment(Qt::AlignLeft | Qt::AlignTop);
-
-	//m_scene->addRect(QRectF(0,0,m_view->viewport()->width(),m_view->viewport()->height()))->setFlag(QGraphicsItem::ItemIsMovable);
-	//m_scene->addRect(QRectF(0,0,100,100))->setFlags(QGraphicsItem::ItemIsMovable|QGraphicsItem::ItemIsSelectable);
+	
 	QMimeData * mp = const_cast<QMimeData *>(QApplication::clipboard()->mimeData()) ;
     ShapeMimeData * data = dynamic_cast<ShapeMimeData*>( mp );
     if ( data ){
@@ -1099,12 +1141,70 @@ void CMajor::slot_paste()
 				connect(this,SIGNAL(sig_expand(bool)),myItem,SLOT(slot_expand(bool)));
 				connect(this,SIGNAL(sig_repeat(bool)),myItem,SLOT(slot_repeat(bool)));
 			}
+			else if(sp->type() == TABLE_TYPE){
+				MyTable* myItem = dynamic_cast<MyTable*>(copy);
+				connect(myItem,SIGNAL(sig_hideRectMouse(bool)),m_scene,SLOT(slot_hideRectMouse(bool)));
+				connect(this,SIGNAL(sig_MyTable(QRectF)),myItem,SLOT(slot_MyTable(QRectF)));
+				connect(this,SIGNAL(sig_joinTable()),myItem,SLOT(slot_joinTable()));
+				
+
+				//重叠和碰撞以后再说
+				//connect(this,SIGNAL(sig_expand(bool)),myItem,SLOT(slot_expand(bool)));
+				//connect(this,SIGNAL(sig_repeat(bool)),myItem,SLOT(slot_repeat(bool)));
+				if (myItem->getCol() > myItem->getRow()) {
+			for (int i = 0; i < myItem->getRow(); ++i) {
+				for (int j = 0; j < myItem->getCol(); ++j) {
+					MyTableText* item = new MyTableText(QRectF(0, 0, myItem->getIntervalW(), myItem->getIntervalH()), myItem);
+					item->moveBy(j * myItem->getIntervalW(), i * myItem->getIntervalH());
+					
+					connect(item, SIGNAL(sig_hideRectMouse(bool)), m_scene, SLOT(slot_hideRectMouse(bool)));
+					connect(item->document(),SIGNAL(contentsChanged()),myItem,SLOT(slot_contentsChanged()));
+					connect(this,SIGNAL(sig_MyTable(QRectF)),item,SLOT(slot_MyTable(QRectF)));
+					
+					item->setData(Qt::UserRole + 1,i);
+					//qDebug()<<"j: "<<j;
+					//qDebug()<<"i: "<<i;
+					myItem->m_tableText.push_back(item);
+					//item->setPlainText(TR("%1").arg(j));
+				}
+			}
+		}
+		else if (myItem->getCol() <= myItem->getRow()) {
+			for (int i = 0; i < myItem->getRow(); ++i) {
+				for (int j = 0; j < myItem->getCol(); ++j) {
+					MyTableText* item = new MyTableText(QRectF(0, 0, myItem->getIntervalW(), myItem->getIntervalH()), myItem);
+					item->moveBy(j * myItem->getIntervalW(), i * myItem->getIntervalH());
+					item->setData(Qt::UserRole + 1,i);
+					//qDebug()<<myItem->m_tableText[i][j].toPlainText();
+					//qDebug()<<myItem->m_tableText.size();
+					connect(item, SIGNAL(sig_hideRectMouse(bool)), m_scene, SLOT(slot_hideRectMouse(bool)));
+					connect(item->document(),SIGNAL(contentsChanged()),myItem,SLOT(slot_contentsChanged()));
+					connect(this,SIGNAL(sig_MyTable(QRectF)),item,SLOT(slot_MyTable(QRectF)));
+					myItem->m_tableText.push_back(item);
+					
+				}
+			}
+		}
+				std::vector<QString> tmpVec;
+
+				MyTable* parent = qgraphicsitem_cast<MyTable*>(sp);
+				//复制文本信息
+
+				for (QGraphicsItem* text : parent->childItems()) {
+					MyTableText* tmp = dynamic_cast<MyTableText*>(text);
+					tmpVec.push_back(tmp->toPlainText());
+				}
+
+				for (int i = 0; i < tmpVec.size(); ++i) {
+					myItem->m_tableText.at(i)->setPlainText(tmpVec.at(i));
+				}
+
+			}
 			
 			if ( copy ){
 				copy->setSelected(true);
-				copy->moveBy(20,20);
+				copy->moveBy(30,30);
 				m_scene->addItem(copy);
-
             }
         }
 		//m_scene->clearFocus();
@@ -1122,8 +1222,8 @@ void CMajor::slot_remove()
 	if (item) {
 		if (item->textCursor().selectedText().isNull() || item->textCursor().selectedText().isEmpty()) {
 			m_scene->removeItem(item);
-			//delete item;
-			//item = nullptr;
+			delete item;
+			item = nullptr;
 		}
 		else {
 			item->textCursor().removeSelectedText();
@@ -1134,6 +1234,8 @@ void CMajor::slot_remove()
 		QList<QGraphicsItem*>list = m_scene->selectedItems();
 		for (QGraphicsItem* value : list) {
 			m_scene->removeItem(value);
+			delete value;
+			value = nullptr;
 			//delete value;
 			//value = nullptr;
 		}
@@ -1186,12 +1288,10 @@ void CMajor::slot_typeface()
 		//不是焦点的处理
 		QList<QGraphicsItem*> list = m_scene->selectedItems();
 		if (list.isEmpty()) {
-			return;
+			
 		}
-
-		
-
-		for (QGraphicsItem* tmp : list) {
+		else {
+			for (QGraphicsItem* tmp : list) {
 			MyGraphicsTextItem* item = dynamic_cast<MyGraphicsTextItem*>(tmp);
 			
 			if (item) {
@@ -1201,20 +1301,10 @@ void CMajor::slot_typeface()
 
 			item->setText(item->toPlainText());
 			}
-			else {
-				MyTable *table = dynamic_cast<MyTable*>(tmp);
-				/*QColor color = table->defaultTextColor();
-				table->setDefaultTextColor(color);
-				table->setFont(font);
-				table->setPlainText(table->toPlainText());*/
 			
 			}
 
-			
 		}
-
-
-
 
 	//QGraphicsItem* itemTmp = m_scene->focusItem();
 	//MyGraphicsTextItem* item = dynamic_cast<MyGraphicsTextItem*>(itemTmp);
@@ -1278,13 +1368,20 @@ void CMajor::slot_save()
 	QFile file(m_curFilePath);
 	file.open(QIODevice::WriteOnly);
 
+	if (file.isOpen()) {
+		qDebug()<<TR("打开文件");
+	}
+	else {
+		qDebug()<<TR("失败");
+	}
 	QJsonObject scene;
 	QJsonArray textArr;
 	QJsonArray pixmapArr;
+	QJsonArray tableAndTextArr;
 	QJsonArray tableArr;
 	
 	QJsonObject root;
-	
+
 	
 	QList<QGraphicsItem*>list = m_scene->items();
 	for (QGraphicsItem* item : list) {
@@ -1345,8 +1442,8 @@ void CMajor::slot_save()
 			//现在用的坐标是场景坐标
 			QPointF point(myItem->pos());
 
-			qDebug() << TR("========保存========");
-			qDebug() << "myItem->pos(): " << point;
+			//qDebug() << TR("========保存========");
+			//qDebug() << "myItem->pos(): " << point;
 			
 			//qDebug() << "myItem->scenePos(): " << myItem->scenePos();
 			//qDebug() << "mapFromScene(): " << m_view->mapFromScene(myItem->pos());
@@ -1365,9 +1462,45 @@ void CMajor::slot_save()
 			//qDebug()<<"save point: "<<point;
 			//qDebug()<<"save item point: "<<item->mapRectFromItem(item->pos());
 		}
+		//表格json格式
+		else if (item->type() == TABLE_TYPE) {
+			MyTable* myItem = dynamic_cast<MyTable*>(item);
+			if (myItem) {
+			QPointF point(myItem->pos());
+			obj.insert("x",point.x());
+			obj.insert("y",point.y());
+			obj.insert("width",myItem->getRect().width());
+			obj.insert("height",myItem->getRect().height());
+			obj.insert("row",myItem->getRow());
+			obj.insert("col",myItem->getCol());
+			obj.insert("scale",myItem->scale());
+			
+			QJsonArray tmpArr;
+			QJsonObject tmpObj;
+
+			for(int i = 0 ; i < myItem->m_tableText.size();++i)
+			{
+				//后期可以增加每个文本框的字体，颜色，倾斜等等信息
+				tmpObj.insert("x",myItem->m_tableText.at(i)->x());
+				tmpObj.insert("y",myItem->m_tableText.at(i)->y());
+				tmpObj.insert("intervalW",myItem->m_tableText.at(i)->intervalW);
+				tmpObj.insert("intervalH",myItem->m_tableText.at(i)->intervalH);
+				tmpObj.insert("contents",myItem->m_tableText.at(i)->toPlainText());
+				tmpArr.append(tmpObj);
+			}
+			//qDebug()<<tmpArr;
+			obj.insert("tableText",tmpArr);
+			
+			tableArr.append(obj);
+			
+			}
+			else {
+				continue;
+			}
+
 		
 	}
-
+	}
 	//========================SCENE======================//
 	scene.insert("width",m_scene->itemsBoundingRect().width());
 	scene.insert("height",m_scene->itemsBoundingRect().height());
@@ -1385,9 +1518,9 @@ void CMajor::slot_save()
 
 	m_curFileName.remove("*");
 	setWindowTitle(m_curFileName);
-	}
+	
 }
-
+}
 void CMajor::slot_zoomOut()
 {	//第一种情况，有选中的就会方法选中的进行调整
 	//第二种情况，没有选中的会全部进行调整
@@ -1572,8 +1705,8 @@ void CMajor::slot_rectFrame(QSize size, QPointF point, bool flag)
 	}
 	else if(m_tableEnable){
 		MyTable *table;
-		if (size.width() <= 100) {
-			table = new MyTable(m_tableRow,m_tableCol,QRectF(0, 0, 300, 100));
+		if (abs(size.width()) <= 100) {
+			table = new MyTable(m_tableRow,m_tableCol,QRectF(0, 0, 200, 100));
 		}
 		else {
 
@@ -1582,6 +1715,8 @@ void CMajor::slot_rectFrame(QSize size, QPointF point, bool flag)
 		
 		connect(table,SIGNAL(sig_hideRectMouse(bool)),m_scene,SLOT(slot_hideRectMouse(bool)));
 		connect(this,SIGNAL(sig_MyTable(QRectF)),table,SLOT(slot_MyTable(QRectF)));
+		connect(this,SIGNAL(sig_joinTable()),table,SLOT(slot_joinTable()));
+		
 		m_scene->addItem(table);
 		
 		if (table->getCol() > table->getRow()) {
@@ -1589,11 +1724,14 @@ void CMajor::slot_rectFrame(QSize size, QPointF point, bool flag)
 				for (int j = 0; j < table->getCol(); ++j) {
 					MyTableText* item = new MyTableText(QRectF(0, 0, table->getIntervalW(), table->getIntervalH()), table);
 					item->moveBy(j * table->getIntervalW(), i * table->getIntervalH());
+					
 					connect(item, SIGNAL(sig_hideRectMouse(bool)), m_scene, SLOT(slot_hideRectMouse(bool)));
 					connect(item->document(),SIGNAL(contentsChanged()),table,SLOT(slot_contentsChanged()));
+					connect(this,SIGNAL(sig_MyTable(QRectF)),item,SLOT(slot_MyTable(QRectF)));
+					
 					item->setData(Qt::UserRole + 1,i);
-					qDebug()<<"j: "<<j;
-					qDebug()<<"i: "<<i;
+					//qDebug()<<"j: "<<j;
+					//qDebug()<<"i: "<<i;
 					table->m_tableText.push_back(item);
 					//item->setPlainText(TR("%1").arg(j));
 				}
@@ -1608,61 +1746,14 @@ void CMajor::slot_rectFrame(QSize size, QPointF point, bool flag)
 
 					connect(item, SIGNAL(sig_hideRectMouse(bool)), m_scene, SLOT(slot_hideRectMouse(bool)));
 					connect(item->document(),SIGNAL(contentsChanged()),table,SLOT(slot_contentsChanged()));
-					
+					connect(this,SIGNAL(sig_MyTable(QRectF)),item,SLOT(slot_MyTable(QRectF)));
 					table->m_tableText.push_back(item);
 					
 				}
 			}
 		}
-
-
-		//else {
-		//	for (int i = 0; i < table->getRow(); ++i) {
-		//		for (int j = 0; j < table->getCol(); ++j) {
-		//			MyTableText* item = new MyTableText(QRectF(0, 0, table->getIntervalW(), table->getIntervalH()), table);
-		//			item->moveBy(i * table->getIntervalW(), j * table->getIntervalH());
-		//			connect(item, SIGNAL(sig_hideRectMouse(bool)), m_scene, SLOT(slot_hideRectMouse(bool)));
-		//			//table->m_tableText[i*j+j] = item;
-		//			table->m_tableText.push_back(item);
-		//			//qDebug() << item << endl;
-		//		}
-		//	}
-		//}
-	
-		//QTextTableFormat format;
-		//format.setWidth(abs(size.width()-10));
-		//format.setHeight(abs(size.height()-10));
-		////format.setCellPadding(0);
-		////format.setMargin(0);
-		////format.setBorder(1);
-		//format.setBorderCollapse(true);
-		////format.setCellSpacing(0);
-		////format.setPosition(QTextFrameFormat::FloatLeft);
-		////format.setPadding(0);
-		//QVector<QTextLength> colLength = format.columnWidthConstraints();
-		//
-		//for (int i = 0; i < table->getCol(); ++i) {
-		//	colLength.append(QTextLength(QTextLength::FixedLength,format.width().rawValue()/table->getCol()));
-		//}
-		//format.setBorderStyle(QTextFrameFormat::BorderStyle_Solid);
-		//format.setColumnWidthConstraints(colLength);
-		////format.setHeight
-	
-		//QTableWidget *wid = new QTableWidget;
-		//wid->setRowCount(3);
-		//wid->setColumnCount(3);
-		
-		
-
-		//QTextTable* table2 = table->textCursor().insertTable(table->getRow(), table->getCol(),format);
-		
-
-		/*connect(table->document(),SIGNAL(contentsChanged()),this,SLOT(slot_TableContentsChanged()));
-
-		connect(table,SIGNAL(sig_hideRectMouse(bool)),m_scene,SLOT(slot_hideRectMouse(bool)));
-		*/
-		
 		m_tableEnable = false;
+
 	if (size.height() < 0 && size.width() < 0) {
 			table->moveBy(point.rx(), point.ry());
 		}
@@ -1676,7 +1767,15 @@ void CMajor::slot_rectFrame(QSize size, QPointF point, bool flag)
 		if (size.width() < 0 && size.height() > 0) {
 			table->moveBy(point.rx(), point.ry() - abs(size.height()));
 		}
-	}else if(flag) {
+
+		m_textEnable = false;
+		
+		return;
+	}
+	
+	emit sig_MyTable(QRectF(point,size));
+	
+	if(flag) {
 		
 		if (size.height() > 0 && size.width() > 0) {
 			QRect rect(point.toPoint() - QPoint(size.width(), size.height()), size);
@@ -1716,7 +1815,7 @@ void CMajor::slot_rectFrame(QSize size, QPointF point, bool flag)
 
 	}
 
-	emit sig_MyTable(QRectF(point,size));
+	
 	m_textEnable = false;
 }
 
@@ -1759,6 +1858,12 @@ void CMajor::slot_repeat()
 		emit sig_repeat(true); 
 		m_repeatTime->stop();
 	}
+}
+
+void CMajor::slot_joinTable()
+{
+	//第一步 首先获得 记录选中的单元格，然后在进行合并划分
+	emit sig_joinTable();
 }
 
 void CMajor::slot_setTableInfo()
@@ -1804,11 +1909,11 @@ void CMajor::slot_textChanged(const QList<QRectF>)
 
 void CMajor::slot_tableRowColumn()
 {
-	QGraphicsTextItem *item = new QGraphicsTextItem();
+	/*QGraphicsTextItem *item = new QGraphicsTextItem();
 	QTextCursor cursor = item->textCursor();
 	cursor.insertTable(3,3);
 	
-	m_scene->addItem(item);
+	m_scene->addItem(item);*/
 	
 	//QGraphicsTextItem* o = new QGraphicsTextItem;
 	//MyGraphicsTable *o = new MyGraphicsTable(QRectF(0,0,100,100));
@@ -1856,7 +1961,7 @@ void CMajor::slot_menuBarFont()
 
     //! 插入
     insertImage->setFont(font);
-    insertForm->setFont(font);
+    //insertForm->setFont(font);
 
 	expand->setFont(font);
 
@@ -1910,12 +2015,6 @@ void CMajor::slot_cancelClicked()
 	tableInfo->deleteLater();
 	tableInfo->close();
 	tableInfo = nullptr;
-}
-void CMajor::slot_TableContentsChanged()
-{
-	//这个信号应该传递table 的矩形大小,然后动态的改变大小
-	qDebug()<<"slot_TableContentsChanged()";
-
 }
 //是否允许扩展
 void CMajor::slot_expand()

@@ -2,13 +2,17 @@
 
 #include <QDebug>
 #include <QGraphicsItem>
+#include <QGraphicsScene>
 #include <QGraphicsSceneMouseEvent>
 #include <QKeyEvent>
 #include <QMenu>
+#include <QMessageBox>
 #include <QPainter>
 #include <QStyleOptionGraphicsItem>
 #include <QTextBlock>
 #include <QTextDocument>
+//记录需要合并的单元格
+static std::vector<MyTableText*> sg_vecJoin;
 
 void MyTable::paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget)
 {
@@ -19,9 +23,11 @@ void MyTable::paint(QPainter* painter, const QStyleOptionGraphicsItem* option, Q
     // qDebug() << "interval H: " << intervalH;
 
     painter->drawRect(m_rect);
-
+    // painter->drawRect(boundingRect());
     //画线条需要判断每一行最长的高度来决定
-    int maxVal = m_tableText[0]->intervalH;
+    // MyTableText* tmp = *m_tableText.begin();
+    // int maxVal = tmp->intervalH;
+    int maxVal = 0;
     int oldMax = 0;
 
     for (int i = 0; i < m_tableText.size(); ++i)
@@ -69,28 +75,27 @@ QPainterPath MyTable::shape() const
     QPainterPathStroker pathStroker;
 
     QPainterPath path = pathStroker.createStroke(temp);
+
     return path;
 }
 
 void MyTable::mousePressEvent(QGraphicsSceneMouseEvent* event)
 {
 
-    qDebug() << "table pressL " << event->pos();
     emit sig_hideRectMouse(false);
-    // setTextInteractionFlags(Qt::NoTextInteraction);
+
     return QGraphicsItem::mousePressEvent(event);
 }
 
 void MyTable::mouseReleaseEvent(QGraphicsSceneMouseEvent* event)
 {
-    qDebug() << "table release: " << event->pos();
+    // qDebug() << "table release: " << event->pos();
     emit sig_hideRectMouse(true);
     return QGraphicsItem::mouseReleaseEvent(event);
 }
 
 void MyTable::mouseMoveEvent(QGraphicsSceneMouseEvent* event)
 {
-    qDebug() << "table move";
 
     emit sig_hideRectMouse(false);
     return QGraphicsItem::mouseMoveEvent(event);
@@ -98,8 +103,8 @@ void MyTable::mouseMoveEvent(QGraphicsSceneMouseEvent* event)
 
 void MyTable::mouseDoubleClickEvent(QGraphicsSceneMouseEvent* event)
 {
-    qDebug() << "table double press";
-    setHandlesChildEvents(true);
+    // qDebug() << "table double press";
+    // setHandlesChildEvents(true);
     event->ignore();
     return QGraphicsItem::mouseDoubleClickEvent(event);
 }
@@ -107,7 +112,8 @@ void MyTable::mouseDoubleClickEvent(QGraphicsSceneMouseEvent* event)
 void MyTable::hoverEnterEvent(QGraphicsSceneHoverEvent* event)
 {
     // qDebug() << "hover";
-    // qDebug() << event->pos();
+    //  qDebug() << event->pos();
+    // qDebug() << shape();
     if (shape().contains(event->pos()))
         setCursor(Qt::SizeAllCursor);
 }
@@ -127,20 +133,44 @@ bool MyTable::eventFilter(QObject* obj, QEvent*)
     return true;
 }
 
-void MyTable::keyReleaseEvent(QKeyEvent* event)
+int MyTable::type() const
 {
-    qDebug() << "table key release ";
-    if (event->key() == Qt::Key_Alt)
+    return TABLE_TYPE;
+}
+
+void MyTable::focusOutEvent(QFocusEvent* event)
+{
+    Q_UNUSED(event)
+    qDebug() << TR("table less focus");
+}
+
+QVariant MyTable::itemChange(GraphicsItemChange change, const QVariant& value)
+{
+    if (m_isExpand)
+    { //允许扩展
+        return QGraphicsItem::itemChange(change, value);
+    }
+    else
     {
-        m_altPress = false;
-        for (QGraphicsItem* item : childItems())
+        if (change == ItemPositionChange && scene()) // 控件发生移动
         {
-            item->setFlags(item->flags() & ~ItemIsSelectable);
-            for (int i = 0; i < m_vecJoin.size(); ++i)
+            // qDebug() << "boundRect :" << boundingRect().width() << "," << boundingRect().height();
+            QPointF newPos = value.toPointF(); //即将要移动的位置
+
+            // QRectF rect(0, 0, scene()->width() - scale() * boundingRect().width(), scene()->height() - scale() * boundingRect().height());
+            QRectF rect = scene()->sceneRect();
+
+            if (!rect.contains(newPos)) // 是否在区域内
             {
-                qDebug() << m_vecJoin.at(i);
+                qDebug() << "scene rect: " << rect;
+                qDebug() << "newPos : " << newPos;
+                newPos.setX(qMin(rect.right(), qMax(newPos.x(), rect.left())));
+                newPos.setY(qMin(rect.bottom(), qMax(newPos.y(), rect.top())));
+                // qDebug() << "newPos: " << newPos;
+                return newPos;
             }
         }
+        return QGraphicsItem::itemChange(change, value);
     }
 }
 
@@ -156,15 +186,15 @@ qreal MyTable::getIntervalH()
 
 void MyTable::keyPressEvent(QKeyEvent* event)
 {
-    qDebug() << "table key press";
-    if (event->key() == Qt::Key_Alt)
-    {
-        m_altPress = true;
-        for (QGraphicsItem* item : childItems())
-        {
-            item->setFlag(QGraphicsItem::ItemIsSelectable);
-        }
-    }
+    // qDebug() << "table key press";
+    /* if (event->key() == Qt::Key_Alt)
+     {
+         m_altPress = true;
+         for (QGraphicsItem* item : childItems())
+         {
+             item->setFlag(QGraphicsItem::ItemIsSelectable);
+         }
+     }*/
 
     //在子类进行删除的时候进行判断
     if (event->key() == Qt::Key_Backspace)
@@ -237,10 +267,92 @@ void MyTable::initTableWidget()
     // installEventFilter(this);
 }
 
+//处理碰撞矩形
 void MyTable::slot_MyTable(QRectF rect)
 {
-    qDebug() << "MyTable recv: " << rect;
-    qDebug() << "mapfromscene pos: " << this->mapFromScene(rect);
+    Q_UNUSED(rect)
+    // qDebug() << TR("清空");
+    sg_vecJoin.clear();
+    // qDebug() << "sg_vecJoin size: " << sg_vecJoin.size() << endl;
+    //  QPointF point = this->mapFromScene(rect.x(), rect.y());
+    //  qDebug() << point;
+    //   setFocus();
+}
+
+void MyTable::slot_joinTable()
+{
+    // qDebug() << "triggered";
+    // if (sg_vecJoin.empty())
+    //{
+    //    QMessageBox::information(nullptr, TR("Tips"), TR("当前选中的单元格为空！"));
+    //    return;
+    //}
+    // qreal maxH = 0;
+    // qreal maxW = 0;
+
+    // MyTableText* minItem = *sg_vecJoin.begin();
+    // maxH = minItem->intervalH;
+    // maxW = minItem->intervalW;
+
+    ////统计全部长度和高度
+    // for (MyTableText* item : sg_vecJoin)
+    //{
+    //     // if (maxH < item->intervalH)
+    //     //{
+    //     //     maxH = item->intervalH;
+    //     // }
+    //     maxH += item->intervalH;
+
+    //    if (maxW < item->intervalW)
+    //    {
+    //        maxW = item->intervalW;
+    //    }
+    //}
+
+    ////找到x和y最小的
+    //// MyTableText* minItem = *sg_vecJoin.begin();
+
+    // for (MyTableText* item : sg_vecJoin)
+    //{
+    //     if (item->getRect().x() > minItem->getRect().x())
+    //     {
+    //         minItem = item;
+    //     }
+    // }
+
+    // for (MyTableText* item : sg_vecJoin)
+    //{
+    //     if (item->getRect().y() > minItem->getRect().y() && item->getRect().x() == minItem->getRect().x())
+    //     {
+    //         minItem = item;
+    //     }
+    // }
+
+    // minItem->intervalH = maxH;
+    // minItem->intervalW = maxW;
+    // minItem->setTextWidth(maxW);
+    // minItem->setRect(QRectF(minItem->x(), minItem->y(), maxW, maxH));
+
+    // for (MyTableText* item : sg_vecJoin)
+    //{
+    //     if (item != minItem)
+    //     {
+
+    //        m_tableText.erase(std::find(m_tableText.begin(), m_tableText.end(), item));
+    //        delete item;
+    //    }
+    //}
+    // qDebug() << "maxH: " << maxH << ",maxW: " << maxW;
+}
+
+void MyTable::slot_expand(bool flag)
+{
+    m_isExpand = flag;
+}
+
+void MyTable::slot_repeat(bool flag)
+{
+    m_isRepeat = flag;
 }
 
 void MyTable::setRect(QRectF rect)
@@ -248,14 +360,14 @@ void MyTable::setRect(QRectF rect)
     m_rect = rect;
 }
 
-MyTable::MyTable(int row, int col, QRectF rect) : m_altPress(false), intervalW(0), intervalH(0)
+MyTable::MyTable(int row, int col, QRectF rect) : intervalW(0), intervalH(0), m_isExpand(true)
 {
     m_row = row;
     m_col = col;
     m_rect = rect;
     intervalW = m_rect.width() / m_col;
     intervalH = m_rect.height() / m_row;
-    // setFocus();
+    setFocus();
 
     initTableWidget();
 }
@@ -281,22 +393,13 @@ int MyTable::getCol()
 
 void MyTable::slot_contentsChanged()
 {
-    MyTableText* child;
-
-    //找到当前正在编辑的子项
-    for (QGraphicsItem* item : childItems())
+    // setFocus();
+    QGraphicsItem* itemFocus = focusItem();
+    MyTableText* child = dynamic_cast<MyTableText*>(itemFocus);
+    if (child == nullptr)
     {
-        if (item->hasFocus())
-        {
-            child = dynamic_cast<MyTableText*>(item);
-            if (child == nullptr)
-            {
-                assert(0);
-            }
-            break;
-        }
+        return;
     }
-
     int height = child->intervalH;
     int docH = child->document()->size().height();
     QFontMetrics metrics(child->font());
@@ -349,7 +452,7 @@ void MyTable::slot_contentsChanged()
 
 //=======================================================================================
 //=======================================================================================
-MyTableText::MyTableText(QRectF rect, QGraphicsItem* parent) : QGraphicsTextItem(parent), m_altPress(false)
+MyTableText::MyTableText(QRectF rect, QGraphicsItem* parent) : QGraphicsTextItem(parent)
 {
     m_rect = rect;
     // installEventFilter(this);
@@ -363,10 +466,10 @@ MyTableText::~MyTableText()
 void MyTableText::paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget)
 {
     Q_UNUSED(option)
-    QPen pen;
-    pen.setColor(Qt::red);
-    painter->setPen(pen);
-    painter->drawRect(m_rect);
+    // QPen pen;
+    // pen.setColor(Qt::red);
+    // painter->setPen(pen);
+    // painter->drawRect(m_rect);
 
     {
         // 原来什么属性就要什么属性,只不过去掉多余的选中状态
@@ -393,31 +496,16 @@ QPainterPath MyTableText::shape() const
 
 void MyTableText::mousePressEvent(QGraphicsSceneMouseEvent* event)
 {
-
-    // if (hasFocus())
-    //{
-    //     return QGraphicsTextItem::mousePressEvent(event);
-    // }
-    // else
-    //{
-    //     // setSelected(true);
-    //     //  qDebug() << "table text: mousePressEvent";
-    //     // setTextInteractionFlags(Qt::NoTextInteraction);
-    //     emit sig_hideRectMouse(false);
-
-    //    MyTable* table = dynamic_cast<MyTable*>(parentItem());
-    //    table->mousePressEvent(event);
-    //    return QGraphicsTextItem::mousePressEvent(event);
-    //}
+    // emit sig_hideRectMouse(false);
     QGraphicsTextItem::mousePressEvent(event);
 }
 
 void MyTableText::mouseReleaseEvent(QGraphicsSceneMouseEvent* event)
 {
-    qDebug() << "text: mouseReleaseEvent";
+    // qDebug() << "text: mouseReleaseEvent";
 
-    MyTable* table = dynamic_cast<MyTable*>(parentItem());
-    table->mouseReleaseEvent(event);
+    /*MyTable* table = dynamic_cast<MyTable*>(parentItem());
+    table->mouseReleaseEvent(event);*/
     return QGraphicsTextItem::mouseReleaseEvent(event);
 }
 
@@ -437,6 +525,7 @@ void MyTableText::setRect(QRectF rect)
 {
     m_rect = rect;
     intervalH = m_rect.height();
+    intervalW = m_rect.width();
 }
 
 QRectF MyTableText::getRect()
@@ -460,7 +549,7 @@ void MyTableText::mouseDoubleClickEvent(QGraphicsSceneMouseEvent* event)
 void MyTableText::keyPressEvent(QKeyEvent* event)
 {
 
-    qDebug() << "child keyPress";
+    // qDebug() << "child keyPress";
     MyTable* table = dynamic_cast<MyTable*>(parentItem());
     table->keyPressEvent(event);
 
@@ -469,15 +558,15 @@ void MyTableText::keyPressEvent(QKeyEvent* event)
 
 void MyTableText::focusInEvent(QFocusEvent* event)
 {
-    qDebug() << "text focusIn event";
+    // qDebug() << "text focusIn event";
     setCursor(Qt::IBeamCursor);
     return QGraphicsTextItem::focusInEvent(event);
 }
 
 void MyTableText::focusOutEvent(QFocusEvent* event)
 {
-    qDebug() << "text focusOut event";
-    // setSelected(false);
+    // qDebug() << "text focusOut event";
+    //  setSelected(false);
     setCursor(Qt::ArrowCursor);
 
     setTextInteractionFlags(Qt::NoTextInteraction);
@@ -487,6 +576,11 @@ void MyTableText::focusOutEvent(QFocusEvent* event)
 void MyTableText::wheelEvent(QGraphicsSceneWheelEvent* event)
 {
     event->ignore();
+}
+
+int MyTableText::type() const
+{
+    return TABLE_TYPE;
 }
 
 void MyTableText::initMyTableText()
@@ -499,4 +593,79 @@ void MyTableText::initMyTableText()
     // setFlag(QGraphicsItem::ItemIsFocusable);
     // setFocus();
     // setPlainText("");
+}
+
+void MyTableText::slot_MyTable(QRectF rect)
+{
+
+    QPointF point = this->mapFromScene(rect.x(), rect.y());
+
+    QPainterPath path;
+
+    QRectF rect2;
+    QSize size(rect.size().toSize());
+    if (size.height() > 0 && size.width() > 0)
+    {
+        rect2.setRect(point.toPoint().x() - size.width(), point.toPoint().y() - size.height(), size.width(), size.height());
+    }
+
+    if (size.height() < 0 && size.width() < 0)
+    {
+        size = QSize(abs(size.width()), abs(size.height()));
+        rect2.setRect(point.toPoint().x(), point.toPoint().y(), size.width(), size.height());
+    }
+
+    if (size.height() < 0 && size.width() > 0)
+    {
+        size = QSize(abs(size.width()), abs(size.height()));
+        rect2.setRect(point.toPoint().x() - size.width(), point.toPoint().y(), size.width(), size.height());
+    }
+
+    if (size.height() > 0 && size.width() < 0)
+    {
+        size = QSize(abs(size.width()), abs(size.height()));
+        rect2.setRect(point.toPoint().x(), point.toPoint().y() - size.height(), size.width(), size.height());
+    }
+
+    // QGraphicsRectItem* item = new QGraphicsRectItem(rect2, this);
+    //如果不包含，那就直接退出,避免选中多个其他Table的单元格
+    // MyTable* parent = dynamic_cast<MyTable*>(parentItem());
+    // qDebug() << "parent rect: " << parent->getRect();
+    // if (!parent->getRect().contains(rect2.x(), rect2.y()))
+    //{
+    //     qDebug() << TR("未包含,退出");
+    //     return;
+    // }
+    //  if (!parentItem()->boundingRect().contains(rect2))
+    //{
+    //      // qDebug() << TR("包含");
+    //      return;
+    //  }
+    //  qDebug() << "rect2: " << rect2;
+    // QPainterPath parentPth;
+    // parentPth.addRect(parent->getRect());
+    // if (!parentPth.contains(path))
+    //{
+    //    // qDebug() << TR("包含");
+    //    qDebug() << TR("未包含,退出");
+    //    return;
+    //}
+    path.addRect(rect2);
+
+    if (collidesWithPath(path))
+    {
+        for (MyTableText* text : sg_vecJoin)
+        {
+            if (this == text)
+            {
+                return;
+            }
+        }
+
+        sg_vecJoin.push_back(this);
+        // qDebug() << "vecJoin: " << this;
+        // qDebug() << TR("添加");
+        // qDebug() << "sg_vecJoin size: " << sg_vecJoin.size() << endl;
+    }
+    // qDebug() << "vecJoin: " << this;
 }

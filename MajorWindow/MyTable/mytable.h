@@ -1,9 +1,11 @@
 #pragma once
 
 #include "ToolDefine.h"
+
 #include <QGraphicsRectItem>
 #include <QObject>
 #include <vector>
+#define TABLE_TYPE QGraphicsItem::UserType + 1
 
 class MyTableText;
 class MyTable : public QObject, public QGraphicsItem
@@ -26,9 +28,11 @@ protected:
 
     bool eventFilter(QObject* obj, QEvent*) override;
 
-    // void contextMenuEvent(QGraphicsSceneContextMenuEvent* event) override;
-    // void wheelEvent(QGraphicsSceneWheelEvent* event) override;
-    void keyReleaseEvent(QKeyEvent* event) override;
+    int type() const override;
+
+    void focusOutEvent(QFocusEvent* event) override;
+
+    QVariant itemChange(GraphicsItemChange change, const QVariant& value) override;
 
 public:
     qreal getIntervalW();
@@ -55,8 +59,17 @@ signals:
     void sig_hideRectMouse(bool);
 
 public slots:
+
     void slot_contentsChanged();
+    //清空vector
     void slot_MyTable(QRectF);
+
+    //合并单元格
+    void slot_joinTable();
+
+    void slot_expand(bool);
+
+    void slot_repeat(bool flag);
 
 private:
     //记录行列
@@ -70,7 +83,8 @@ private:
     qreal intervalW;
     qreal intervalH;
 
-    bool m_altPress;
+    bool m_isExpand;
+    bool m_isRepeat;
 
 public:
     MyTable(int row, int col, QRectF rect);
@@ -78,7 +92,7 @@ public:
 
 public:
     //结构体数组
-    std::vector<MyTableText*> m_vecJoin;
+
     std::vector<MyTableText*> m_tableText;
 };
 
@@ -120,6 +134,8 @@ protected:
 
     void wheelEvent(QGraphicsSceneWheelEvent* event) override;
 
+    int type() const override;
+
 private:
     //初始化基本信息
     void initMyTableText();
@@ -128,6 +144,9 @@ private:
 
 signals:
     void sig_hideRectMouse(bool);
+
+private slots:
+    void slot_MyTable(QRectF rect);
 
 public:
     qreal intervalW;
@@ -140,11 +159,5 @@ public:
 
 private:
     // QGraphicsProxyWidget* m_proxy;
-
-    //记录行列
-    int m_row;
-    int m_col;
     QRectF m_rect;
-
-    bool m_altPress;
 };

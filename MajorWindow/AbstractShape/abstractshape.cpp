@@ -1,6 +1,7 @@
 #include "abstractshape.h"
-#include "../PixmapGraphics/mygraphicspixmapitem.h"
-#include "../TextItemGraphics/mygraphicstextitem.h"
+#include "MyTable/mytable.h"
+#include "PixmapGraphics/mygraphicspixmapitem.h"
+#include "TextItemGraphics/mygraphicstextitem.h"
 
 #include <QGraphicsTextItem>
 QGraphicsItem* AbstractShape::copy()
@@ -28,11 +29,16 @@ QGraphicsItem* AbstractShape::copy()
         tmpItem->setPos(item->pos());
         return tmpItem;
     }
-    else
+    else if (this->type() == TABLE_TYPE)
     {
+        //复制表格，首先复制行列数,分别new处每个单元格，还有单元格的内容
+        MyTable* item = qgraphicsitem_cast<MyTable*>(this);
+        MyTable* tmpItem = new MyTable(item->getRow(), item->getCol(), item->getRect());
 
-        return nullptr;
+        return tmpItem;
     }
+
+    return nullptr;
 }
 
 int AbstractShape::type() const
@@ -45,10 +51,12 @@ int AbstractShape::type() const
     {
         return QGraphicsPixmapItem::Type;
     }
-    else
+    else if (type() == TABLE_TYPE)
     {
-        return 0;
+        return TABLE_TYPE;
     }
+
+    return 0;
 }
 
 AbstractShape::AbstractShape(QObject* parent)

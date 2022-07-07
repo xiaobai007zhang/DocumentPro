@@ -53,6 +53,9 @@ signals:
     void sig_expand(bool);
     void sig_repeat(bool);
 
+    //告诉单元格要开始合并
+    void sig_joinTable();
+
     //发送给单元格一个矩形
     void sig_MyTable(QRectF);
 
@@ -96,6 +99,8 @@ private:
     void setFilePathAName(QString path);
 
     void initCMajor();
+
+    void loadTableText(QJsonObject obj, MyTable* parent);
 
     //!重写的函数
 private:
@@ -179,6 +184,8 @@ private slots:
 
     void slot_repeat();
 
+    void slot_joinTable();
+
     void slot_setTableInfo();
 
     //!其他槽函数
@@ -201,8 +208,6 @@ private slots:
     void slot_okClicked(int, int);
 
     void slot_cancelClicked();
-
-    void slot_TableContentsChanged();
 
     //!成员变量
 private:

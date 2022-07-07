@@ -64,6 +64,7 @@ void MyGraphicsScene::mousePressEvent(QGraphicsSceneMouseEvent* event)
 
 void MyGraphicsScene::mouseMoveEvent(QGraphicsSceneMouseEvent* event)
 {
+
     //只有点击了才会做处理
     if (m_isPress && initFlag == false)
     {
