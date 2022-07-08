@@ -29,18 +29,6 @@ void MyGraphicsTextItem::initGraphicsTextItem()
     setFocus();
 }
 
-void MyGraphicsTextItem::setName(const int& key, const QString& name)
-{
-    setData(key, name);
-}
-
-// const QString& MyGraphicsTextItem::getName(const int& key)
-//{
-//     Q_UNUSED(key)
-//     // return data(key).toString();
-//     return nullptr;
-// }
-
 void MyGraphicsTextItem::setRect(const QRectF& rect)
 {
     m_rect = rect;
@@ -51,21 +39,25 @@ void MyGraphicsTextItem::updateFontInfo()
     m_fontWidth = document()->size().width();
     m_fontHeight = document()->size().height();
     QFontMetrics metrics(font());
+    setTextWidth(m_rect.width());
+
     // setPlainText(m_text);
     //当输入文字长于文本框时
-    if (m_fontWidth > boundingRect().width())
-    {
-        qreal adjust = metrics.width("中");
-        this->setRect(QRectF(boundingRect().x(), boundingRect().y(), m_fontWidth + adjust, boundingRect().height()));
-        // setRect(QRectF(boundingRect().x(), boundingRect().y(), m_fontWidth + adjust, boundingRect().height()));
-        // this->setFont(m_font);
-        this->setPlainText(m_text);
+    // if (m_fontWidth > boundingRect().width())
+    //{
+    //    qreal adjust = metrics.width("中");
+    //    this->setRect(QRectF(boundingRect().x(), boundingRect().y(), m_fontWidth + adjust, boundingRect().height()));
+    //    // setRect(QRectF(boundingRect().x(), boundingRect().y(), m_fontWidth + adjust, boundingRect().height()));
+    //    // this->setFont(m_font);
+    //    this->setPlainText(m_text);
 
-        //当更新文本框后，光标的位置设置，文本的末尾
-        QTextCursor cursor = this->textCursor();
-        cursor.movePosition(QTextCursor::End, QTextCursor::MoveAnchor, 1);
-        this->setTextCursor(cursor);
-    }
+    //    //当更新文本框后，光标的位置设置，文本的末尾
+    //    QTextCursor cursor = this->textCursor();
+    //    cursor.movePosition(QTextCursor::End, QTextCursor::MoveAnchor, 1);
+    //    this->setTextCursor(cursor);
+    //}
+    //
+
     //当输入文字高于文本框时
     if (m_fontHeight > boundingRect().height())
     {
@@ -166,7 +158,7 @@ void MyGraphicsTextItem::paint(QPainter* painter, const QStyleOptionGraphicsItem
 
     if (hasFocus())
     {
-        // painter->setRenderHints(QPainter::SmoothPixmapTransform | QPainter::Antialiasing);
+        painter->setRenderHints(QPainter::SmoothPixmapTransform | QPainter::Antialiasing);
         painter->drawRect(boundingRect());
         QString text = toPlainText();
         setText(text);

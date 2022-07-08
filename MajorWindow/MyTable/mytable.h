@@ -86,6 +86,8 @@ private:
     bool m_isExpand;
     bool m_isRepeat;
 
+    bool m_isJoin;
+
 public:
     MyTable(int row, int col, QRectF rect);
     ~MyTable();
@@ -156,6 +158,7 @@ public:
     void setRect(QRectF rect);
 
     QRectF getRect();
+    bool m_isSelect = false;
 
 private:
     // QGraphicsProxyWidget* m_proxy;

@@ -546,17 +546,34 @@ void CMajor::loadJsonObj(const QJsonObject & obj, const QString & type)
 		
 		//接下来该读取单元格的信息了
 		QJsonArray textArr  = obj.value("tableText").toArray();
-		MyTable *table = new MyTable(row,col,QRectF(x,y,width,height));
+		MyTable *table = new MyTable(row,col,QRectF(0,0,width,height));
+		table->setPos(x,y);
+
+		connect(table, SIGNAL(sig_hideRectMouse(bool)), m_scene, SLOT(slot_hideRectMouse(bool)));
+		connect(this,SIGNAL(sig_expand(bool)),table,SLOT(slot_expand(bool)));
+		connect(this,SIGNAL(sig_repeat(bool)),table,SLOT(slot_repeat(bool)));
 
 		for (QJsonValue value : textArr) {
 			QJsonObject tmpObj = value.toObject();
 			loadTableText(tmpObj,table);
 		}
 		m_scene->addItem(table);	
-}
+		//给容器整理元素的排放位置
+		for (QGraphicsItem* tmpItem : table->childItems()) {
+			MyTableText* text = dynamic_cast<MyTableText*>(tmpItem);
+			table->m_tableText.push_back(text);
+		}
 
-}
+		for (int i = 0; i < table->getRow(); ++i) {
+				for (int j = 0; j < table->getCol(); ++j) {
+				
+					table->m_tableText.at(i*table->getCol()+j)->setData(Qt::UserRole + 1,i);
+				
+				}
+		}
 
+	}
+}
 //!实时更新状态栏的 光标 行列数
 void CMajor::updateStatusBar()
 {
@@ -612,8 +629,14 @@ void CMajor::loadTableText(QJsonObject obj,MyTable* parent)
 	 qreal x = obj.value("x").toDouble();
 	 qreal y = obj.value("y").toDouble();
 
-	 MyTableText* text = new MyTableText(QRect(x,y,intervalW,intervalH),parent);
+	 MyTableText* text = new MyTableText(QRect(0,0,intervalW,intervalH),parent);
+	 
+	 text->setPos(x,y);
 	 text->setPlainText(contents);
+	 //text->setRect(QRectF(50,0,intervalW,intervalH));
+	 connect(text, SIGNAL(sig_hideRectMouse(bool)), m_scene, SLOT(slot_hideRectMouse(bool)));
+	 connect(text->document(),SIGNAL(contentsChanged()),parent,SLOT(slot_contentsChanged()));
+	 connect(this,SIGNAL(sig_MyTable(QRectF)),text,SLOT(slot_MyTable(QRectF)));
 
 }
 
@@ -782,10 +805,11 @@ void CMajor::dropEvent(QDropEvent* event)
 	QPoint point = cursor().pos() - pos();
 	//qDebug()<<pos();
 	//qDebug()<<"frame: "<<frameGeometry().topLeft();
-	MyGraphicsPixmapItem* item = new MyGraphicsPixmapItem(QRectF(point.x(),point.y(), pixmap.width(), pixmap.height()));
+	MyGraphicsPixmapItem* item = new MyGraphicsPixmapItem(QRectF(0,0, pixmap.width(), pixmap.height()));
 	//MyGraphicsPixmapItem* item = new MyGraphicsPixmapItem(QRectF(0,0,pixmap.width(), pixmap.height()));
 	item->setImage(file.absoluteFilePath());
 	m_scene->addItem(item);
+	item->moveBy(point.x(),point.y());
 	connect(this,SIGNAL(sig_expand(bool)),item,SLOT(slot_expand(bool)));
 	connect(this,SIGNAL(sig_repeat(bool)),item,SLOT(slot_repeat(bool)));
 	connect(item, SIGNAL(sig_hideRectMouse(bool)), m_scene, SLOT(slot_hideRectMouse(bool)));
@@ -969,6 +993,8 @@ bool CMajor::slot_otherSave()
 			MyTable* myItem = dynamic_cast<MyTable*>(item);
 			if (myItem) {
 			QPointF point(myItem->pos());
+			
+
 			obj.insert("x",point.x());
 			obj.insert("y",point.y());
 			obj.insert("width",myItem->getRect().width());
@@ -980,7 +1006,7 @@ bool CMajor::slot_otherSave()
 			QJsonArray tmpArr;
 			QJsonObject tmpObj;
 			for(int i = 0 ; i < myItem->m_tableText.size();++i)
-			{
+			{	//qDebug()<<"table point: "<<myItem->m_tableText.at(i)->pos();
 				//后期可以增加每个文本框的字体，颜色，倾斜等等信息
 				tmpObj.insert("x",myItem->m_tableText.at(i)->x());
 				tmpObj.insert("y",myItem->m_tableText.at(i)->y());
@@ -1117,8 +1143,6 @@ void CMajor::slot_shear()
 //粘贴
 void CMajor::slot_paste()
 {
-
-	
 	QMimeData * mp = const_cast<QMimeData *>(QApplication::clipboard()->mimeData()) ;
     ShapeMimeData * data = dynamic_cast<ShapeMimeData*>( mp );
     if ( data ){
@@ -1154,8 +1178,10 @@ void CMajor::slot_paste()
 				if (myItem->getCol() > myItem->getRow()) {
 			for (int i = 0; i < myItem->getRow(); ++i) {
 				for (int j = 0; j < myItem->getCol(); ++j) {
-					MyTableText* item = new MyTableText(QRectF(0, 0, myItem->getIntervalW(), myItem->getIntervalH()), myItem);
-					item->moveBy(j * myItem->getIntervalW(), i * myItem->getIntervalH());
+					int w = myItem->m_tableText.at(i*myItem->getCol()+j)->intervalW;
+					int h = myItem->m_tableText.at(i*myItem->getCol()+j)->intervalH;
+					MyTableText* item = new MyTableText(QRectF(0, 0, myItem->m_tableText.at(i*myItem->getCol()+j)->intervalW,myItem->m_tableText.at(i*myItem->getCol()+j)->intervalH), myItem);
+					item->moveBy(j * w, i * h);
 					
 					connect(item, SIGNAL(sig_hideRectMouse(bool)), m_scene, SLOT(slot_hideRectMouse(bool)));
 					connect(item->document(),SIGNAL(contentsChanged()),myItem,SLOT(slot_contentsChanged()));
@@ -1467,6 +1493,7 @@ void CMajor::slot_save()
 			MyTable* myItem = dynamic_cast<MyTable*>(item);
 			if (myItem) {
 			QPointF point(myItem->pos());
+			//qDebug()<<"table point: "<<point;
 			obj.insert("x",point.x());
 			obj.insert("y",point.y());
 			obj.insert("width",myItem->getRect().width());
@@ -1480,6 +1507,7 @@ void CMajor::slot_save()
 
 			for(int i = 0 ; i < myItem->m_tableText.size();++i)
 			{
+				//qDebug()<<"table point: "<<myItem->m_tableText.at(i)->scenePos();
 				//后期可以增加每个文本框的字体，颜色，倾斜等等信息
 				tmpObj.insert("x",myItem->m_tableText.at(i)->x());
 				tmpObj.insert("y",myItem->m_tableText.at(i)->y());
@@ -2042,8 +2070,7 @@ void CMajor::slot_expand()
 		//setWindowFlags(windowFlags() & Qt::WindowMaximizeButtonHint);
 		//show();
 	}
-	
-	
+
 }
 
 bool CMajor::loadPlugin()

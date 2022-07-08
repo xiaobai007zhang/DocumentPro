@@ -23,44 +23,48 @@ void MyTable::paint(QPainter* painter, const QStyleOptionGraphicsItem* option, Q
     // qDebug() << "interval H: " << intervalH;
 
     painter->drawRect(m_rect);
-    // painter->drawRect(boundingRect());
+    //  painter->drawRect(boundingRect());
+    /* for (QGraphicsItem* item : childItems())
+     {
+         MyTableText* child = dynamic_cast<MyTableText*>(item);
+         painter->drawRect(child->getRect());
+     }*/
     //画线条需要判断每一行最长的高度来决定
     // MyTableText* tmp = *m_tableText.begin();
     // int maxVal = tmp->intervalH;
-    int maxVal = 0;
-    int oldMax = 0;
+    // int maxVal = 0;
+    // int oldMax = 0;
 
-    for (int i = 0; i < m_tableText.size(); ++i)
-    {
-        if (i % m_col != 0)
-        {
-            if (maxVal < m_tableText[i]->intervalH)
-            {
-                maxVal = m_tableText[i]->intervalH;
-            }
-        }
-        else if (i != 0)
-        {
-            //比较完成一轮了，开始绘画
-            painter->drawLine(0, oldMax + maxVal, m_rect.width(), oldMax + maxVal);
-
-            // val++;
-            oldMax += maxVal;
-            maxVal = m_tableText[i]->intervalH;
-            //还需要再次比较一次
-        }
-    }
-
-    // for (int i = 1; i < m_row; ++i)
+    // for (int i = 0; i < m_tableText.size(); ++i)
     //{
-    //     painter->drawLine(0, i * intervalH, 0 + m_rect.width(), i * intervalH);
-    // }
+    //     if (i % m_col != 0)
+    //     {
+    //         if (maxVal < m_tableText[i]->intervalH)
+    //         {
+    //             maxVal = m_tableText[i]->intervalH;
+    //         }
+    //     }
+    //     else if (i != 0)
+    //     {
+    //         //比较完成一轮了，开始绘画
+    //         painter->drawLine(0, oldMax + maxVal, m_rect.width(), oldMax + maxVal);
 
-    for (int i = 1; i < m_col; ++i)
-    {
-        painter->drawLine(i * intervalW, 0, i * intervalW, 0 + m_rect.height());
-    }
-    // QGraphicsItem::paint(painter, option, widget);
+    //        // val++;
+    //        oldMax += maxVal;
+    //        maxVal = m_tableText[i]->intervalH;
+    //        //还需要再次比较一次
+    //    }
+    //}
+
+    //// for (int i = 1; i < m_row; ++i)
+    ////{
+    ////     painter->drawLine(0, i * intervalH, 0 + m_rect.width(), i * intervalH);
+    //// }
+
+    // for (int i = 1; i < m_col; ++i)
+    //{
+    //     painter->drawLine(i * intervalW, 0, i * intervalW, 0 + m_rect.height());
+    // }
 }
 
 QRectF MyTable::boundingRect() const
@@ -187,20 +191,17 @@ qreal MyTable::getIntervalH()
 void MyTable::keyPressEvent(QKeyEvent* event)
 {
     // qDebug() << "table key press";
-    /* if (event->key() == Qt::Key_Alt)
-     {
-         m_altPress = true;
-         for (QGraphicsItem* item : childItems())
-         {
-             item->setFlag(QGraphicsItem::ItemIsSelectable);
-         }
-     }*/
 
     //在子类进行删除的时候进行判断
     if (event->key() == Qt::Key_Backspace)
     {
         QGraphicsItem* item = focusItem();
         MyTableText* text = dynamic_cast<MyTableText*>(item);
+
+        if (text == nullptr)
+        {
+            return;
+        }
         if (text->document()->blockCount() == 1 && text->document()->firstBlock().text().length() == 1)
         {
             return;
@@ -216,43 +217,50 @@ void MyTable::keyPressEvent(QKeyEvent* event)
         //如果文档内容小于当前的高度
         if (docH < height)
         {
-            //分为两种情况，一种是当前编辑的框的长度是最长的,那就把当前的行和总长度都要缩短，
-            //第二种情况是当前行中第二或者第三长的，那就不管
-            for (QGraphicsItem* item : childItems())
-            {
-                MyTableText* tmp = dynamic_cast<MyTableText*>(item);
-                if (tmp->data(Qt::UserRole + 1).toInt() == data)
-                {
-                    if (maxVal < tmp->document()->size().height())
-                    {
-                        maxVal = tmp->document()->size().height();
-                    }
-                }
-            }
 
-            //如果相等，证明是当前一层中最高的,需要整体缩短
-            if (maxVal == curVal)
-            {
-                qreal adjust = metrics.height();
+            // if (m_isJoin)
+            //{
+
+            //} //没有合并过就按照原先的方式
+            // else
+            { //分为两种情况，一种是当前编辑的框的长度是最长的,那就把当前的行和总长度都要缩短，
+                //第二种情况是当前行中第二或者第三长的，那就不管
                 for (QGraphicsItem* item : childItems())
                 {
                     MyTableText* tmp = dynamic_cast<MyTableText*>(item);
                     if (tmp->data(Qt::UserRole + 1).toInt() == data)
                     {
-                        QRectF rect = tmp->getRect();
-                        tmp->setRect(QRectF(rect.x(), rect.y(), rect.width(), rect.height() - adjust));
-                    }
-                    else if (tmp->data(Qt::UserRole + 1).toInt() > data)
-                    {
-                        QRectF rect = tmp->getRect();
-                        tmp->moveBy(rect.x(), rect.y() - adjust);
+                        if (maxVal < tmp->document()->size().height())
+                        {
+                            maxVal = tmp->document()->size().height();
+                        }
                     }
                 }
-                setRect(QRectF(m_rect.x(), m_rect.y(), m_rect.width(), m_rect.height() - adjust));
-            }
-            else
-            {
-                //啥也不干
+
+                //如果相等，证明是当前一层中最高的,需要整体缩短
+                if (maxVal == curVal)
+                {
+                    qreal adjust = metrics.height();
+                    for (QGraphicsItem* item : childItems())
+                    {
+                        MyTableText* tmp = dynamic_cast<MyTableText*>(item);
+                        if (tmp->data(Qt::UserRole + 1).toInt() == data)
+                        {
+                            QRectF rect = tmp->getRect();
+                            tmp->setRect(QRectF(rect.x(), rect.y(), rect.width(), rect.height() - adjust));
+                        }
+                        else if (tmp->data(Qt::UserRole + 1).toInt() > data)
+                        {
+                            QRectF rect = tmp->getRect();
+                            tmp->moveBy(rect.x(), rect.y() - adjust);
+                        }
+                    }
+                    setRect(QRectF(m_rect.x(), m_rect.y(), m_rect.width(), m_rect.height() - adjust));
+                }
+                else
+                {
+                    //啥也不干
+                }
             }
         }
     }
@@ -273,75 +281,139 @@ void MyTable::slot_MyTable(QRectF rect)
     Q_UNUSED(rect)
     // qDebug() << TR("清空");
     sg_vecJoin.clear();
-    // qDebug() << "sg_vecJoin size: " << sg_vecJoin.size() << endl;
-    //  QPointF point = this->mapFromScene(rect.x(), rect.y());
-    //  qDebug() << point;
-    //   setFocus();
+    for (MyTableText* text : m_tableText)
+    {
+        text->m_isSelect = false;
+    }
+
+    // qDebug() << "size: " << sg_vecJoin.size();
+    //  qDebug() << "sg_vecJoin size: " << sg_vecJoin.size() << endl;
+    //   QPointF point = this->mapFromScene(rect.x(), rect.y());
+    //   qDebug() << point;
+    //    setFocus();
 }
 
 void MyTable::slot_joinTable()
 {
     // qDebug() << "triggered";
-    // if (sg_vecJoin.empty())
-    //{
-    //    QMessageBox::information(nullptr, TR("Tips"), TR("当前选中的单元格为空！"));
-    //    return;
-    //}
-    // qreal maxH = 0;
-    // qreal maxW = 0;
+    if (sg_vecJoin.empty() || sg_vecJoin.size() == 1)
+    {
+        // QMessageBox::information(nullptr, TR("Tips"), TR("当前选中的单元格为空！"));
+        return;
+    }
 
-    // MyTableText* minItem = *sg_vecJoin.begin();
-    // maxH = minItem->intervalH;
-    // maxW = minItem->intervalW;
+    qreal maxH = 0;
+    qreal maxW = 0;
 
-    ////统计全部长度和高度
-    // for (MyTableText* item : sg_vecJoin)
-    //{
-    //     // if (maxH < item->intervalH)
-    //     //{
-    //     //     maxH = item->intervalH;
-    //     // }
-    //     maxH += item->intervalH;
+    MyTableText* minItem = *sg_vecJoin.begin();
 
-    //    if (maxW < item->intervalW)
-    //    {
-    //        maxW = item->intervalW;
-    //    }
-    //}
+    //右下角的文本框
+    MyTableText* maxTableXY = minItem;
 
-    ////找到x和y最小的
-    //// MyTableText* minItem = *sg_vecJoin.begin();
+    //找出xy中最大的一个，然后使用它的data数据
+    for (MyTableText* item : sg_vecJoin)
+    {
+        if (maxTableXY->y() < item->y())
+        {
+            maxTableXY = item;
+        }
+    }
 
-    // for (MyTableText* item : sg_vecJoin)
-    //{
-    //     if (item->getRect().x() > minItem->getRect().x())
-    //     {
-    //         minItem = item;
-    //     }
-    // }
+    //找到x和y最小的
 
-    // for (MyTableText* item : sg_vecJoin)
-    //{
-    //     if (item->getRect().y() > minItem->getRect().y() && item->getRect().x() == minItem->getRect().x())
-    //     {
-    //         minItem = item;
-    //     }
-    // }
+    //根据左上角的x和y判断出当前是那种合并模式
+    // 0代表行，1代表列,data代表当前的左上角的data
+    int index[2] = {0};
 
-    // minItem->intervalH = maxH;
-    // minItem->intervalW = maxW;
-    // minItem->setTextWidth(maxW);
-    // minItem->setRect(QRectF(minItem->x(), minItem->y(), maxW, maxH));
+    int data = minItem->data(Qt::UserRole + 1).toInt();
+    for (MyTableText* item : sg_vecJoin)
+    {
+        if (item->data(Qt::UserRole + 1).toInt() == data)
+        {
+            //记录行
+            index[0]++;
+        }
+        if (item->data(Qt::UserRole + 1).toInt() > data)
+        {
+            //记录列
+            index[1]++;
+        }
+    }
 
-    // for (MyTableText* item : sg_vecJoin)
-    //{
-    //     if (item != minItem)
-    //     {
+    //区分情况,如果都行列都大于1，那就是合并大矩形
+    if (index[0] > 1 && index[1] > 1)
+    {
 
-    //        m_tableText.erase(std::find(m_tableText.begin(), m_tableText.end(), item));
-    //        delete item;
-    //    }
-    //}
+        //统计全部长度和高度
+        for (MyTableText* item : sg_vecJoin)
+        {
+            maxH += item->intervalH;
+            maxW += item->intervalW;
+        }
+    }
+
+    //如果只有行大于1，就代表宽度不变，只有高度增长
+    if (index[0] > 1 && index[1] <= 1)
+    {
+        //判断非法合并
+        for (MyTableText* item : sg_vecJoin)
+        {
+            if (minItem->intervalH != item->intervalH)
+            {
+                return;
+            }
+        }
+
+        //统计全部长度和高度
+        for (MyTableText* item : sg_vecJoin)
+        {
+            maxW += item->intervalW;
+            maxH = item->intervalH;
+        }
+    }
+    //如果只有列大于1，就代表高度不变，宽度增长
+    if (index[0] <= 1 && index[1] > 1)
+    {
+        //统计全部长度和高度
+        for (MyTableText* item : sg_vecJoin)
+        {
+            maxH += item->intervalH;
+            maxW = item->intervalW;
+        }
+    }
+
+    //如果行列都等于1的情况
+    if (index[0] == 1 && index[1] == 1)
+    {
+        //统计全部长度和高度
+        for (MyTableText* item : sg_vecJoin)
+        {
+            maxH += item->intervalH;
+            maxW = item->intervalW;
+        }
+    }
+
+    minItem->intervalH = maxH;
+    minItem->intervalW = maxW;
+    minItem->setTextWidth(maxW);
+    // minItem = sg_vecJoin.at(0);
+    // qDebug() << "table, xy: " << m_rect;
+    // qDebug() << minItem->data(Qt::UserRole + 1).toInt();
+    // qDebug() << maxTableXY->data(Qt::UserRole + 1).toInt();
+
+    minItem->setData(Qt::UserRole + 1, maxTableXY->data(Qt::UserRole + 1).toInt());
+    minItem->setRect(QRectF(minItem->getRect().x(), minItem->getRect().y(), maxW, maxH));
+
+    for (MyTableText* item : sg_vecJoin)
+    {
+        if (item != minItem)
+        {
+            m_tableText.erase(std::find(m_tableText.begin(), m_tableText.end(), item));
+            delete item;
+        }
+    }
+
+    m_isJoin = false;
     // qDebug() << "maxH: " << maxH << ",maxW: " << maxW;
 }
 
@@ -445,6 +517,7 @@ void MyTable::slot_contentsChanged()
 
                 // tmp->setRect(QRectF(rect.x(), rect.y() + adjust + adjust, rect.width(), rect.height()));
                 tmp->moveBy(rect.x(), rect.y() + adjust);
+                // tmp->setRect(QRectF(rect.x(), rect.y() + adjust, tmp->intervalW, tmp->intervalH));
             }
         }
     }
@@ -466,11 +539,20 @@ MyTableText::~MyTableText()
 void MyTableText::paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget)
 {
     Q_UNUSED(option)
-    // QPen pen;
+    QPen pen;
     // pen.setColor(Qt::red);
     // painter->setPen(pen);
     // painter->drawRect(m_rect);
-
+    painter->drawRect(m_rect);
+    if (m_isSelect)
+    {
+        painter->setBrush(Qt::gray);
+        painter->drawRect(m_rect);
+    }
+    else
+    {
+        painter->setBrush(Qt::black);
+    }
     {
         // 原来什么属性就要什么属性,只不过去掉多余的选中状态
         QStyleOptionGraphicsItem op;
@@ -478,8 +560,6 @@ void MyTableText::paint(QPainter* painter, const QStyleOptionGraphicsItem* optio
         op.state = QStyle::State_None;
         QGraphicsTextItem::paint(painter, &op, widget);
     }
-
-    // QGraphicsTextItem::paint(painter, option, widget);
 }
 
 QRectF MyTableText::boundingRect() const
@@ -654,6 +734,7 @@ void MyTableText::slot_MyTable(QRectF rect)
 
     if (collidesWithPath(path))
     {
+
         for (MyTableText* text : sg_vecJoin)
         {
             if (this == text)
@@ -661,7 +742,8 @@ void MyTableText::slot_MyTable(QRectF rect)
                 return;
             }
         }
-
+        // sg_isSelect = true;
+        m_isSelect = true;
         sg_vecJoin.push_back(this);
         // qDebug() << "vecJoin: " << this;
         // qDebug() << TR("添加");

@@ -18,10 +18,6 @@ public:
 
 public:
     void initGraphicsTextItem();
-    //根据键值对来区分json文件中的各个模块
-    void setName(const int& key, const QString& name);
-
-    // const QString& getName(const int& key);
 
     void setRect(const QRectF& rect);
 
