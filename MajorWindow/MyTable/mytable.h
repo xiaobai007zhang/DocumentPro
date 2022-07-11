@@ -15,8 +15,6 @@ class MyTable : public QObject, public QGraphicsItem
 protected:
     void paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget) override;
 
-    QRectF boundingRect() const override;
-
     QPainterPath shape() const override;
 
     void mouseMoveEvent(QGraphicsSceneMouseEvent* event) override;
@@ -36,7 +34,7 @@ protected:
 
 public:
     qreal getIntervalW();
-
+    QRectF boundingRect() const override;
     qreal getIntervalH();
     void keyPressEvent(QKeyEvent* event) override;
     void mousePressEvent(QGraphicsSceneMouseEvent* event) override;
@@ -55,9 +53,12 @@ public:
 private:
     void initTableWidget();
 
+    MyTableText* findItem(int row, int col);
+
 signals:
     void sig_hideRectMouse(bool);
 
+    void sig_changeSelect();
 public slots:
 
     void slot_contentsChanged();
@@ -66,8 +67,6 @@ public slots:
 
     //合并单元格
     void slot_joinTable();
-
-    void slot_expand(bool);
 
     void slot_repeat(bool flag);
 
@@ -82,8 +81,6 @@ private:
 
     qreal intervalW;
     qreal intervalH;
-
-    bool m_isExpand;
     bool m_isRepeat;
 
     bool m_isJoin;
@@ -96,6 +93,9 @@ public:
     //结构体数组
 
     std::vector<MyTableText*> m_tableText;
+
+    //记录需要合并的单元格
+    std::vector<MyTableText*> sg_vecJoin;
 };
 
 //=========================================================================================
@@ -149,6 +149,7 @@ signals:
 
 private slots:
     void slot_MyTable(QRectF rect);
+    void slot_changeSelect();
 
 public:
     qreal intervalW;
@@ -157,10 +158,19 @@ public:
 public:
     void setRect(QRectF rect);
 
+    void setIndex(int row, int col);
+
+    int getRow();
+    int getCol();
+
     QRectF getRect();
     bool m_isSelect = false;
 
 private:
     // QGraphicsProxyWidget* m_proxy;
     QRectF m_rect;
+
+    //记录当前的行列数，作为属性
+    int m_row;
+    int m_col;
 };

@@ -7,7 +7,7 @@
 #include <QMenuBar>
 #include <QPainter>
 
-#include "../TextItemGraphics/mygraphicstextitem.h"
+#include "TextItemGraphics/mygraphicstextitem.h"
 
 MyGraphicsScene::MyGraphicsScene(const int& width, const int& height, QObject* parent) : QGraphicsScene(parent), m_isPress(false), m_textItemFlag(true), m_rectMouse(nullptr)
 {
@@ -58,7 +58,7 @@ void MyGraphicsScene::mousePressEvent(QGraphicsSceneMouseEvent* event)
     }
     else
     {
-        QGraphicsScene::mousePressEvent(event);
+        return QGraphicsScene::mousePressEvent(event);
     }
 }
 
@@ -95,12 +95,12 @@ void MyGraphicsScene::mouseMoveEvent(QGraphicsSceneMouseEvent* event)
             m_rectMouse->setRect(QRectF(m_curPos.toPoint() - QPoint(size.width(), 0), size));
         }
 
-        QGraphicsScene::mouseMoveEvent(event);
+        return QGraphicsScene::mouseMoveEvent(event);
     }
     else
     {
 
-        QGraphicsScene::mouseMoveEvent(event);
+        return QGraphicsScene::mouseMoveEvent(event);
     }
 }
 
@@ -109,8 +109,13 @@ void MyGraphicsScene::mouseReleaseEvent(QGraphicsSceneMouseEvent* event)
     // qDebug() << "scene mouse release: " << event->scenePos();
     //  QSize size = QSize(abs(event->scenePos().x() - m_curPos.x()), (abs(event->scenePos().y() - m_curPos.y())));
 
-    QSize size = QSize(event->scenePos().x() - m_curPos.x(), (event->scenePos().y() - m_curPos.y()));
+    //如果是右键，那么就不会发送信号
+    if (event->button() == Qt::RightButton)
+    {
+        return;
+    }
 
+    QSize size = QSize(event->scenePos().x() - m_curPos.x(), (event->scenePos().y() - m_curPos.y()));
     //计算一下选中的文本框大小
     // qDebug() << "startPos: " << m_curPos;
     // qDebug() << "scenePos: " << event->scenePos();

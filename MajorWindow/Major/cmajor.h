@@ -86,9 +86,6 @@ private:
     //加载样式表
     void loadStyleSheet(const QString& fileName);
 
-    //实时更新行数和列数
-    void updateStatusBar();
-
     //初始化定时器
     void initTimer();
 
@@ -177,11 +174,6 @@ private slots:
 
     void slot_rightMenu(const QPoint&);
 
-    //实时记录场景的大小
-    void slot_sceneRectChanged(const QRectF&);
-
-    void slot_expand();
-
     void slot_repeat();
 
     void slot_joinTable();
@@ -190,13 +182,9 @@ private slots:
 
     //!其他槽函数
 private slots:
-    //定时器到期槽函数
-    void slot_timeOut();
 
     //如果改动了当前的文件，那么就会加上一个*号
     void slot_textChanged(const QList<QRectF>);
-
-    void slot_tableRowColumn();
 
     void slot_menuBarFont();
 
@@ -253,7 +241,7 @@ private:
     //工具栏
     QToolBar* m_toolBar;
 
-    QTimer* m_timer;
+    // QTimer* m_timer;
 
     QTimer* m_repeatTime;
 
@@ -294,7 +282,7 @@ private:
     //用于回撤功能
     // QUndoStack* undoStack;
 
-    bool m_isExpand;
+    // bool m_isExpand;
 
     bool m_isRepeat;
 

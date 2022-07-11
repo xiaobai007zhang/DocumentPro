@@ -34,7 +34,10 @@ QGraphicsItem* AbstractShape::copy()
         //复制表格，首先复制行列数,分别new处每个单元格，还有单元格的内容
         MyTable* item = qgraphicsitem_cast<MyTable*>(this);
         MyTable* tmpItem = new MyTable(item->getRow(), item->getCol(), item->getRect());
-
+        for (MyTableText* item : item->m_tableText)
+        {
+            tmpItem->m_tableText.push_back(item);
+        }
         return tmpItem;
     }
 

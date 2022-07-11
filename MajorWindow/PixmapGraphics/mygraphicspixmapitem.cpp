@@ -98,14 +98,14 @@ void MyGraphicsPixmapItem::mouseMoveEvent(QGraphicsSceneMouseEvent* event)
     }
     else
     {
-        QList<QGraphicsItem*> list = collidingItems();
-        for (QGraphicsItem* item : list)
-        {
-            setZValue(item->zValue() + 0.01);
-        }
+        // QList<QGraphicsItem*> list = collidingItems();
+        // for (QGraphicsItem* item : list)
+        //{
+        //     // setZValue(item->zValue() + 0.01);
+        // }
     }
 
-    QGraphicsPixmapItem::mouseMoveEvent(event);
+    return QGraphicsPixmapItem::mouseMoveEvent(event);
 }
 
 void MyGraphicsPixmapItem::paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget)
@@ -123,32 +123,32 @@ void MyGraphicsPixmapItem::paint(QPainter* painter, const QStyleOptionGraphicsIt
 
 QVariant MyGraphicsPixmapItem::itemChange(GraphicsItemChange change, const QVariant& value)
 {
-    if (m_isExpand)
-    { //允许扩展
-        return QGraphicsItem::itemChange(change, value);
-    }
-    else
-    {
-        if (change == ItemPositionChange && scene()) // 控件发生移动
-        {
-            // qDebug() << "boundRect :" << boundingRect().width() << "," << boundingRect().height();
-            QPointF newPos = value.toPointF(); //即将要移动的位置
+    // if (m_isExpand)
+    //{ //允许扩展
+    return QGraphicsItem::itemChange(change, value);
+    //}
+    // else
+    //{
+    //    if (change == ItemPositionChange && scene()) // 控件发生移动
+    //    {
+    //        // qDebug() << "boundRect :" << boundingRect().width() << "," << boundingRect().height();
+    //        QPointF newPos = value.toPointF(); //即将要移动的位置
 
-            // QRectF rect(0, 0, scene()->width() - scale() * boundingRect().width(), scene()->height() - scale() * boundingRect().height());
-            QRectF rect = scene()->sceneRect();
+    //        // QRectF rect(0, 0, scene()->width() - scale() * boundingRect().width(), scene()->height() - scale() * boundingRect().height());
+    //        QRectF rect = scene()->sceneRect();
 
-            if (!rect.contains(newPos)) // 是否在区域内
-            {
-                qDebug() << "scene rect: " << rect;
-                qDebug() << "newPos : " << newPos;
-                newPos.setX(qMin(rect.right(), qMax(newPos.x(), rect.left())));
-                newPos.setY(qMin(rect.bottom(), qMax(newPos.y(), rect.top())));
-                // qDebug() << "newPos: " << newPos;
-                return newPos;
-            }
-        }
-        return QGraphicsItem::itemChange(change, value);
-    }
+    //        if (!rect.contains(newPos)) // 是否在区域内
+    //        {
+    //            qDebug() << "scene rect: " << rect;
+    //            qDebug() << "newPos : " << newPos;
+    //            newPos.setX(qMin(rect.right(), qMax(newPos.x(), rect.left())));
+    //            newPos.setY(qMin(rect.bottom(), qMax(newPos.y(), rect.top())));
+    //            // qDebug() << "newPos: " << newPos;
+    //            return newPos;
+    //        }
+    //    }
+    //    return QGraphicsItem::itemChange(change, value);
+    //}
 }
 
 QRectF MyGraphicsPixmapItem::boundingRect() const

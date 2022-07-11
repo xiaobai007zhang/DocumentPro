@@ -128,29 +128,29 @@ void MyGraphicsTextItem::focusOutEvent(QFocusEvent* e)
 
 QVariant MyGraphicsTextItem::itemChange(GraphicsItemChange change, const QVariant& value)
 {
-    if (m_isExpand)
-    {
-        return QGraphicsTextItem::itemChange(change, value);
-    }
-    else
-    {
-        if (change == ItemPositionChange && scene()) // 控件发生移动
-        {
-            QPointF newPos = value.toPointF(); //即将要移动的位置
-            // QRectF rect(0, 0, scene()->width(), scene()->height());
-            QRectF rect = scene()->sceneRect();
-            qDebug() << "scene()->sceneRect()" << rect;
+    // if (m_isExpand)
+    //{
+    return QGraphicsTextItem::itemChange(change, value);
+    //}
+    // else
+    //{
+    //    if (change == ItemPositionChange && scene()) // 控件发生移动
+    //    {
+    //        QPointF newPos = value.toPointF(); //即将要移动的位置
+    //        // QRectF rect(0, 0, scene()->width(), scene()->height());
+    //        QRectF rect = scene()->sceneRect();
+    //        qDebug() << "scene()->sceneRect()" << rect;
 
-            if (!rect.contains(newPos)) // 是否在区域内
-            {
-                newPos.setX(qMin(rect.right(), qMax(newPos.x(), rect.left())));
-                newPos.setY(qMin(rect.bottom(), qMax(newPos.y(), rect.top())));
-                // qDebug() << "text newPos: ";
-                return newPos;
-            }
-        }
-        return QGraphicsTextItem::itemChange(change, value);
-    }
+    //        if (!rect.contains(newPos)) // 是否在区域内
+    //        {
+    //            newPos.setX(qMin(rect.right(), qMax(newPos.x(), rect.left())));
+    //            newPos.setY(qMin(rect.bottom(), qMax(newPos.y(), rect.top())));
+    //            // qDebug() << "text newPos: ";
+    //            return newPos;
+    //        }
+    //    }
+    //    return QGraphicsTextItem::itemChange(change, value);
+    //}
 }
 
 void MyGraphicsTextItem::paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget)

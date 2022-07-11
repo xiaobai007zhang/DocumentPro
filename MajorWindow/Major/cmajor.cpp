@@ -91,7 +91,7 @@
 //};
 
 CMajor::CMajor(QWidget* parent) : QMainWindow(parent),m_imageStartPos(QPoint(0,0))
-,ui(new Ui::CMajor), m_textEnable(false),m_isExpand(true),m_isRepeat(true) ,tableInfo(nullptr),m_tableEnable(false){
+,ui(new Ui::CMajor), m_textEnable(false),m_isRepeat(true) ,tableInfo(nullptr),m_tableEnable(false){
 	ui->setupUi(this);
 
 	loadStyleSheet("./Action.qss");
@@ -109,7 +109,7 @@ CMajor::CMajor(QWidget* parent) : QMainWindow(parent),m_imageStartPos(QPoint(0,0
 
 	//expand->setIcon(QIcon("../yesExpand.png"));
 	//repeat->setIcon(QIcon("../yesExpand.png"));
-	expand->setIcon(QIcon(":/yesExpand.png"));
+	//expand->setIcon(QIcon(":/yesExpand.png"));
 	repeat->setIcon(QIcon(":/yesExpand.png"));
 }
 
@@ -148,8 +148,8 @@ void CMajor::readJson(const QString & fileName)
 	file.open(QIODevice::ReadOnly);
 	if (!file.isOpen()){
 		// QMessageBox::information(nullptr,"Tips","打开文件失败!");
-		if(logFile != nullptr)
-		logFile->errorLog(TR("打开 ”%1“ 文件失败!").arg(m_curFileName));
+		/*if(logFile != nullptr)
+		logFile->errorLog(TR("打开 ”%1“ 文件失败!").arg(m_curFileName));*/
 	}
 	QByteArray byte = file.readAll();
 	QJsonDocument doc (QJsonDocument::fromJson(byte));
@@ -185,10 +185,6 @@ void CMajor::readJson(const QString & fileName)
 		loadJsonObj(obj,"table");
 	}
 
-	//==============TABLE=================//
-	// 
-	// 
-	//====================================//
 	
 	//m_scene->setSceneRect(QRectF());
 	file.close();
@@ -289,16 +285,16 @@ void CMajor::initMenuBar()
 	connect(size, SIGNAL(triggered()), this, SLOT(slot_menuBarFont()));
 
 	//! 功能区
-	expand = new QAction(TR("扩展窗口"));
+	//expand = new QAction(TR("扩展窗口"));
 	repeat = new QAction(TR("重叠"));
 	joinTable = new QAction(TR("合并单元格"));
 
 	connect(repeat,SIGNAL(triggered()),this,SLOT(slot_repeat()));
-	connect(expand,SIGNAL(triggered()),this,SLOT(slot_expand()));
+	//connect(expand,SIGNAL(triggered()),this,SLOT(slot_expand()));
 	connect(joinTable,SIGNAL(triggered()),this,SLOT(slot_joinTable()));
 
 
-	domain->addAction(expand);
+	//domain->addAction(expand);
 	domain->addAction(repeat);
 
 
@@ -378,16 +374,13 @@ void CMajor::initCenterWidget()
 void CMajor::initConnection()
 {
 	//定时器
-	connect(m_timer, SIGNAL(timeout()), this, SLOT(slot_timeOut()));
+	//connect(m_timer, SIGNAL(timeout()), this, SLOT(slot_timeOut()));
 	// textEdit文本改变
 	//connect(m_wid->m_textEdit, SIGNAL(textChanged()), this, SLOT(slot_textChanged()));
 	connect(m_scene, SIGNAL(changed(const QList<QRectF>)), this, SLOT(slot_textChanged(const QList<QRectF>)));
 	
 	connect(m_repeatTime,SIGNAL(timeout()),this,SLOT(slot_repeatTime()));
 
-	//connect(m_findWid, SIGNAL(sig_findText(QString)), this, SLOT(slot_findBtnClicked(QString)));
-
-	//connect(insertForm, SIGNAL(triggered()), this, SLOT(slot_tableRowColumn()));
 }
 
 void CMajor::initFindWidget()
@@ -405,47 +398,14 @@ void CMajor::initGraphics()
 	//m_view = new QGraphicsView;
 	m_view = new MyGraphicsView;
 	m_scene = new MyGraphicsScene;
-	//m_view->setAlignment(Qt::AlignLeft | Qt::AlignTop);
-	
-	//qDebug() << "m_view viewport pos: " << m_view->viewport()->pos();
 
-	//m_scene = new MyGraphicsScene(m_view->viewport()->width(),m_view->viewport()->height());
-	//m_scene = new MyGraphicsScene(m_view->viewport()->width(),m_view->viewport()->height());
-	//m_scene = new MyGraphicsScene(QRect(m_view->mapToScene(0,0).toPoint(),m_view->viewport()->width(),m_view->viewport()->height()));
-	//m_scene = new MyGraphicsScene(QRectF(m_view->mapToScene(0,0),QSizeF(m_view->viewport()->width(),m_view->viewport()->height())));
-	//qDebug()<<m_view->viewport()->size();
-	//qDebug()<<m_view->size();
-
-
-	//QGraphicsRectItem* item = m_scene->addRect(QRectF(0,0,10,10));
-	//m_scene->clear();
-	//m_view->setDragMode(QGraphicsView::RubberBandDrag);
-	//qDebug()<<"width: "<<width()<<",height: "<<height();
-	//qDebug()<<"m_view rect: "<<m_view->rect();
-	//m_view->setSceneRect(QRectF(QPointF(pos()),QSize(width(),height())));
-	
-	//QPointF point = m_view->mapToScene(m_view->pos());
-	//m_scene->setSceneRect(QRectF(point,QSize(m_view->viewport()->width(),m_view->viewport()->height())));
-	//qDebug()<<point;
-	//qDebug()<<"m_view rect: "<<m_view->viewport();
 	connect(m_scene, SIGNAL(sig_rectFrame(QSize, QPointF, bool)), this, SLOT(slot_rectFrame(QSize, QPointF, bool)));
 	connect(m_view,SIGNAL(customContextMenuRequested(const QPoint &)),this,SLOT(slot_rightMenu(const QPoint &)));
-	//connect(m_scene,SIGNAL(sceneRectChanged(const QRectF &)),this,SLOT(slot_sceneRectChanged(const QRectF&)));
-	
-	//m_view->setResizeAnchor(QGraphicsView::AnchorViewCenter);
+
 	m_view->setContextMenuPolicy(Qt::CustomContextMenu);
 	m_view->setScene(m_scene);
 	m_view->setViewportUpdateMode(QGraphicsView::FullViewportUpdate);
 	
-	//qDebug()<<m_scene->width()<<" "<<m_scene->height();
-	//m_scene->addRect(QRectF(0,0,m_scene->width(),m_scene->height()))->setBrush(Qt::gray);
-	
-	//m_scene->setBackgroundBrush(Qt::gray);
-	//m_view->setScene(scene);
-	//m_view->show();
-
-	//m_view->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
-	//m_view->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
 
 }
 
@@ -495,7 +455,7 @@ void CMajor::loadJsonObj(const QJsonObject & obj, const QString & type)
 	myItem->setScale(scale);
 
 	connect(myItem, SIGNAL(sig_hideRectMouse(bool)), m_scene, SLOT(slot_hideRectMouse(bool)));
-	connect(this,SIGNAL(sig_expand(bool)),myItem,SLOT(slot_expand(bool)));
+	//connect(this,SIGNAL(sig_expand(bool)),myItem,SLOT(slot_expand(bool)));
 	connect(this,SIGNAL(sig_repeat(bool)),myItem,SLOT(slot_repeat(bool)));
 	connect(myItem, SIGNAL(sig_loseFocusText(QGraphicsTextItem*)), this, SLOT(slot_eraseTextFrame(QGraphicsTextItem*)));
 	connect(myItem, SIGNAL(sig_needSceneUpdate()), this, SLOT(slot_sceneUpdate()));
@@ -525,13 +485,13 @@ void CMajor::loadJsonObj(const QJsonObject & obj, const QString & type)
 		//qDebug() << QStringLiteral("========打开========");
 		//qDebug() << "myItem->pos(): " << point;
 		//qDebug() << "mapFromScene(myItem->scenePos()): " << point;
+
 		myItem->pos();
 		myItem->setScale(scale);
 		myItem->setImage(imgPth);
 		myItem->setZValue(zValue);
 
 		connect(myItem, SIGNAL(sig_hideRectMouse(bool)), m_scene, SLOT(slot_hideRectMouse(bool)));
-		connect(this,SIGNAL(sig_expand(bool)),myItem,SLOT(slot_expand(bool)));
 		connect(this,SIGNAL(sig_repeat(bool)),myItem,SLOT(slot_repeat(bool)));
 		m_scene->addItem(myItem);
 	}
@@ -544,14 +504,16 @@ void CMajor::loadJsonObj(const QJsonObject & obj, const QString & type)
 		qreal height = obj.value("height").toDouble();
 		qreal width = obj.value("width").toDouble();
 		
+
 		//接下来该读取单元格的信息了
 		QJsonArray textArr  = obj.value("tableText").toArray();
-		MyTable *table = new MyTable(row,col,QRectF(0,0,width,height));
+		MyTable *table = new MyTable(row,col,QRectF(0,0,width-1,height));
 		table->setPos(x,y);
 
 		connect(table, SIGNAL(sig_hideRectMouse(bool)), m_scene, SLOT(slot_hideRectMouse(bool)));
-		connect(this,SIGNAL(sig_expand(bool)),table,SLOT(slot_expand(bool)));
 		connect(this,SIGNAL(sig_repeat(bool)),table,SLOT(slot_repeat(bool)));
+		connect(this,SIGNAL(sig_joinTable()),table,SLOT(slot_joinTable()));
+		connect(this,SIGNAL(sig_MyTable(QRectF)),table,SLOT(slot_MyTable(QRectF)));
 
 		for (QJsonValue value : textArr) {
 			QJsonObject tmpObj = value.toObject();
@@ -564,40 +526,13 @@ void CMajor::loadJsonObj(const QJsonObject & obj, const QString & type)
 			table->m_tableText.push_back(text);
 		}
 
-		for (int i = 0; i < table->getRow(); ++i) {
-				for (int j = 0; j < table->getCol(); ++j) {
-				
-					table->m_tableText.at(i*table->getCol()+j)->setData(Qt::UserRole + 1,i);
-				
-				}
-		}
-
 	}
-}
-//!实时更新状态栏的 光标 行列数
-void CMajor::updateStatusBar()
-{
-
-	//QTextCursor tc = m_wid->m_textEdit->textCursor();
-	//// QTextLayout *pLayout = tc.block().layout();
-
-	////光标在一行中的位置
-	////光标的绝对位置-当前的文本块的起始位置，得出光标所在列数
-	//m_column = QString::number(tc.position() - tc.block().position());
-
-	//m_row = QString::number(tc.block().firstLineNumber());
-	//// m_lineCount = QString::number(pLayout->lineForTextPosition(nCurpos).lineNumber() + tc.block().firstLineNumber());
-
-	//ui->statusbar->showMessage(QStringLiteral("行：") + m_row + QStringLiteral(" 列：") + m_column);
 }
 
 void CMajor::initTimer()
 {
-	m_timer = new QTimer;
-	m_timer->setInterval(800);
-
 	m_repeatTime = new QTimer;
-	m_repeatTime->setInterval(800);
+	m_repeatTime->setInterval(300);
 }
 
 void CMajor::setWinTitle(QString winTitle)
@@ -628,16 +563,20 @@ void CMajor::loadTableText(QJsonObject obj,MyTable* parent)
 	 qreal intervalW = obj.value("intervalW").toDouble();
 	 qreal x = obj.value("x").toDouble();
 	 qreal y = obj.value("y").toDouble();
+	 int row = obj.value("rowIndex").toInt();
+	 int col = obj.value("colIndex").toInt();
 
 	 MyTableText* text = new MyTableText(QRect(0,0,intervalW,intervalH),parent);
 	 
+	 text->setIndex(row,col);
 	 text->setPos(x,y);
 	 text->setPlainText(contents);
 	 //text->setRect(QRectF(50,0,intervalW,intervalH));
 	 connect(text, SIGNAL(sig_hideRectMouse(bool)), m_scene, SLOT(slot_hideRectMouse(bool)));
 	 connect(text->document(),SIGNAL(contentsChanged()),parent,SLOT(slot_contentsChanged()));
 	 connect(this,SIGNAL(sig_MyTable(QRectF)),text,SLOT(slot_MyTable(QRectF)));
-
+	 connect(parent,SIGNAL(sig_changeSelect()),text,SLOT(slot_changeSelect()));
+	 text->update();
 }
 
 
@@ -645,25 +584,14 @@ void CMajor::resizeEvent(QResizeEvent * event)
 {	//qDebug()<<"viewport size: "<<m_view->viewport()->size();
 	//qDebug()<<"size: "<<m_view->size();
 	Q_UNUSED(event)
-	if (m_isExpand) {
+	//if (m_isExpand) {
 		//允许扩展
 		m_scene->setSceneRect(QRectF());
 		m_view->setAlignment(Qt::AlignLeft | Qt::AlignTop);
 		this->resize(width(),height());
 		m_scene->update();
 		m_view->update();
-		emit(sig_expand(true));
-	}
-	else {
-		//不允许扩展
-		this->resize(m_curWidth,m_curHeight);
-		QRectF rect = m_scene->sceneRect();
-		m_scene->setSceneRect(rect);
-		m_scene->update();
-		m_view->update();
-		emit(sig_expand(false));
 
-	}
 
 }
 
@@ -810,14 +738,14 @@ void CMajor::dropEvent(QDropEvent* event)
 	item->setImage(file.absoluteFilePath());
 	m_scene->addItem(item);
 	item->moveBy(point.x(),point.y());
-	connect(this,SIGNAL(sig_expand(bool)),item,SLOT(slot_expand(bool)));
+	//connect(this,SIGNAL(sig_expand(bool)),item,SLOT(slot_expand(bool)));
 	connect(this,SIGNAL(sig_repeat(bool)),item,SLOT(slot_repeat(bool)));
 	connect(item, SIGNAL(sig_hideRectMouse(bool)), m_scene, SLOT(slot_hideRectMouse(bool)));
 	//解决了根据当前视图按照比例缩放
 	if(pixmap.width() > m_view->viewport()->width() || pixmap.height() > m_view->viewport()->height())
 	m_view->fitInView(item,Qt::KeepAspectRatio);
 	
-	emit(sig_expand(true));
+	//emit(sig_expand(true));
 	}
 	
 
@@ -845,7 +773,10 @@ void CMajor::slot_creatDocument()
 				if (!file.isOpen())
 				{
 					// QMessageBox::critical(nullptr,"Tips","文件保存失败，请重试!");
+					#ifdef PLUGIN_SUCCESS
 					logFile->errorLog(TR("文件“%1”保存失败").arg(m_curFileName));
+					#endif
+
 					return;
 				}
 			}else{
@@ -898,10 +829,10 @@ bool CMajor::slot_openFile()
 	
 	setWindowTitle(m_curFileName);
 
-	////记录日志
-	if(logFile != nullptr)
-	logFile->PrintLog(TR("打开文件:{文件名:%1,文件路径:%2").arg(m_curFileName).arg(m_curFilePath));
-
+	//记录日志
+	#ifdef PLUGIN_SUCCESS
+		logFile->PrintLog(TR("打开文件:{文件名:%1,文件路径:%2").arg(m_curFileName).arg(m_curFilePath));
+	#endif
 	return true;
 }
 
@@ -1013,13 +944,16 @@ bool CMajor::slot_otherSave()
 				tmpObj.insert("intervalW",myItem->m_tableText.at(i)->intervalW);
 				tmpObj.insert("intervalH",myItem->m_tableText.at(i)->intervalH);
 				tmpObj.insert("contents",myItem->m_tableText.at(i)->toPlainText());
+				tmpObj.insert("rowIndex",myItem->m_tableText.at(i)->getRow());
+				tmpObj.insert("colIndex",myItem->m_tableText.at(i)->getCol());
 				tmpArr.append(tmpObj);
+				//qDebug()<<myItem->m_tableText.at(i)->getRow()<<", "<<myItem->m_tableText.at(i)->getCol();
 			}
-			//qDebug()<<tmpArr;
+
 			obj.insert("tableText",tmpArr);
 			
 			tableArr.append(obj);
-			//tableArr.append("aaaaaaaaaaaaaaaaaaaa");
+			
 			
 			}
 			else {
@@ -1049,18 +983,6 @@ bool CMajor::slot_otherSave()
 
 	file.close();
 
-	/*if (fileName.contains("png")) {
-		file.remove();
-
-		QPixmap pix = m_view->grab();
-		pix.save(fileName, "PNG");
-	}
-	if (fileName.contains("rtf")) {
-		QDataStream stream(&file);
-
-		file.close();
-	}*/
-
 	QMessageBox::information(nullptr, "Tips", TR("保存成功!"));
 
 	setFilePathAName(fileName);
@@ -1069,8 +991,11 @@ bool CMajor::slot_otherSave()
 
 
 	//记录日志
-	if(logFile != nullptr)
-	logFile->PrintLog(TR("另存为:{文件名:%1,文件路径:%2").arg(m_curFileName).arg(m_curFilePath));
+	#ifdef PLUGIN_SUCCESS
+		logFile->PrintLog(TR("另存为:{文件名:%1,文件路径:%2").arg(m_curFileName).arg(m_curFilePath));
+	#endif // PLUGIN_SUCCESS
+
+	
 
 	return true;
 }
@@ -1154,15 +1079,12 @@ void CMajor::slot_paste()
 			if (sp->type() == QGraphicsTextItem::Type) {
 				MyGraphicsTextItem* myItem = dynamic_cast<MyGraphicsTextItem*>(copy);
 				connect(myItem, SIGNAL(sig_hideRectMouse(bool)), m_scene, SLOT(slot_hideRectMouse(bool)));
-				connect(this,SIGNAL(sig_expand(bool)),myItem,SLOT(slot_expand(bool)));
 				connect(this,SIGNAL(sig_repeat(bool)),myItem,SLOT(slot_repeat(bool)));
-				//connect(myItem, SIGNAL(sig_loseFocusText(QGraphicsTextItem*)), this, SLOT(slot_eraseTextFrame(QGraphicsTextItem*)));
-				//connect(myItem, SIGNAL(sig_needSceneUpdate()), this, SLOT(slot_sceneUpdate()));
 			}
 			else if (sp->type() == QGraphicsPixmapItem::Type) {
 				MyGraphicsPixmapItem* myItem = dynamic_cast<MyGraphicsPixmapItem*>(copy);
 				connect(myItem, SIGNAL(sig_hideRectMouse(bool)), m_scene, SLOT(slot_hideRectMouse(bool)));
-				connect(this,SIGNAL(sig_expand(bool)),myItem,SLOT(slot_expand(bool)));
+				
 				connect(this,SIGNAL(sig_repeat(bool)),myItem,SLOT(slot_repeat(bool)));
 			}
 			else if(sp->type() == TABLE_TYPE){
@@ -1171,48 +1093,30 @@ void CMajor::slot_paste()
 				connect(this,SIGNAL(sig_MyTable(QRectF)),myItem,SLOT(slot_MyTable(QRectF)));
 				connect(this,SIGNAL(sig_joinTable()),myItem,SLOT(slot_joinTable()));
 				
+				std::vector<MyTableText*> tableVec;
 
-				//重叠和碰撞以后再说
-				//connect(this,SIGNAL(sig_expand(bool)),myItem,SLOT(slot_expand(bool)));
-				//connect(this,SIGNAL(sig_repeat(bool)),myItem,SLOT(slot_repeat(bool)));
-				if (myItem->getCol() > myItem->getRow()) {
-			for (int i = 0; i < myItem->getRow(); ++i) {
-				for (int j = 0; j < myItem->getCol(); ++j) {
-					int w = myItem->m_tableText.at(i*myItem->getCol()+j)->intervalW;
-					int h = myItem->m_tableText.at(i*myItem->getCol()+j)->intervalH;
-					MyTableText* item = new MyTableText(QRectF(0, 0, myItem->m_tableText.at(i*myItem->getCol()+j)->intervalW,myItem->m_tableText.at(i*myItem->getCol()+j)->intervalH), myItem);
-					item->moveBy(j * w, i * h);
-					
+				for (MyTableText* text : myItem->m_tableText) {
+					if (text == nullptr) {
+						return;
+					}
+					MyTableText* item = new MyTableText(QRectF(0, 0, text->intervalW,text->intervalH), myItem);
+					item->setIndex(text->getRow(),text->getCol());
+					item->setPos(text->x(),text->y());
+
 					connect(item, SIGNAL(sig_hideRectMouse(bool)), m_scene, SLOT(slot_hideRectMouse(bool)));
 					connect(item->document(),SIGNAL(contentsChanged()),myItem,SLOT(slot_contentsChanged()));
 					connect(this,SIGNAL(sig_MyTable(QRectF)),item,SLOT(slot_MyTable(QRectF)));
-					
-					item->setData(Qt::UserRole + 1,i);
-					//qDebug()<<"j: "<<j;
-					//qDebug()<<"i: "<<i;
-					myItem->m_tableText.push_back(item);
-					//item->setPlainText(TR("%1").arg(j));
-				}
+					connect(myItem,SIGNAL(sig_changeSelect()),item,SLOT(slot_changeSelect()));
+					//myItem->m_tableText.push_back(item);
+					tableVec.push_back(item);
+				
+				
 			}
-		}
-		else if (myItem->getCol() <= myItem->getRow()) {
-			for (int i = 0; i < myItem->getRow(); ++i) {
-				for (int j = 0; j < myItem->getCol(); ++j) {
-					MyTableText* item = new MyTableText(QRectF(0, 0, myItem->getIntervalW(), myItem->getIntervalH()), myItem);
-					item->moveBy(j * myItem->getIntervalW(), i * myItem->getIntervalH());
-					item->setData(Qt::UserRole + 1,i);
-					//qDebug()<<myItem->m_tableText[i][j].toPlainText();
-					//qDebug()<<myItem->m_tableText.size();
-					connect(item, SIGNAL(sig_hideRectMouse(bool)), m_scene, SLOT(slot_hideRectMouse(bool)));
-					connect(item->document(),SIGNAL(contentsChanged()),myItem,SLOT(slot_contentsChanged()));
-					connect(this,SIGNAL(sig_MyTable(QRectF)),item,SLOT(slot_MyTable(QRectF)));
-					myItem->m_tableText.push_back(item);
-					
-				}
-			}
-		}
+				
+				myItem->m_tableText = tableVec;
+				tableVec.clear();
 				std::vector<QString> tmpVec;
-
+				
 				MyTable* parent = qgraphicsitem_cast<MyTable*>(sp);
 				//复制文本信息
 
@@ -1289,7 +1193,7 @@ void CMajor::slot_insertImage()
 	m_scene->addItem(pixmap);
 	//pixmap->setFlags(QGraphicsItem::ItemIsMovable | QGraphicsItem::ItemIsSelectable | QGraphicsItem::ItemSendsGeometryChanges);
 	
-	connect(this,SIGNAL(sig_expand(bool)),pixmap,SLOT(slot_expand(bool)));
+	//connect(this,SIGNAL(sig_expand(bool)),pixmap,SLOT(slot_expand(bool)));
 	connect(this,SIGNAL(sig_repeat(bool)),pixmap,SLOT(slot_repeat(bool)));
 	connect(pixmap, SIGNAL(sig_hideRectMouse(bool)), m_scene, SLOT(slot_hideRectMouse(bool)));
 	
@@ -1297,7 +1201,7 @@ void CMajor::slot_insertImage()
 	if (pix.width() > m_view->viewport()->width() || pix.height() > m_view->viewport()->height())
 	m_view->fitInView(pixmap, Qt::KeepAspectRatio);
 	
-	emit(sig_expand(true));
+	//emit(sig_expand(true));
 }
 
 void CMajor::slot_insertForm()
@@ -1331,53 +1235,6 @@ void CMajor::slot_typeface()
 			}
 
 		}
-
-	//QGraphicsItem* itemTmp = m_scene->focusItem();
-	//MyGraphicsTextItem* item = dynamic_cast<MyGraphicsTextItem*>(itemTmp);
-	//ASSERT(item);
-
-	
-
-
-	//如果为真证明是焦点窗口
-	//if (item) {
-	//	//区分选中和未选中两种
-	//	if (item->textCursor().selectedText().isEmpty() || item->textCursor().selectedText().isNull()) {
-	//		QColor color = item->defaultTextColor();
-	//		
-	//		item->setFont(font);
-	//		item->setDefaultTextColor(color);
-	//		item->setText(item->toPlainText());
-	//	}
-	//	else {
-	//		QTextCharFormat fmt;        //文本字符格式
-	//		fmt.setFont(font);
-	//		QTextCursor cursor = item->textCursor();
-	//		//cursor.setCharFormat(fmt);
-	//		cursor.mergeCharFormat(fmt);
-	//		
-	//	}
-
-	//}
-	//else {
-
-	//	//不是焦点的处理
-	//	QList<QGraphicsItem*> list = m_scene->selectedItems();
-	//	if (list.isEmpty()) {
-	//		return;
-	//	}
-
-	//	for (QGraphicsItem* tmp : list) {
-	//		MyGraphicsTextItem* item = dynamic_cast<MyGraphicsTextItem*>(tmp);
-	//		
-	//		QColor color = item->defaultTextColor();
-	//		item->setDefaultTextColor(color);
-	//		item->setFont(font);
-
-	//		item->setText(item->toPlainText());
-	//	}
-
-	//}
 
 }
 
@@ -1493,7 +1350,7 @@ void CMajor::slot_save()
 			MyTable* myItem = dynamic_cast<MyTable*>(item);
 			if (myItem) {
 			QPointF point(myItem->pos());
-			//qDebug()<<"table point: "<<point;
+
 			obj.insert("x",point.x());
 			obj.insert("y",point.y());
 			obj.insert("width",myItem->getRect().width());
@@ -1501,7 +1358,6 @@ void CMajor::slot_save()
 			obj.insert("row",myItem->getRow());
 			obj.insert("col",myItem->getCol());
 			obj.insert("scale",myItem->scale());
-			
 			QJsonArray tmpArr;
 			QJsonObject tmpObj;
 
@@ -1514,9 +1370,11 @@ void CMajor::slot_save()
 				tmpObj.insert("intervalW",myItem->m_tableText.at(i)->intervalW);
 				tmpObj.insert("intervalH",myItem->m_tableText.at(i)->intervalH);
 				tmpObj.insert("contents",myItem->m_tableText.at(i)->toPlainText());
+				tmpObj.insert("rowIndex",myItem->m_tableText.at(i)->getRow());
+				tmpObj.insert("colIndex",myItem->m_tableText.at(i)->getCol());
 				tmpArr.append(tmpObj);
 			}
-			//qDebug()<<tmpArr;
+
 			obj.insert("tableText",tmpArr);
 			
 			tableArr.append(obj);
@@ -1668,17 +1526,7 @@ void CMajor::slot_textFrame()
 		m_tool->setCheckable(true);
 		m_tool->setChecked(true);
 	}
-	//if (m_tool->isChecked()) {
-	//	m_tool->setChecked(false);
-	//}
-	//else {
-	//	m_tool->setChecked(true);
-	//}
-	
-	
-	//m_tempTextFrame->setCheckable(true);
-	//m_scene->slot_hideRectMouse(false);
-	//printf("slot_textFrame\n");
+
 	if (m_textEnable == false) {
 		m_textEnable = true;
 
@@ -1702,7 +1550,7 @@ void CMajor::slot_rectFrame(QSize size, QPointF point, bool flag)
 	
 	if (m_textEnable) {
 		MyGraphicsTextItem* item = new MyGraphicsTextItem(QRectF(0, 0, abs(size.width()), abs(size.height())));
-		connect(this,SIGNAL(sig_expand(bool)),item,SLOT(slot_expand(bool)));
+		//connect(this,SIGNAL(sig_expand(bool)),item,SLOT(slot_expand(bool)));
 		connect(this,SIGNAL(sig_repeat(bool)),item,SLOT(slot_repeat(bool)));
 		m_scene->addItem(item);
 
@@ -1756,10 +1604,10 @@ void CMajor::slot_rectFrame(QSize size, QPointF point, bool flag)
 					connect(item, SIGNAL(sig_hideRectMouse(bool)), m_scene, SLOT(slot_hideRectMouse(bool)));
 					connect(item->document(),SIGNAL(contentsChanged()),table,SLOT(slot_contentsChanged()));
 					connect(this,SIGNAL(sig_MyTable(QRectF)),item,SLOT(slot_MyTable(QRectF)));
-					
-					item->setData(Qt::UserRole + 1,i);
-					//qDebug()<<"j: "<<j;
-					//qDebug()<<"i: "<<i;
+					connect(table,SIGNAL(sig_changeSelect()),item,SLOT(slot_changeSelect()));
+					//item->setData(Qt::UserRole + 1,i);
+					item->setIndex(i,j);
+
 					table->m_tableText.push_back(item);
 					//item->setPlainText(TR("%1").arg(j));
 				}
@@ -1770,13 +1618,13 @@ void CMajor::slot_rectFrame(QSize size, QPointF point, bool flag)
 				for (int j = 0; j < table->getCol(); ++j) {
 					MyTableText* item = new MyTableText(QRectF(0, 0, table->getIntervalW(), table->getIntervalH()), table);
 					item->moveBy(j * table->getIntervalW(), i * table->getIntervalH());
-					item->setData(Qt::UserRole + 1,i);
-
+					//item->setData(Qt::UserRole + 1,i);
+					item->setIndex(i,j);
 					connect(item, SIGNAL(sig_hideRectMouse(bool)), m_scene, SLOT(slot_hideRectMouse(bool)));
 					connect(item->document(),SIGNAL(contentsChanged()),table,SLOT(slot_contentsChanged()));
 					connect(this,SIGNAL(sig_MyTable(QRectF)),item,SLOT(slot_MyTable(QRectF)));
+					connect(table,SIGNAL(sig_changeSelect()),item,SLOT(slot_changeSelect()));
 					table->m_tableText.push_back(item);
-					
 				}
 			}
 		}
@@ -1852,20 +1700,12 @@ void CMajor::slot_rightMenu(const QPoint &point)
 	Q_UNUSED(point);
 	//qDebug()<<"slot_rightMenu";
 	QMenu *menu = new QMenu();
-	menu->addAction(expand);
+	//menu->addAction(expand);
 	menu->addAction(repeat);
 	menu->addAction(joinTable);
 	//menu->move(point);
 	//qDebug()<<point;
 	menu->exec(cursor().pos());
-}
-
-void CMajor::slot_sceneRectChanged(const QRectF &rect)
-{
-	Q_UNUSED(rect)
-	/*m_sceneWidth = rect.width();
-	m_sceneHeight = rect.height();
-	qDebug()<<"slot_sceneRectChanged: "<<m_sceneWidth<<","<<m_sceneHeight;*/
 }
 
 void CMajor::slot_repeat()
@@ -1915,15 +1755,6 @@ void CMajor::slot_setTableInfo()
 	tableInfo->move(pos()+QPoint(width()/2,height()/2));
 }
 
-void CMajor::slot_timeOut()
-{
-	//m_scene->update();
-	if (m_isExpand == false) {
-		//不支持扩展
-		emit sig_expand(false);
-	}
-
-}
 
 void CMajor::slot_textChanged(const QList<QRectF>)
 {
@@ -1933,29 +1764,6 @@ void CMajor::slot_textChanged(const QList<QRectF>)
 		return;
 	}
 	setWindowTitle(documentName + "*");
-}
-
-void CMajor::slot_tableRowColumn()
-{
-	/*QGraphicsTextItem *item = new QGraphicsTextItem();
-	QTextCursor cursor = item->textCursor();
-	cursor.insertTable(3,3);
-	
-	m_scene->addItem(item);*/
-	
-	//QGraphicsTextItem* o = new QGraphicsTextItem;
-	//MyGraphicsTable *o = new MyGraphicsTable(QRectF(0,0,100,100));
-	//m_scene->addItem(o);
-	//QTextTable* table = cursor.insertTable(row.toInt(), column.toInt());
-	//QTextTableFormat format = table->format();
-	//format.setWidth(200);
-	//format.setBorder(1);
-	//format.setBorderCollapse(1);
-
-	//// format.setBorderStyle(QTextFrameFormat::BorderStyle_Solid);
-	//// format.setBorderBrush(Qt::black);
-
-	//table->setFormat(format);
 }
 
 void CMajor::slot_menuBarFont()
@@ -1989,9 +1797,6 @@ void CMajor::slot_menuBarFont()
 
     //! 插入
     insertImage->setFont(font);
-    //insertForm->setFont(font);
-
-	expand->setFont(font);
 
 	scale->setFont(font);
 }
@@ -2010,30 +1815,6 @@ void CMajor::slot_okClicked(int row,int col)
 {	
 	m_tableCol = col;
 	m_tableRow = row;
-
-
-	//connect(table,SIGNAL(void sig_hideRectMouse(bool)),m_scene,SLOT(slot_hideRectMouse()));
-	//connect(this,SIGNAL(sig_expand(bool)),table,SLOT(slot_expand(bool)));
-	//connect(this,SIGNAL(sig_repeat(bool)),table,SLOT(slot_repeat(bool)));
-
-	//connect(table,SIGNAL(itemChanged(QTableWidgetItem* )),table,SLOT(resizeRowsToContents()));
-	/*QTableWidget *table = new QTableWidget;
-	QGraphicsProxyWidget* wid = m_scene->addWidget(table);	
-	wid->setFlags(QGraphicsItem::ItemIsFocusable|QGraphicsItem::ItemIsMovable|QGraphicsItem::ItemIsSelectable);
-
-		
-	table->setFrameRect(QRect(0,0,400,400));
-	table->setRowCount(row);
-	table->setColumnCount(col);
-	table->horizontalHeader()->hide();
-	table->verticalHeader()->hide();
-	table->verticalScrollBar()->hide();
-	table->horizontalScrollBar()->hide();
-	table->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
-	table->verticalHeader()->setSectionResizeMode(QHeaderView::Stretch);
-	
-	table->adjustSize();
-	m_scene->addItem(wid);*/
 	
 }
 void CMajor::slot_cancelClicked()
@@ -2043,34 +1824,6 @@ void CMajor::slot_cancelClicked()
 	tableInfo->deleteLater();
 	tableInfo->close();
 	tableInfo = nullptr;
-}
-//是否允许扩展
-void CMajor::slot_expand()
-{
-	if (m_isExpand == true) {
-		//记录当前的窗口大小
-		initCMajor();
-		m_isExpand = false;
-		expand->setIcon(QIcon(""));
-		resizeEvent(nullptr);
-		m_timer->start();
-		//setWindowFlags(windowFlags() & ~Qt::WindowMaximizeButtonHint);
-		//show();
-
-	}
-	else {
-		m_isExpand = true;
-		//QIcon icon("../yesExpand.png");
-		QIcon icon(":/yesExpand.png");
-		expand->setIcon(icon);
-		resizeEvent(nullptr);
-		//m_scene->update();
-		//emit sig_expand(false);
-		m_timer->stop();
-		//setWindowFlags(windowFlags() & Qt::WindowMaximizeButtonHint);
-		//show();
-	}
-
 }
 
 bool CMajor::loadPlugin()
@@ -2090,6 +1843,9 @@ bool CMajor::loadPlugin()
 			logFile = qobject_cast<Plugin*>(obj);
 			if (logFile)
 			{
+#ifndef PLUGIN_SUCCESS
+#define PLUGIN_SUCCESS 
+#endif // !PLUGIN_SUCCESS
 				return true;
 			}
 		}
