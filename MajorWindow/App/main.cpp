@@ -11,8 +11,7 @@ int main(int argc, char* argv[])
 
     window.isLoadPlugin();
     window.show();
-    // window.setJson("./zjx.json");
-    // window.getJson();
+
 
     return a.exec();
 }

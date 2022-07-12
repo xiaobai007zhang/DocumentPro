@@ -668,8 +668,8 @@ void CMajor::keyPressEvent(QKeyEvent* event)
 		}
 
 	}
-
-	QMainWindow::keyPressEvent(event);
+	//qDebug() << "cmajor key press";
+	return QMainWindow::keyPressEvent(event);
 }
 
 void CMajor::dragEnterEvent(QDragEnterEvent* event)
@@ -1588,9 +1588,10 @@ void CMajor::slot_rectFrame(QSize size, QPointF point, bool flag)
 			for (int i = 0; i < table->getRow(); ++i) {
 				for (int j = 0; j < table->getCol(); ++j) {
 					MyTableText* item = new MyTableText(QRectF(j * table->getIntervalW(), i * table->getIntervalH(), table->getIntervalW(), table->getIntervalH()), table);
+					//MyTableText* item = new MyTableText(QRectF(0,0, table->getIntervalW(), table->getIntervalH()), table);
 					//item->moveBy(j * table->getIntervalW(), i * table->getIntervalH());
 					//item->setPos(j * table->getIntervalW(), i * table->getIntervalH());
-					
+					//item->setRect(QRectF(j * table->getIntervalW(), i * table->getIntervalH(), item->getRect().width(), item->getRect().height()));
 					connect(item, SIGNAL(sig_hideRectMouse(bool)), m_scene, SLOT(slot_hideRectMouse(bool)));
 					//connect(item->document(),SIGNAL(contentsChanged()),table,SLOT(slot_contentsChanged()));
 					connect(this,SIGNAL(sig_MyTable(QRectF)),item,SLOT(slot_MyTable(QRectF)));
@@ -1607,8 +1608,9 @@ void CMajor::slot_rectFrame(QSize size, QPointF point, bool flag)
 			for (int i = 0; i < table->getRow(); ++i) {
 				for (int j = 0; j < table->getCol(); ++j) {
 					MyTableText* item = new MyTableText(QRectF(j * table->getIntervalW(), i * table->getIntervalH(), table->getIntervalW(), table->getIntervalH()), table);
+					//MyTableText* item = new MyTableText(QRectF(0, 0, table->getIntervalW(), table->getIntervalH()), table);
 					//item->moveBy(j * table->getIntervalW(), i * table->getIntervalH());
-					
+					//item->setRect(QRectF(j * table->getIntervalW(), i * table->getIntervalH(), item->getRect().width(), item->getRect().height()));
 					//item->setData(Qt::UserRole + 1,i);
 					item->setIndex(i,j);
 					connect(item, SIGNAL(sig_hideRectMouse(bool)), m_scene, SLOT(slot_hideRectMouse(bool)));

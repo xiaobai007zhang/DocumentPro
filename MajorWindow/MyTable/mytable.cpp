@@ -21,7 +21,6 @@ enum STATE_FLAG1
     MOV_BOTTOM_LINE,      //标记当前为用户按下矩形的下边界区域
     MOV_RIGHTBOTTOM_RECT, //标记当前为用户按下矩形的右下角
     MOV_RECT,             //标记当前为鼠标拖动图片移动状态
-    ROTATE                //标记当前为旋转状态
 } M_FLAG;
 
 void MyTable::paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget)
@@ -29,19 +28,19 @@ void MyTable::paint(QPainter* painter, const QStyleOptionGraphicsItem* option, Q
     Q_UNUSED(option)
     Q_UNUSED(widget)
     // painter->setPen(Qt::red);
-    painter->setBrush(Qt::white);
-    painter->setPen(Qt::gray);
-    painter->drawEllipse(m_bottomRect);
-    painter->drawEllipse(m_topRect);
-    painter->drawEllipse(m_rightRect);
-    painter->drawEllipse(m_leftRect);
+
 
     painter->setPen(Qt::black);
     for (QGraphicsItem* item : childItems())
     {
         painter->drawRect(item->boundingRect());
     }
-
+    painter->setBrush(Qt::white);
+    painter->setPen(Qt::gray);
+    painter->drawEllipse(m_bottomRect);
+    painter->drawEllipse(m_topRect);
+    painter->drawEllipse(m_rightRect);
+    painter->drawEllipse(m_leftRect);
     /*  for (MyTableText* text : m_tableText)
       {
           painter->drawRect(text->boundingRect());
@@ -72,7 +71,7 @@ QPainterPath MyTable::shape() const
 
 void MyTable::mousePressEvent(QGraphicsSceneMouseEvent* event)
 {
-    qDebug() << "table press";
+    //qDebug() << "table press";
     // emit sig_hideRectMouse(false);
     m_startPos = event->pos();
 
@@ -349,7 +348,7 @@ int MyTable::type() const
 void MyTable::focusOutEvent(QFocusEvent* event)
 {
     Q_UNUSED(event)
-    qDebug() << TR("table less focus");
+    //qDebug() << TR("table less focus");
 }
 
 QVariant MyTable::itemChange(GraphicsItemChange change, const QVariant& value)
@@ -444,6 +443,7 @@ void MyTable::keyPressEvent(QKeyEvent* event)
     //        }
     //    }
     //}
+    //qDebug() << "scene keypress";
     return QGraphicsItem::keyPressEvent(event);
 }
 
@@ -733,11 +733,12 @@ MyTableText::~MyTableText()
 
 void MyTableText::paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget)
 {
-    Q_UNUSED(option)
-    // QPen pen;
-    //// pen.setColor(Qt::red);
-    //// painter->setPen(pen);
-    ////  painter->drawRect(m_rect);
+    //painter->drawText(0, 0, "123");
+    //Q_UNUSED(option)
+     QPen pen;
+     pen.setColor(Qt::red);
+     painter->setPen(pen);
+     painter->drawRect(m_rect);
     //// painter->setRenderHint(QPainter::Antialiasing);
     // painter->setRenderHint(QPainter::SmoothPixmapTransform);
     // painter->save();
@@ -754,11 +755,11 @@ void MyTableText::paint(QPainter* painter, const QStyleOptionGraphicsItem* optio
     //     painter->setBrush(Qt::black);
     // }
     //// 原来什么属性就要什么属性,只不过去掉多余的选中状态
-    // QStyleOptionGraphicsItem op;
-    // op.initFrom(widget);
-    // op.state = QStyle::State_None;
+    QStyleOptionGraphicsItem op;
+     op.initFrom(widget);
+     op.state = QStyle::State_None;
     // painter->restore();
-    // return QGraphicsTextItem::paint(painter, &op, widget);
+     QGraphicsTextItem::paint(painter, &op, widget); 
 }
 
 QRectF MyTableText::boundingRect() const
@@ -775,13 +776,14 @@ QPainterPath MyTableText::shape() const
 
 void MyTableText::mousePressEvent(QGraphicsSceneMouseEvent* event)
 {
-    qDebug() << "text press";
+    //qDebug() << "text press";
     if (!m_rect.contains(event->pos()))
     {
         m_isSelect = false;
     }
-    // m_isSelect = true;
-
+    m_isSelect = true;
+    setTextInteractionFlags(Qt::TextEditorInteraction);
+    //setFocus();
     return QGraphicsTextItem::mousePressEvent(event);
 }
 
@@ -826,7 +828,7 @@ QRectF MyTableText::getRect()
 
 void MyTableText::mouseDoubleClickEvent(QGraphicsSceneMouseEvent* event)
 {
-    // qDebug() << "table text: mouseDoubleClickEvent";
+    qDebug() << "table text: mouseDoubleClickEvent";
     event->accept();
     if (event->button() == Qt::LeftButton)
     {
@@ -840,9 +842,9 @@ void MyTableText::mouseDoubleClickEvent(QGraphicsSceneMouseEvent* event)
 void MyTableText::keyPressEvent(QKeyEvent* event)
 {
 
-    // qDebug() << "child keyPress";
-    MyTable* table = dynamic_cast<MyTable*>(parentItem());
-    table->keyPressEvent(event);
+    qDebug() << "child keyPress";
+    //MyTable* table = dynamic_cast<MyTable*>(parentItem());
+    //table->keyPressEvent(event);
 
     return QGraphicsTextItem::keyPressEvent(event);
 }
@@ -856,12 +858,12 @@ void MyTableText::focusInEvent(QFocusEvent* event)
 
 void MyTableText::focusOutEvent(QFocusEvent* event)
 {
-    // qDebug() << "text focusOut event";
+    //qDebug() << "text focusOut event";
     //  setSelected(false);
     setCursor(Qt::ArrowCursor);
 
     setTextInteractionFlags(Qt::NoTextInteraction);
-    QGraphicsTextItem::focusOutEvent(event);
+    return QGraphicsTextItem::focusOutEvent(event);
 }
 
 void MyTableText::wheelEvent(QGraphicsSceneWheelEvent* event)
