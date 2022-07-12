@@ -22,9 +22,6 @@ protected:
     void mouseDoubleClickEvent(QGraphicsSceneMouseEvent* event) override;
 
     // void keyPressEvent(QKeyEvent* event) override;
-    void hoverEnterEvent(QGraphicsSceneHoverEvent* event) override;
-
-    bool eventFilter(QObject* obj, QEvent*) override;
 
     int type() const override;
 
@@ -41,6 +38,8 @@ public:
 
     void mouseReleaseEvent(QGraphicsSceneMouseEvent* event) override;
 
+    void hoverMoveEvent(QGraphicsSceneHoverEvent* event) override;
+
 public:
     QRectF getRect();
 
@@ -54,6 +53,8 @@ private:
     void initTableWidget();
 
     MyTableText* findItem(int row, int col);
+
+    QPolygonF getRotatePolygonFromRect(QRectF rectIn);
 
 signals:
     void sig_hideRectMouse(bool);
@@ -75,7 +76,9 @@ private:
     int m_row;
     int m_col;
 
-    QRectF m_rect;
+    QRectF m_rect, m_topRect, m_leftRect, m_rightRect, m_bottomRect, m_rbRect, m_insicedRectf;
+    QPolygonF m_topPoly, m_leftPoly, m_rightPoly, m_bottomPoly, m_rbPoly, m_insicedPoly;
+    QPolygonF m_oldRectPolygon;
 
     QGraphicsTextItem* item;
 
@@ -84,6 +87,8 @@ private:
     bool m_isRepeat;
 
     bool m_isJoin;
+
+    QPointF m_startPos;
 
 public:
     MyTable(int row, int col, QRectF rect);
@@ -99,6 +104,7 @@ public:
 };
 
 //=========================================================================================
+//=========================================================================================
 class MyTableText : public QGraphicsTextItem
 {
     Q_OBJECT
@@ -108,17 +114,16 @@ public:
     MyTableText()
     {
     }
+    QRectF boundingRect() const override;
 
 protected:
     void paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget) override;
-
-    QRectF boundingRect() const override;
 
     QPainterPath shape() const override;
 
     void mousePressEvent(QGraphicsSceneMouseEvent* event) override;
 
-    void mouseReleaseEvent(QGraphicsSceneMouseEvent* event) override;
+    // void mouseReleaseEvent(QGraphicsSceneMouseEvent* event) override;
 
     void mouseMoveEvent(QGraphicsSceneMouseEvent* event) override;
 

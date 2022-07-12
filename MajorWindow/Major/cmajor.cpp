@@ -509,6 +509,7 @@ void CMajor::loadJsonObj(const QJsonObject & obj, const QString & type)
 		QJsonArray textArr  = obj.value("tableText").toArray();
 		MyTable *table = new MyTable(row,col,QRectF(0,0,width-1,height));
 		table->setPos(x,y);
+		table->setScale(scale);
 
 		connect(table, SIGNAL(sig_hideRectMouse(bool)), m_scene, SLOT(slot_hideRectMouse(bool)));
 		connect(this,SIGNAL(sig_repeat(bool)),table,SLOT(slot_repeat(bool)));
@@ -600,17 +601,13 @@ void CMajor::closeEvent(QCloseEvent* event)
 	Q_UNUSED(event);
 	if (windowTitle().contains("*"))
 	{
-
-		//另存为或者不保存
-		QMessageBox::StandardButton standard =
-			QMessageBox::information(nullptr, "Tips", TR("是否保存对此文件的修改"), QMessageBox::Save | QMessageBox::No | QMessageBox::Cancel);
+	QMessageBox::StandardButton standard =
+	QMessageBox::information(nullptr, "Tips", TR("是否保存对此文件的修改?"), QMessageBox::Save | QMessageBox::No | QMessageBox::Cancel);
 
 		if (standard == QMessageBox::Save)
 		{
-
-			//处理保存逻辑
 			QFile file(m_curFilePath);
-
+			
 			//判断是否存在，如果不存在那么就另存为后关闭
 			if (!file.exists())
 			{
@@ -621,36 +618,28 @@ void CMajor::closeEvent(QCloseEvent* event)
 				if (!file.isOpen())
 				{
 					// QMessageBox::critical(nullptr,"Tips","文件保存失败，请重试!");
+#ifdef PLUGIN_SUCCESS
+					logFile->errorLog(TR("文件“%1”保存失败").arg(m_curFileName));
+#endif
+
 					return;
 				}
-				QPixmap pix = m_view->grab();
-				pix.save(fileName, "PNG");
-			}
-			else
-			{
-				file.open(QIODevice::WriteOnly | QIODevice::Truncate | QIODevice::Text);
-				if (!file.isOpen())
-				{
-					// QMessageBox::critical(nullptr,"Tips","文件打开失败!");
-					return;
+			}else{
+				//否则文件是已经打开的，可以直接保存
+				slot_save();
 				}
-				//存在
-				QPixmap pix = m_view->grab();
-				pix.save(m_curFileName, "PNG");
-
-			}
-		}
-		else if (standard == QMessageBox::Cancel)
-		{
-
-			event->ignore();
+		
+		}else if (standard == QMessageBox::Cancel){
+			
 			return;
 		}
-	}
 
-	//m_wid->close();
+
+	//新的文档名称
 	m_curFileName = "";
 	m_curFilePath = "";
+	
+	}
 }
 
 //键盘事件
@@ -773,9 +762,9 @@ void CMajor::slot_creatDocument()
 				if (!file.isOpen())
 				{
 					// QMessageBox::critical(nullptr,"Tips","文件保存失败，请重试!");
-					#ifdef PLUGIN_SUCCESS
+#ifdef PLUGIN_SUCCESS
 					logFile->errorLog(TR("文件“%1”保存失败").arg(m_curFileName));
-					#endif
+#endif
 
 					return;
 				}
@@ -1104,7 +1093,7 @@ void CMajor::slot_paste()
 					item->setPos(text->x(),text->y());
 
 					connect(item, SIGNAL(sig_hideRectMouse(bool)), m_scene, SLOT(slot_hideRectMouse(bool)));
-					connect(item->document(),SIGNAL(contentsChanged()),myItem,SLOT(slot_contentsChanged()));
+					//connect(item->document(),SIGNAL(contentsChanged()),myItem,SLOT(slot_contentsChanged()));
 					connect(this,SIGNAL(sig_MyTable(QRectF)),item,SLOT(slot_MyTable(QRectF)));
 					connect(myItem,SIGNAL(sig_changeSelect()),item,SLOT(slot_changeSelect()));
 					//myItem->m_tableText.push_back(item);
@@ -1598,11 +1587,12 @@ void CMajor::slot_rectFrame(QSize size, QPointF point, bool flag)
 		if (table->getCol() > table->getRow()) {
 			for (int i = 0; i < table->getRow(); ++i) {
 				for (int j = 0; j < table->getCol(); ++j) {
-					MyTableText* item = new MyTableText(QRectF(0, 0, table->getIntervalW(), table->getIntervalH()), table);
-					item->moveBy(j * table->getIntervalW(), i * table->getIntervalH());
+					MyTableText* item = new MyTableText(QRectF(j * table->getIntervalW(), i * table->getIntervalH(), table->getIntervalW(), table->getIntervalH()), table);
+					//item->moveBy(j * table->getIntervalW(), i * table->getIntervalH());
+					//item->setPos(j * table->getIntervalW(), i * table->getIntervalH());
 					
 					connect(item, SIGNAL(sig_hideRectMouse(bool)), m_scene, SLOT(slot_hideRectMouse(bool)));
-					connect(item->document(),SIGNAL(contentsChanged()),table,SLOT(slot_contentsChanged()));
+					//connect(item->document(),SIGNAL(contentsChanged()),table,SLOT(slot_contentsChanged()));
 					connect(this,SIGNAL(sig_MyTable(QRectF)),item,SLOT(slot_MyTable(QRectF)));
 					connect(table,SIGNAL(sig_changeSelect()),item,SLOT(slot_changeSelect()));
 					//item->setData(Qt::UserRole + 1,i);
@@ -1616,12 +1606,13 @@ void CMajor::slot_rectFrame(QSize size, QPointF point, bool flag)
 		else if (table->getCol() <= table->getRow()) {
 			for (int i = 0; i < table->getRow(); ++i) {
 				for (int j = 0; j < table->getCol(); ++j) {
-					MyTableText* item = new MyTableText(QRectF(0, 0, table->getIntervalW(), table->getIntervalH()), table);
-					item->moveBy(j * table->getIntervalW(), i * table->getIntervalH());
+					MyTableText* item = new MyTableText(QRectF(j * table->getIntervalW(), i * table->getIntervalH(), table->getIntervalW(), table->getIntervalH()), table);
+					//item->moveBy(j * table->getIntervalW(), i * table->getIntervalH());
+					
 					//item->setData(Qt::UserRole + 1,i);
 					item->setIndex(i,j);
 					connect(item, SIGNAL(sig_hideRectMouse(bool)), m_scene, SLOT(slot_hideRectMouse(bool)));
-					connect(item->document(),SIGNAL(contentsChanged()),table,SLOT(slot_contentsChanged()));
+					//connect(item->document(),SIGNAL(contentsChanged()),table,SLOT(slot_contentsChanged()));
 					connect(this,SIGNAL(sig_MyTable(QRectF)),item,SLOT(slot_MyTable(QRectF)));
 					connect(table,SIGNAL(sig_changeSelect()),item,SLOT(slot_changeSelect()));
 					table->m_tableText.push_back(item);

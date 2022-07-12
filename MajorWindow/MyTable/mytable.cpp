@@ -12,80 +12,114 @@
 #include <QTextBlock>
 #include <QTextDocument>
 
+enum STATE_FLAG1
+{
+    DEFAULT_FLAG = 0,
+    MOV_LEFT_LINE,        //标记当前为用户按下矩形的左边界区域
+    MOV_TOP_LINE,         //标记当前为用户按下矩形的上边界区域
+    MOV_RIGHT_LINE,       //标记当前为用户按下矩形的右边界区域
+    MOV_BOTTOM_LINE,      //标记当前为用户按下矩形的下边界区域
+    MOV_RIGHTBOTTOM_RECT, //标记当前为用户按下矩形的右下角
+    MOV_RECT,             //标记当前为鼠标拖动图片移动状态
+    ROTATE                //标记当前为旋转状态
+} M_FLAG;
+
 void MyTable::paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget)
 {
     Q_UNUSED(option)
     Q_UNUSED(widget)
-    
-    //进行绘画出对应的表格
-    //暂时决定，将鼠标聚焦放到对应的位置进行双击会出现编辑框
-    // qDebug() << "interval H: " << intervalH;
+    // painter->setPen(Qt::red);
+    painter->setBrush(Qt::white);
+    painter->setPen(Qt::gray);
+    painter->drawEllipse(m_bottomRect);
+    painter->drawEllipse(m_topRect);
+    painter->drawEllipse(m_rightRect);
+    painter->drawEllipse(m_leftRect);
+
+    painter->setPen(Qt::black);
+    for (QGraphicsItem* item : childItems())
+    {
+        painter->drawRect(item->boundingRect());
+    }
+
+    /*  for (MyTableText* text : m_tableText)
+      {
+          painter->drawRect(text->boundingRect());
+      }*/
 
     // painter->drawRect(m_rect);
-    //  painter->drawRect(boundingRect());
-    /* for (QGraphicsItem* item : childItems())
-     {
-         MyTableText* child = dynamic_cast<MyTableText*>(item);
-         painter->drawRect(child->getRect());
-     }*/
-    //画线条需要判断每一行最长的高度来决定
-    // MyTableText* tmp = *m_tableText.begin();
-    // int maxVal = tmp->intervalH;
-    // int maxVal = 0;
-    // int oldMax = 0;
-
-    // for (int i = 0; i < m_tableText.size(); ++i)
-    //{
-    //     if (i % m_col != 0)
-    //     {
-    //         if (maxVal < m_tableText[i]->intervalH)
-    //         {
-    //             maxVal = m_tableText[i]->intervalH;
-    //         }
-    //     }
-    //     else if (i != 0)
-    //     {
-    //         //比较完成一轮了，开始绘画
-    //         painter->drawLine(0, oldMax + maxVal, m_rect.width(), oldMax + maxVal);
-
-    //        // val++;
-    //        oldMax += maxVal;
-    //        maxVal = m_tableText[i]->intervalH;
-    //        //还需要再次比较一次
-    //    }
-    //}
-
-    //// for (int i = 1; i < m_row; ++i)
-    ////{
-    ////     painter->drawLine(0, i * intervalH, 0 + m_rect.width(), i * intervalH);
-    //// }
-
-    // for (int i = 1; i < m_col; ++i)
-    //{
-    //     painter->drawLine(i * intervalW, 0, i * intervalW, 0 + m_rect.height());
-    // }
+    //   painter->drawRect(-10, -10, 100, 100);
+    //进行绘画出对应的表格
+    //暂时决定，将鼠标聚焦放到对应的位置进行双击会出现编辑框
 }
 
 QRectF MyTable::boundingRect() const
 {
-    return QRectF(m_rect.x() - 3, m_rect.y() - 3, m_rect.width() + 6, m_rect.height() + 6);
+    // return QRectF(m_rect.x() - 3, m_rect.y() - 3, m_rect.width() + 6, m_rect.height() + 6);
+    return m_rect;
 }
 
 QPainterPath MyTable::shape() const
 {
-    QPainterPath temp;
-    temp.addRect(boundingRect());
-    QPainterPathStroker pathStroker;
+    QPainterPath path;
+    path.addRect(boundingRect());
+    /* QPainterPathStroker pathStroker;
 
-    QPainterPath path = pathStroker.createStroke(temp);
+     QPainterPath path = pathStroker.createStroke(temp);*/
 
     return path;
 }
 
 void MyTable::mousePressEvent(QGraphicsSceneMouseEvent* event)
 {
+    qDebug() << "table press";
+    // emit sig_hideRectMouse(false);
+    m_startPos = event->pos();
 
-    emit sig_hideRectMouse(false);
+    if (m_insicedPoly.containsPoint(m_startPos, Qt::WindingFill))
+    {
+        // setCursor(Qt::ArrowCursor);
+        // M_FLAG = MOV_RECT;
+        // setFlag(QGraphicsItem::ItemIsMovable);
+        M_FLAG = DEFAULT_FLAG;
+    }
+    else if (m_topPoly.containsPoint(m_startPos, Qt::WindingFill))
+    {
+        // setFlags(flags() ^ QGraphicsItem::ItemIsMovable);
+        // setCursor(Qt::SizeVerCursor);
+
+        M_FLAG = MOV_TOP_LINE;
+    }
+    else if (m_leftPoly.containsPoint(m_startPos, Qt::WindingFill))
+    {
+        // setFlags(flags() ^ QGraphicsItem::ItemIsMovable);
+        // setCursor(Qt::SizeHorCursor);
+        M_FLAG = MOV_LEFT_LINE;
+    }
+    else if (m_rightPoly.containsPoint(m_startPos, Qt::WindingFill))
+    {
+        // setFlags(flags() ^ QGraphicsItem::ItemIsMovable);
+        // setCursor(Qt::SizeHorCursor);
+        M_FLAG = MOV_RIGHT_LINE;
+    }
+    else if (m_bottomPoly.containsPoint(m_startPos, Qt::WindingFill))
+    {
+        // setFlags(flags() ^ QGraphicsItem::ItemIsMovable);
+        // setCursor(Qt::SizeVerCursor);
+        M_FLAG = MOV_BOTTOM_LINE;
+    }
+    else if (m_rbRect.contains(m_startPos))
+    {
+        // setFlags(flags() ^ QGraphicsItem::ItemIsMovable);
+        // setCursor(Qt::SizeFDiagCursor);
+        M_FLAG = MOV_RIGHTBOTTOM_RECT;
+    }
+    else
+    {
+        // setFlags(flags() ^ QGraphicsItem::ItemIsMovable);
+        // setCursor(Qt::ArrowCursor);
+        M_FLAG = DEFAULT_FLAG;
+    }
     return QGraphicsItem::mousePressEvent(event);
 }
 
@@ -96,10 +130,206 @@ void MyTable::mouseReleaseEvent(QGraphicsSceneMouseEvent* event)
     return QGraphicsItem::mouseReleaseEvent(event);
 }
 
+void MyTable::hoverMoveEvent(QGraphicsSceneHoverEvent* event)
+{
+    if (m_topPoly.containsPoint(event->pos(), Qt::WindingFill))
+    {
+        // setFlags(flags() ^ QGraphicsItem::ItemIsMovable);
+        setCursor(Qt::SizeVerCursor);
+
+        // M_FLAG = MOV_TOP_LINE;
+    }
+    else if (m_leftPoly.containsPoint(event->pos(), Qt::WindingFill))
+    {
+        // setFlags(flags() ^ QGraphicsItem::ItemIsMovable);
+        setCursor(Qt::SizeHorCursor);
+        // M_FLAG = MOV_LEFT_LINE;
+    }
+    else if (m_rightPoly.containsPoint(event->pos(), Qt::WindingFill))
+    {
+        // setFlags(flags() ^ QGraphicsItem::ItemIsMovable);
+        setCursor(Qt::SizeHorCursor);
+        // M_FLAG = MOV_RIGHT_LINE;
+    }
+    else if (m_bottomPoly.containsPoint(event->pos(), Qt::WindingFill))
+    {
+        // setFlags(flags() ^ QGraphicsItem::ItemIsMovable);
+        setCursor(Qt::SizeVerCursor);
+        // M_FLAG = MOV_BOTTOM_LINE;
+    }
+    else if (m_rbRect.contains(event->pos()))
+    {
+        // setFlags(flags() ^ QGraphicsItem::ItemIsMovable);
+        setCursor(Qt::SizeFDiagCursor);
+        // M_FLAG = MOV_RIGHTBOTTOM_RECT;
+    }
+    else
+    {
+        // setFlags(flags() ^ QGraphicsItem::ItemIsMovable);
+        setCursor(Qt::ArrowCursor);
+        // M_FLAG = DEFAULT_FLAG;
+    }
+    QGraphicsItem::hoverEnterEvent(event);
+}
+
 void MyTable::mouseMoveEvent(QGraphicsSceneMouseEvent* event)
 {
 
     emit sig_hideRectMouse(false);
+
+    if (M_FLAG == MOV_RECT)
+    {
+        QPointF point = event->pos() - m_startPos;
+        moveBy(point.x(), point.y());
+        setRect(m_rect);
+        scene()->update();
+    }
+    else if (M_FLAG == MOV_TOP_LINE)
+    {
+        // qDebug() << "top";
+        //  pf求出了矩形的中心点
+        QPointF pf = QPointF((m_oldRectPolygon.at(2).x() + m_oldRectPolygon.at(3).x()) / 2, ((m_oldRectPolygon.at(2).y() + m_oldRectPolygon.at(3).y()) / 2));
+
+        //最终dis求出来的是，鼠标移动对于矩形中心点的距离
+        qreal dis = sqrt((event->pos().x() - pf.x()) * (event->pos().x() - pf.x()) + (event->pos().y() - pf.y()) * (event->pos().y() - pf.y()));
+        qreal dis2LT = sqrt((event->pos().x() - m_oldRectPolygon.at(0).x()) * (event->pos().x() - m_oldRectPolygon.at(0).x()) +
+                            (event->pos().y() - m_oldRectPolygon.at(0).y()) * (event->pos().y() - m_oldRectPolygon.at(0).y()));
+        qreal dis2LB = sqrt((event->pos().x() - m_oldRectPolygon.at(3).x()) * (event->pos().x() - m_oldRectPolygon.at(3).x()) +
+                            (event->pos().y() - m_oldRectPolygon.at(3).y()) * (event->pos().y() - m_oldRectPolygon.at(3).y()));
+
+        // dis2LT 和dis2LB 左上角大于左下角的话，那么就代表向下拉到极限了
+        if (dis < 20 || dis2LT > dis2LB)
+        {
+            return;
+        }
+        else
+        {
+            // qDebug() << "dis: " << dis;
+            // qDebug() << "bottom: " << m_rect.bottom();
+            QRectF newRect(m_rect);
+            newRect.setTop(m_rect.bottom() - dis);
+            newRect.setBottom(m_rect.bottom());
+            setRect(newRect);
+            // m_RotateCenter = QPointF((m_oldRectPolygon.at(0).x() + m_oldRectPolygon.at(2).x()) / 2, (m_oldRectPolygon.at(0).y() + m_oldRectPolygon.at(2).y()) / 2);
+            // m_rect.moveCenter(m_RotateCenter);
+            setRect(m_rect);
+            scene()->update(); //必须要用scene()->update()，不能用update();否则会出现重影
+            
+
+            //所有的孩子的高度都要变
+           /* for (MyTableText* text : m_tableText)
+            {
+                text->setRect(QRectF(text->getRect().x(), text->getRect().y(), text->intervalW, text->intervalH));
+            }*/
+        
+        }
+    }
+    else if (M_FLAG == MOV_LEFT_LINE)
+    {
+        QPointF pf = QPointF((m_oldRectPolygon.at(1).x() + m_oldRectPolygon.at(2).x()) / 2, ((m_oldRectPolygon.at(1).y() + m_oldRectPolygon.at(2).y()) / 2));
+        //计算到右侧边中点的距离
+        qreal dis = sqrt((event->pos().x() - pf.x()) * (event->pos().x() - pf.x()) + (event->pos().y() - pf.y()) * (event->pos().y() - pf.y()));
+        qreal dis2LT = sqrt((event->pos().x() - m_oldRectPolygon.at(0).x()) * (event->pos().x() - m_oldRectPolygon.at(0).x()) +
+                            (event->pos().y() - m_oldRectPolygon.at(0).y()) * (event->pos().y() - m_oldRectPolygon.at(0).y()));
+        qreal dis2RT = sqrt((event->pos().x() - m_oldRectPolygon.at(1).x()) * (event->pos().x() - m_oldRectPolygon.at(1).x()) +
+                            (event->pos().y() - m_oldRectPolygon.at(1).y()) * (event->pos().y() - m_oldRectPolygon.at(1).y()));
+        if (dis < 20 || dis2LT > dis2RT)
+        {
+            return;
+        }
+        else
+        {
+            QRectF newRect(m_rect);
+            newRect.setLeft(m_rect.right() - dis);
+            newRect.setRight(m_rect.right());
+            setRect(newRect);
+
+            // setRect(m_rect);
+            scene()->update(); //必须要用scene()->update()，不能用update();否则会出现重影
+        }
+    }
+    else if (M_FLAG == MOV_RIGHT_LINE)
+    {
+        QPointF pf = QPointF((m_oldRectPolygon.at(0).x() + m_oldRectPolygon.at(3).x()) / 2, ((m_oldRectPolygon.at(0).y() + m_oldRectPolygon.at(3).y()) / 2));
+        //计算到左侧边中点的距离
+        qreal dis = sqrt((event->pos().x() - pf.x()) * (event->pos().x() - pf.x()) + (event->pos().y() - pf.y()) * (event->pos().y() - pf.y()));
+        qreal dis2LT = sqrt((event->pos().x() - m_oldRectPolygon.at(0).x()) * (event->pos().x() - m_oldRectPolygon.at(0).x()) +
+                            (event->pos().y() - m_oldRectPolygon.at(0).y()) * (event->pos().y() - m_oldRectPolygon.at(0).y()));
+        qreal dis2RT = sqrt((event->pos().x() - m_oldRectPolygon.at(1).x()) * (event->pos().x() - m_oldRectPolygon.at(1).x()) +
+                            (event->pos().y() - m_oldRectPolygon.at(1).y()) * (event->pos().y() - m_oldRectPolygon.at(1).y()));
+        if (dis < 20 || dis2LT < dis2RT)
+        {
+            return;
+        }
+        else
+        {
+            QRectF newRect(m_rect);
+            newRect.setLeft(m_rect.left());
+            newRect.setRight(m_rect.left() + dis);
+            setRect(newRect);
+
+            // setRect(m_rect);
+            scene()->update(); //必须要用scene()->update()，不能用update();否则会出现重影
+        }
+    }
+    else if (M_FLAG == MOV_BOTTOM_LINE)
+    {
+        //顶边中点
+        QPointF pf = QPointF((m_oldRectPolygon.at(0).x() + m_oldRectPolygon.at(1).x()) / 2, ((m_oldRectPolygon.at(0).y() + m_oldRectPolygon.at(1).y()) / 2));
+        //计算到底边中点的距离
+        qreal dis = sqrt((event->pos().x() - pf.x()) * (event->pos().x() - pf.x()) + (event->pos().y() - pf.y()) * (event->pos().y() - pf.y()));
+        qreal dis2LT = sqrt((event->pos().x() - m_oldRectPolygon.at(0).x()) * (event->pos().x() - m_oldRectPolygon.at(0).x()) +
+                            (event->pos().y() - m_oldRectPolygon.at(0).y()) * (event->pos().y() - m_oldRectPolygon.at(0).y()));
+        qreal dis2LB = sqrt((event->pos().x() - m_oldRectPolygon.at(3).x()) * (event->pos().x() - m_oldRectPolygon.at(3).x()) +
+                            (event->pos().y() - m_oldRectPolygon.at(3).y()) * (event->pos().y() - m_oldRectPolygon.at(3).y()));
+        if (dis < 20 || dis2LT < dis2LB)
+        {
+            return;
+        }
+        else
+        {
+            QRectF newRect(m_rect);
+            newRect.setTop(m_rect.top());
+            newRect.setBottom(m_rect.top() + dis);
+            setRect(newRect);
+            // m_RotateCenter = QPointF((m_oldRectPolygon.at(0).x() + m_oldRectPolygon.at(2).x()) / 2, (m_oldRectPolygon.at(0).y() + m_oldRectPolygon.at(2).y()) / 2);
+            // m_oldRect.moveCenter(m_RotateCenter);
+            // setRect(m_rect);
+            scene()->update(); //必须要用scene()->update()，不能用update();否则会出现重影
+        }
+    }
+    else if (M_FLAG == MOV_RIGHTBOTTOM_RECT)
+    {
+        //中心坐标点
+        QPointF pf = QPointF((m_oldRectPolygon.at(0).x() + m_oldRectPolygon.at(1).x()) / 2, ((m_oldRectPolygon.at(0).y() + m_oldRectPolygon.at(1).y()) / 2));
+
+        qreal dis = sqrt((event->pos().x() - pf.x()) * (event->pos().x() - pf.x()) + (event->pos().y() - pf.y()) * (event->pos().y() - pf.y()));
+        qreal dis2LT = sqrt((event->pos().x() - m_oldRectPolygon.at(0).x()) * (event->pos().x() - m_oldRectPolygon.at(0).x()) +
+                            (event->pos().y() - m_oldRectPolygon.at(0).y()) * (event->pos().y() - m_oldRectPolygon.at(0).y()));
+        qreal dis2RB = sqrt((event->pos().x() - m_oldRectPolygon.at(3).x()) * (event->pos().x() - m_oldRectPolygon.at(2).x()) +
+                            (event->pos().y() - m_oldRectPolygon.at(3).y()) * (event->pos().y() - m_oldRectPolygon.at(2).y()));
+
+        QPointF pf2 = QPointF((m_oldRectPolygon.at(0).x() + m_oldRectPolygon.at(3).x()) / 2, ((m_oldRectPolygon.at(0).y() + m_oldRectPolygon.at(3).y()) / 2));
+        qreal dis2 = sqrt((event->pos().x() - pf2.x()) * (event->pos().x() - pf2.x()) + (event->pos().y() - pf2.y()) * (event->pos().y() - pf2.y()));
+
+        if (dis < 20 || dis2LT < dis2RB)
+        {
+            return;
+        }
+        else
+        {
+            // qDebug() << "m_rect: bottom: " << m_rect.bottom() << ", right: " << m_rect.right();
+            QRectF newRect(m_rect);
+            // qDebug() << "dis1: " << dis;
+            // qDebug() << "dis2: " << dis2;
+            newRect.setBottom(m_rect.top() + dis);
+            newRect.setRight(m_rect.left() + dis2);
+            setRect(newRect);
+
+            scene()->update();
+        }
+    }
+
     return QGraphicsItem::mouseMoveEvent(event);
 }
 
@@ -109,30 +339,6 @@ void MyTable::mouseDoubleClickEvent(QGraphicsSceneMouseEvent* event)
     // setHandlesChildEvents(true);
     event->ignore();
     return QGraphicsItem::mouseDoubleClickEvent(event);
-}
-
-void MyTable::hoverEnterEvent(QGraphicsSceneHoverEvent* event)
-{
-    // qDebug() << "hover";
-    //  qDebug() << event->pos();
-    // qDebug() << shape();
-    if (shape().contains(event->pos()))
-        setCursor(Qt::SizeAllCursor);
-}
-
-bool MyTable::eventFilter(QObject* obj, QEvent*)
-{
-    for (QGraphicsItem* item : childItems())
-    {
-        MyTableText* tmp = dynamic_cast<MyTableText*>(item);
-        MyTableText* tmp2 = dynamic_cast<MyTableText*>(obj);
-        if (tmp2 == tmp)
-        {
-            return false;
-        }
-    }
-
-    return true;
 }
 
 int MyTable::type() const
@@ -167,86 +373,85 @@ void MyTable::keyPressEvent(QKeyEvent* event)
     // qDebug() << "table key press";
 
     //在子类进行删除的时候进行判断
-    if (event->key() == Qt::Key_Backspace)
-    {
-        QGraphicsItem* item = focusItem();
-        MyTableText* text = dynamic_cast<MyTableText*>(item);
+    // if (event->key() == Qt::Key_Backspace)
+    //{
+    //    QGraphicsItem* item = focusItem();
+    //    MyTableText* text = dynamic_cast<MyTableText*>(item);
 
-        if (text == nullptr)
-        {
-            return;
-        }
-        if (text->document()->blockCount() == 1 && text->document()->firstBlock().text().length() == 1)
-        {
-            return;
-        }
+    //    if (text == nullptr)
+    //    {
+    //        return;
+    //    }
+    //    if (text->document()->blockCount() == 1 && text->document()->firstBlock().text().length() == 1)
+    //    {
+    //        return;
+    //    }
 
-        int height = text->intervalH;
-        int docH = text->document()->size().height();
+    //    int height = text->intervalH;
+    //    int docH = text->document()->size().height();
 
-        int data = text->data(Qt::UserRole + 1).toInt();
-        int maxVal = docH;
-        int curVal = docH;
-        QFontMetrics metrics(text->font());
-        //如果文档内容小于当前的高度
-        if (docH < height)
-        {
+    //    int data = text->data(Qt::UserRole + 1).toInt();
+    //    int maxVal = docH;
+    //    int curVal = docH;
+    //    QFontMetrics metrics(text->font());
+    //    //如果文档内容小于当前的高度
+    //    if (docH < height)
+    //    {
 
-            // if (m_isJoin)
-            //{
+    //        // if (m_isJoin)
+    //        //{
 
-            //} //没有合并过就按照原先的方式
-            // else
-            { //分为两种情况，一种是当前编辑的框的长度是最长的,那就把当前的行和总长度都要缩短，
-                //第二种情况是当前行中第二或者第三长的，那就不管
-                for (QGraphicsItem* item : childItems())
-                {
-                    MyTableText* tmp = dynamic_cast<MyTableText*>(item);
-                    if (tmp->data(Qt::UserRole + 1).toInt() == data)
-                    {
-                        if (maxVal < tmp->document()->size().height())
-                        {
-                            maxVal = tmp->document()->size().height();
-                        }
-                    }
-                }
+    //        //} //没有合并过就按照原先的方式
+    //        // else
+    //        { //分为两种情况，一种是当前编辑的框的长度是最长的,那就把当前的行和总长度都要缩短，
+    //            //第二种情况是当前行中第二或者第三长的，那就不管
+    //            for (QGraphicsItem* item : childItems())
+    //            {
+    //                MyTableText* tmp = dynamic_cast<MyTableText*>(item);
+    //                if (tmp->data(Qt::UserRole + 1).toInt() == data)
+    //                {
+    //                    if (maxVal < tmp->document()->size().height())
+    //                    {
+    //                        maxVal = tmp->document()->size().height();
+    //                    }
+    //                }
+    //            }
 
-                //如果相等，证明是当前一层中最高的,需要整体缩短
-                if (maxVal == curVal)
-                {
-                    qreal adjust = metrics.height();
-                    for (QGraphicsItem* item : childItems())
-                    {
-                        MyTableText* tmp = dynamic_cast<MyTableText*>(item);
-                        if (tmp->data(Qt::UserRole + 1).toInt() == data)
-                        {
-                            QRectF rect = tmp->getRect();
-                            tmp->setRect(QRectF(rect.x(), rect.y(), rect.width(), rect.height() - adjust));
-                        }
-                        else if (tmp->data(Qt::UserRole + 1).toInt() > data)
-                        {
-                            QRectF rect = tmp->getRect();
-                            tmp->moveBy(rect.x(), rect.y() - adjust);
-                        }
-                    }
-                    setRect(QRectF(m_rect.x(), m_rect.y(), m_rect.width(), m_rect.height() - adjust));
-                }
-                else
-                {
-                    //啥也不干
-                }
-            }
-        }
-    }
+    //            //如果相等，证明是当前一层中最高的,需要整体缩短
+    //            if (maxVal == curVal)
+    //            {
+    //                qreal adjust = metrics.height();
+    //                for (QGraphicsItem* item : childItems())
+    //                {
+    //                    MyTableText* tmp = dynamic_cast<MyTableText*>(item);
+    //                    if (tmp->data(Qt::UserRole + 1).toInt() == data)
+    //                    {
+    //                        QRectF rect = tmp->getRect();
+    //                        tmp->setRect(QRectF(rect.x(), rect.y(), rect.width(), rect.height() - adjust));
+    //                    }
+    //                    else if (tmp->data(Qt::UserRole + 1).toInt() > data)
+    //                    {
+    //                        QRectF rect = tmp->getRect();
+    //                        tmp->moveBy(rect.x(), rect.y() - adjust);
+    //                    }
+    //                }
+    //                setRect(QRectF(m_rect.x(), m_rect.y(), m_rect.width(), m_rect.height() - adjust));
+    //            }
+    //            else
+    //            {
+    //                //啥也不干
+    //            }
+    //        }
+    //    }
+    //}
     return QGraphicsItem::keyPressEvent(event);
 }
 
 void MyTable::initTableWidget()
 {
-    setFlags(QGraphicsItem::ItemIsMovable | QGraphicsItem::ItemIsSelectable);
+    setFlags(QGraphicsItem::ItemIsSelectable);
     setAcceptHoverEvents(true);
     setFocus();
-    // installEventFilter(this);
 }
 
 MyTableText* MyTable::findItem(int row, int col)
@@ -263,7 +468,22 @@ MyTableText* MyTable::findItem(int row, int col)
     return nullptr;
 }
 
-//处理碰撞矩形
+QPolygonF MyTable::getRotatePolygonFromRect(QRectF rectIn)
+{
+    QVector<QPointF> vpt;
+    QPointF pf = rectIn.topLeft();
+    vpt.append(pf);
+    pf = rectIn.topRight();
+    vpt.append(pf);
+    pf = rectIn.bottomRight();
+    vpt.append(pf);
+    pf = rectIn.bottomLeft();
+    vpt.append(pf);
+    pf = rectIn.topLeft();
+    vpt.append(pf);
+    return QPolygonF(vpt);
+}
+
 void MyTable::slot_MyTable(QRectF rect)
 {
     Q_UNUSED(rect)
@@ -388,6 +608,22 @@ void MyTable::slot_repeat(bool flag)
 void MyTable::setRect(QRectF rect)
 {
     m_rect = rect;
+    m_oldRectPolygon = getRotatePolygonFromRect(m_rect);
+
+    m_topRect = QRectF(m_rect.x() + m_rect.width() / 2 - 5, m_rect.y() - 5, 10, 10);
+    m_topPoly = getRotatePolygonFromRect(m_topRect);
+
+    m_leftRect = QRectF(m_rect.x() - 5, m_rect.y() + m_rect.height() / 2 - 5, 10, 10);
+    m_leftPoly = getRotatePolygonFromRect(m_leftRect);
+
+    m_rightRect = QRectF(m_rect.right() - 5, m_rect.y() + m_rect.height() / 2 - 5, 10, 10);
+    m_rightPoly = getRotatePolygonFromRect(m_rightRect);
+
+    m_bottomRect = QRectF(m_rect.x() + m_rect.width() / 2 - 5, m_rect.bottom() - 5, 10, 10);
+    m_bottomPoly = getRotatePolygonFromRect(m_bottomRect);
+
+    m_insicedRectf = QRectF(m_rect.x() + 8, m_rect.y() + 8, m_rect.width() - 16, m_rect.height() - 16);
+    m_insicedPoly = getRotatePolygonFromRect(m_insicedRectf);
 }
 
 MyTable::MyTable(int row, int col, QRectF rect) : intervalW(0), intervalH(0)
@@ -400,6 +636,7 @@ MyTable::MyTable(int row, int col, QRectF rect) : intervalW(0), intervalH(0)
     // setFocus();
 
     initTableWidget();
+    setRect(m_rect);
 }
 
 MyTable::~MyTable()
@@ -424,61 +661,61 @@ int MyTable::getCol()
 void MyTable::slot_contentsChanged()
 {
     // setFocus();
-    QGraphicsItem* itemFocus = focusItem();
-    MyTableText* child = dynamic_cast<MyTableText*>(itemFocus);
-    if (child == nullptr)
-    {
-        return;
-    }
-    int height = child->intervalH;
-    int docH = child->document()->size().height();
-    QFontMetrics metrics(child->font());
+    // QGraphicsItem* itemFocus = focusItem();
+    // MyTableText* child = dynamic_cast<MyTableText*>(itemFocus);
+    // if (child == nullptr)
+    //{
+    //    return;
+    //}
+    // int height = child->intervalH;
+    // int docH = child->document()->size().height();
+    // QFontMetrics metrics(child->font());
 
-    if (docH > height)
-    {
-        qreal adjust = metrics.height();
-        QRectF childRect = child->getRect();
+    // if (docH > height)
+    //{
+    //     qreal adjust = metrics.height();
+    //     QRectF childRect = child->getRect();
 
-        child->setRect(QRectF(childRect.x(), childRect.y(), childRect.width(), childRect.height() + adjust));
-        setRect(QRectF(m_rect.x(), m_rect.y(), m_rect.width(), m_rect.height() + adjust));
+    //    child->setRect(QRectF(childRect.x(), childRect.y(), childRect.width(), childRect.height() + adjust));
+    //    setRect(QRectF(m_rect.x(), m_rect.y(), m_rect.width(), m_rect.height() + adjust));
 
-        //当更新文本框后，光标的位置设置，文本的末尾
-        /* QTextCursor cursor = child->textCursor();
-         cursor.movePosition(QTextCursor::End, QTextCursor::MoveAnchor, 1);
-         child->setTextCursor(cursor);*/
+    //    //当更新文本框后，光标的位置设置，文本的末尾
+    //    /* QTextCursor cursor = child->textCursor();
+    //     cursor.movePosition(QTextCursor::End, QTextCursor::MoveAnchor, 1);
+    //     child->setTextCursor(cursor);*/
 
-        int tmpData = child->data(Qt::UserRole + 1).toInt();
+    //    int tmpData = child->data(Qt::UserRole + 1).toInt();
 
-        for (QGraphicsItem* item : childItems())
-        {
-            MyTableText* tmp = dynamic_cast<MyTableText*>(item);
-            if (tmp->data(Qt::UserRole + 1).toInt() == tmpData && tmp != child)
-            {
-                QRectF tmpRect = tmp->getRect();
-                tmp->setRect(QRectF(tmpRect.x(), tmpRect.y(), tmpRect.width(), tmpRect.height() + adjust));
-            }
-        }
+    //    for (QGraphicsItem* item : childItems())
+    //    {
+    //        MyTableText* tmp = dynamic_cast<MyTableText*>(item);
+    //        if (tmp->data(Qt::UserRole + 1).toInt() == tmpData && tmp != child)
+    //        {
+    //            QRectF tmpRect = tmp->getRect();
+    //            tmp->setRect(QRectF(tmpRect.x(), tmpRect.y(), tmpRect.width(), tmpRect.height() + adjust));
+    //        }
+    //    }
 
-        //设置向下偏移
-        int data = 20;
-        for (QGraphicsItem* item : childItems())
-        {
-            MyTableText* tmp = dynamic_cast<MyTableText*>(item);
-            if (tmp->hasFocus())
-            {
-                data = tmp->data(Qt::UserRole + 1).toInt();
-            }
+    //    //设置向下偏移
+    //    int data = 20;
+    //    for (QGraphicsItem* item : childItems())
+    //    {
+    //        MyTableText* tmp = dynamic_cast<MyTableText*>(item);
+    //        if (tmp->hasFocus())
+    //        {
+    //            data = tmp->data(Qt::UserRole + 1).toInt();
+    //        }
 
-            if (tmp->data(Qt::UserRole + 1).toInt() > data)
-            {
-                QRectF rect = tmp->getRect();
+    //        if (tmp->data(Qt::UserRole + 1).toInt() > data)
+    //        {
+    //            QRectF rect = tmp->getRect();
 
-                // tmp->setRect(QRectF(rect.x(), rect.y() + adjust + adjust, rect.width(), rect.height()));
-                tmp->moveBy(rect.x(), rect.y() + adjust);
-                // tmp->setRect(QRectF(rect.x(), rect.y() + adjust, tmp->intervalW, tmp->intervalH));
-            }
-        }
-    }
+    //            // tmp->setRect(QRectF(rect.x(), rect.y() + adjust + adjust, rect.width(), rect.height()));
+    //            tmp->moveBy(rect.x(), rect.y() + adjust);
+    //            // tmp->setRect(QRectF(rect.x(), rect.y() + adjust, tmp->intervalW, tmp->intervalH));
+    //        }
+    //    }
+    //}
 }
 
 //=======================================================================================
@@ -486,7 +723,7 @@ void MyTable::slot_contentsChanged()
 MyTableText::MyTableText(QRectF rect, QGraphicsItem* parent) : QGraphicsTextItem(parent)
 {
     m_rect = rect;
-    // installEventFilter(this);
+
     initMyTableText();
 }
 
@@ -497,30 +734,31 @@ MyTableText::~MyTableText()
 void MyTableText::paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget)
 {
     Q_UNUSED(option)
-    QPen pen;
-    // pen.setColor(Qt::red);
-    // painter->setPen(pen);
-    //  painter->drawRect(m_rect);
-    // painter->setRenderHint(QPainter::Antialiasing);
-    painter->setRenderHint(QPainter::SmoothPixmapTransform);
-    painter->save();
-    painter->drawRect(m_rect);
-
-    if (m_isSelect == true)
-    {
-        painter->setBrush(Qt::gray);
-        painter->drawRect(m_rect);
-    }
-    else
-    {
-        painter->setBrush(Qt::black);
-    }
-    // 原来什么属性就要什么属性,只不过去掉多余的选中状态
-    QStyleOptionGraphicsItem op;
-    op.initFrom(widget);
-    op.state = QStyle::State_None;
-    painter->restore();
-    return QGraphicsTextItem::paint(painter, &op, widget);
+    // QPen pen;
+    //// pen.setColor(Qt::red);
+    //// painter->setPen(pen);
+    ////  painter->drawRect(m_rect);
+    //// painter->setRenderHint(QPainter::Antialiasing);
+    // painter->setRenderHint(QPainter::SmoothPixmapTransform);
+    // painter->save();
+    //// painter->drawRect(m_rect);
+    ////  painter->setBrush(Qt::gray);
+    ////  painter->drawEllipse(m_rect.x() + m_rect.width() / 2, m_rect.y() - 5, 10, 10);
+    // if (m_isSelect == true)
+    //{
+    //     painter->setBrush(Qt::gray);
+    //     painter->drawRect(m_rect);
+    // }
+    // else
+    //{
+    //     painter->setBrush(Qt::black);
+    // }
+    //// 原来什么属性就要什么属性,只不过去掉多余的选中状态
+    // QStyleOptionGraphicsItem op;
+    // op.initFrom(widget);
+    // op.state = QStyle::State_None;
+    // painter->restore();
+    // return QGraphicsTextItem::paint(painter, &op, widget);
 }
 
 QRectF MyTableText::boundingRect() const
@@ -537,23 +775,19 @@ QPainterPath MyTableText::shape() const
 
 void MyTableText::mousePressEvent(QGraphicsSceneMouseEvent* event)
 {
+    qDebug() << "text press";
     if (!m_rect.contains(event->pos()))
     {
         m_isSelect = false;
     }
     // m_isSelect = true;
+
     return QGraphicsTextItem::mousePressEvent(event);
-}
-
-void MyTableText::mouseReleaseEvent(QGraphicsSceneMouseEvent* event)
-{
-
-    return QGraphicsTextItem::mouseReleaseEvent(event);
 }
 
 void MyTableText::mouseMoveEvent(QGraphicsSceneMouseEvent* event)
 {
-    emit sig_hideRectMouse(false);
+    // emit sig_hideRectMouse(false);
     return QGraphicsTextItem::mouseMoveEvent(event);
 }
 

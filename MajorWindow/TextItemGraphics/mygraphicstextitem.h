@@ -7,6 +7,7 @@
 #include <QPen>
 #include <QTextCursor>
 #include <QTimer>
+#define M_PI 3.14
 
 class MyGraphicsTextItem : public QGraphicsTextItem
 {
@@ -34,6 +35,10 @@ public:
     //返回文本信息
     QString getStrText();
 
+    void setRectSize(QRectF rect);
+
+    QPolygonF getRotatePolygonFromRect(QRectF rectIn);
+
 protected:
     // void hoverEnterEvent(QGraphicsSceneHoverEvent* event) override;
     void focusInEvent(QFocusEvent* e) override;
@@ -48,12 +53,12 @@ protected:
     void mouseReleaseEvent(QGraphicsSceneMouseEvent* event) override;
     void mouseMoveEvent(QGraphicsSceneMouseEvent* event) override;
 
+    void hoverMoveEvent(QGraphicsSceneHoverEvent* event) override;
     QPainterPath shape() const;
 
     void mouseDoubleClickEvent(QGraphicsSceneMouseEvent* e) override;
 
 public slots:
-    void slot_expand(bool);
     void slot_repeat(bool);
 
 signals:
@@ -69,7 +74,11 @@ signals:
     void sig_hideRectMouse(bool);
 
 private:
-    QRectF m_rect;
+    QRectF m_rect, m_leftRect, m_rightRect, m_topRect, m_bottomRect, m_rbRect;
+
+    QRectF m_insicedRectf;
+
+    QPolygonF m_oldRectPolygon;
 
     QString m_text;
 
@@ -82,9 +91,9 @@ private:
 
     QPointF m_startPos;
 
-    bool m_isExpand;
-
     bool m_isRepeat;
 
     short m_zValue;
+
+    QPolygonF m_topPoly, m_leftPoly, m_rightPoly, m_bottomPoly, m_insicsdPoly;
 };

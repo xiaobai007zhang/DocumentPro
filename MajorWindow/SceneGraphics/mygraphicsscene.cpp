@@ -45,10 +45,14 @@ void MyGraphicsScene::mousePressEvent(QGraphicsSceneMouseEvent* event)
     // qDebug() << "scene mouse press pos: " << event->scenePos();
     //  qDebug() << "scene pos: " << event->pos();
     //  qDebug() << "scene scenePos pos: " << event->scenePos();
+    // qDebug() << "scene press";
     if (event->button() == Qt::LeftButton)
     {
+        if (m_rectMouse == nullptr)
+        {
+            m_rectMouse = new QGraphicsRectItem;
+        }
 
-        m_rectMouse = new QGraphicsRectItem;
         // m_rectMouse->setPos(0, 0);
         // m_rectMouse->setBrush(Qt::blue);
         addItem(m_rectMouse);
@@ -64,7 +68,7 @@ void MyGraphicsScene::mousePressEvent(QGraphicsSceneMouseEvent* event)
 
 void MyGraphicsScene::mouseMoveEvent(QGraphicsSceneMouseEvent* event)
 {
-
+    // qDebug() << "scene move event";
     //只有点击了才会做处理
     if (m_isPress && initFlag == false)
     {
@@ -154,7 +158,7 @@ void MyGraphicsScene::wheelEvent(QGraphicsSceneWheelEvent* event)
             }
             else
             {
-                if (item->scale() - 0.1 <= 0)
+                if (item->scale() - 0.2 <= 0)
                 {
                     continue;
                 }
