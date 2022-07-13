@@ -144,8 +144,7 @@ void MyGraphicsScene::wheelEvent(QGraphicsSceneWheelEvent* event)
     QList<QGraphicsItem*> list = selectedItems();
     if (list.isEmpty())
     {
-        QGraphicsScene::wheelEvent(event);
-        return;
+        return QGraphicsScene::wheelEvent(event);
     }
     else
     {
@@ -158,7 +157,7 @@ void MyGraphicsScene::wheelEvent(QGraphicsSceneWheelEvent* event)
             }
             else
             {
-                if (item->scale() - 0.2 <= 0)
+                if (item->scale() - 0.1 <= 0)
                 {
                     continue;
                 }

@@ -5,6 +5,9 @@
 #include <QGraphicsRectItem>
 #include <QObject>
 #include <vector>
+
+#include "ToolDefine.h"
+
 #define TABLE_TYPE QGraphicsItem::UserType + 1
 
 class MyTableText;
@@ -60,6 +63,9 @@ signals:
     void sig_hideRectMouse(bool);
 
     void sig_changeSelect();
+
+    void sig_updateSize(STATE_FLAG, qreal);
+
 public slots:
 
     void slot_contentsChanged();
@@ -90,6 +96,8 @@ private:
 
     QPointF m_startPos;
 
+    STATE_FLAG M_FLAG;
+
 public:
     MyTable(int row, int col, QRectF rect);
     ~MyTable();
@@ -111,8 +119,9 @@ class MyTableText : public QGraphicsTextItem
 public:
     MyTableText(QRectF rect, QGraphicsItem* parent = nullptr);
     ~MyTableText();
-    MyTableText()
+    MyTableText(QGraphicsItem* parent = nullptr) : m_rect(0, 0, 0, 0), QGraphicsTextItem(parent)
     {
+        initMyTableText();
     }
     QRectF boundingRect() const override;
 
@@ -147,6 +156,7 @@ private:
     //初始化基本信息
     void initMyTableText();
 
+    QPolygonF getRotatePolygonFromRect(QRectF rectIn);
     // void updateHeight();
 
 signals:
@@ -155,6 +165,9 @@ signals:
 private slots:
     void slot_MyTable(QRectF rect);
     void slot_changeSelect();
+
+    //关联的四个槽
+    void slot_updateSize(STATE_FLAG, qreal distance);
 
 public:
     qreal intervalW;
@@ -168,6 +181,12 @@ public:
     int getRow();
     int getCol();
 
+    void setX(int);
+    void setY(int);
+
+    int getX();
+    int getY();
+
     QRectF getRect();
     bool m_isSelect = false;
 
@@ -178,4 +197,8 @@ private:
     //记录当前的行列数，作为属性
     int m_row;
     int m_col;
+    int m_x, m_y;
+
+    QPolygonF m_oldRectPolygon;
+    STATE_FLAG M_FLAG;
 };

@@ -807,9 +807,9 @@ bool CMajor::slot_openFile()
 	}
 
 	//刷新一次
-	slot_sceneUpdate();
+	//slot_sceneUpdate();
 
-	QString fileName = QFileDialog::getOpenFileName(nullptr, "Tips", "./");
+	QString fileName = QFileDialog::getOpenFileName(nullptr, "Tips", ".");
 
 	//从文件路径中获取文件名称,并显示到窗口上
 	setFilePathAName(fileName);
@@ -1091,32 +1091,32 @@ void CMajor::slot_paste()
 					MyTableText* item = new MyTableText(QRectF(0, 0, text->intervalW,text->intervalH), myItem);
 					item->setIndex(text->getRow(),text->getCol());
 					item->setPos(text->x(),text->y());
-
+					//item->setPos(text->getX(),text->getY());
 					connect(item, SIGNAL(sig_hideRectMouse(bool)), m_scene, SLOT(slot_hideRectMouse(bool)));
 					//connect(item->document(),SIGNAL(contentsChanged()),myItem,SLOT(slot_contentsChanged()));
 					connect(this,SIGNAL(sig_MyTable(QRectF)),item,SLOT(slot_MyTable(QRectF)));
 					connect(myItem,SIGNAL(sig_changeSelect()),item,SLOT(slot_changeSelect()));
 					//myItem->m_tableText.push_back(item);
 					tableVec.push_back(item);
-				
-				
+					
+					//item->scene()->update();
 			}
-				
+				myItem->update();
 				myItem->m_tableText = tableVec;
 				tableVec.clear();
 				std::vector<QString> tmpVec;
 				
-				MyTable* parent = qgraphicsitem_cast<MyTable*>(sp);
-				//复制文本信息
+				//MyTable* parent = qgraphicsitem_cast<MyTable*>(sp);
+				////复制文本信息
 
-				for (QGraphicsItem* text : parent->childItems()) {
-					MyTableText* tmp = dynamic_cast<MyTableText*>(text);
-					tmpVec.push_back(tmp->toPlainText());
-				}
+				//for (QGraphicsItem* text : parent->childItems()) {
+				//	MyTableText* tmp = dynamic_cast<MyTableText*>(text);
+				//	tmpVec.push_back(tmp->toPlainText());
+				//}
 
-				for (int i = 0; i < tmpVec.size(); ++i) {
-					myItem->m_tableText.at(i)->setPlainText(tmpVec.at(i));
-				}
+				//for (int i = 0; i < tmpVec.size(); ++i) {
+				//	myItem->m_tableText.at(i)->setPlainText(tmpVec.at(i));
+				//}
 
 			}
 			
@@ -1141,7 +1141,8 @@ void CMajor::slot_remove()
 	if (item) {
 		if (item->textCursor().selectedText().isNull() || item->textCursor().selectedText().isEmpty()) {
 			m_scene->removeItem(item);
-			delete item;
+			//delete item;
+			item->update();
 			item = nullptr;
 		}
 		else {
@@ -1153,7 +1154,8 @@ void CMajor::slot_remove()
 		QList<QGraphicsItem*>list = m_scene->selectedItems();
 		for (QGraphicsItem* value : list) {
 			m_scene->removeItem(value);
-			delete value;
+			//delete value;
+			value->update();
 			value = nullptr;
 			//delete value;
 			//value = nullptr;
@@ -1161,7 +1163,6 @@ void CMajor::slot_remove()
 	}
 
 	m_scene->update();
-	m_view->update();
 }
 
 void CMajor::slot_insertImage()
@@ -1587,16 +1588,18 @@ void CMajor::slot_rectFrame(QSize size, QPointF point, bool flag)
 		if (table->getCol() > table->getRow()) {
 			for (int i = 0; i < table->getRow(); ++i) {
 				for (int j = 0; j < table->getCol(); ++j) {
-					MyTableText* item = new MyTableText(QRectF(j * table->getIntervalW(), i * table->getIntervalH(), table->getIntervalW(), table->getIntervalH()), table);
-					//MyTableText* item = new MyTableText(QRectF(0,0, table->getIntervalW(), table->getIntervalH()), table);
+					//MyTableText* item = new MyTableText(QRectF(j * table->getIntervalW(), i * table->getIntervalH(), table->getIntervalW(), table->getIntervalH()), table);
+					MyTableText* item = new MyTableText(QRectF(0,0, table->getIntervalW(), table->getIntervalH()), table);
 					//item->moveBy(j * table->getIntervalW(), i * table->getIntervalH());
-					//item->setPos(j * table->getIntervalW(), i * table->getIntervalH());
+					item->setPos(j * table->getIntervalW(), i * table->getIntervalH());
+					item->setX(j * table->getIntervalW());
+					item->setY(i * table->getIntervalH());
 					//item->setRect(QRectF(j * table->getIntervalW(), i * table->getIntervalH(), item->getRect().width(), item->getRect().height()));
 					connect(item, SIGNAL(sig_hideRectMouse(bool)), m_scene, SLOT(slot_hideRectMouse(bool)));
 					//connect(item->document(),SIGNAL(contentsChanged()),table,SLOT(slot_contentsChanged()));
 					connect(this,SIGNAL(sig_MyTable(QRectF)),item,SLOT(slot_MyTable(QRectF)));
 					connect(table,SIGNAL(sig_changeSelect()),item,SLOT(slot_changeSelect()));
-					//item->setData(Qt::UserRole + 1,i);
+					connect(table,SIGNAL(sig_updateSize(STATE_FLAG, qreal)),item,SLOT(slot_updateSize(STATE_FLAG, qreal)));
 					item->setIndex(i,j);
 
 					table->m_tableText.push_back(item);
@@ -1607,8 +1610,13 @@ void CMajor::slot_rectFrame(QSize size, QPointF point, bool flag)
 		else if (table->getCol() <= table->getRow()) {
 			for (int i = 0; i < table->getRow(); ++i) {
 				for (int j = 0; j < table->getCol(); ++j) {
-					MyTableText* item = new MyTableText(QRectF(j * table->getIntervalW(), i * table->getIntervalH(), table->getIntervalW(), table->getIntervalH()), table);
-					//MyTableText* item = new MyTableText(QRectF(0, 0, table->getIntervalW(), table->getIntervalH()), table);
+					//MyTableText* item = new MyTableText(QRectF(j * table->getIntervalW(), i * table->getIntervalH(), table->getIntervalW(), table->getIntervalH()), table);
+					MyTableText* item = new MyTableText(QRectF(0, 0, table->getIntervalW(), table->getIntervalH()), table);
+					//MyTableText* item = new MyTableText(table);
+					item->setPos(j * table->getIntervalW(), i * table->getIntervalH());
+					
+					item->setX(j * table->getIntervalW());
+					item->setY(i * table->getIntervalH());
 					//item->moveBy(j * table->getIntervalW(), i * table->getIntervalH());
 					//item->setRect(QRectF(j * table->getIntervalW(), i * table->getIntervalH(), item->getRect().width(), item->getRect().height()));
 					//item->setData(Qt::UserRole + 1,i);
@@ -1617,6 +1625,7 @@ void CMajor::slot_rectFrame(QSize size, QPointF point, bool flag)
 					//connect(item->document(),SIGNAL(contentsChanged()),table,SLOT(slot_contentsChanged()));
 					connect(this,SIGNAL(sig_MyTable(QRectF)),item,SLOT(slot_MyTable(QRectF)));
 					connect(table,SIGNAL(sig_changeSelect()),item,SLOT(slot_changeSelect()));
+					connect(table,SIGNAL(sig_updateSize(STATE_FLAG, qreal)),item,SLOT(slot_updateSize(STATE_FLAG, qreal)));
 					table->m_tableText.push_back(item);
 				}
 			}

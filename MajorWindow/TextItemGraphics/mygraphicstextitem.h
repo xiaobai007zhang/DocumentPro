@@ -1,5 +1,6 @@
 #pragma once
 
+#include "ToolDefine.h"
 #include <QColor>
 #include <QFontMetricsF>
 #include <QGraphicsTextItem>
@@ -96,4 +97,8 @@ private:
     short m_zValue;
 
     QPolygonF m_topPoly, m_leftPoly, m_rightPoly, m_bottomPoly, m_insicsdPoly;
+
+    QRectF m_topOldRect, m_leftOldRect;
+
+    STATE_FLAG M_FLAG;
 };

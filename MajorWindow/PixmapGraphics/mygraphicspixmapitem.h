@@ -1,5 +1,6 @@
 #pragma once
 
+#include "ToolDefine.h"
 #include <QGraphicsPixmapItem>
 #include <QObject>
 #include <QRectF>
@@ -53,6 +54,8 @@ private:
 
     QPolygonF m_oldRectPolygon;
     QPolygonF m_topPoly, m_leftPoly, m_rightPoly, m_bottomPoly, m_insicsdPoly;
+
+    STATE_FLAG M_FLAG;
 
 public:
     QRectF m_rect, m_topRect, m_leftRect, m_rightRect, m_bottomRect, m_rbRect;

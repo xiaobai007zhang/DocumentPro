@@ -8,17 +8,17 @@
 #include <QStyleOptionGraphicsItem>
 #include <qtextdocument.h>
 
-enum STATE_FLAG2
-{
-    DEFAULT_FLAG = 0,
-    MOV_LEFT_LINE,        //标记当前为用户按下矩形的左边界区域
-    MOV_TOP_LINE,         //标记当前为用户按下矩形的上边界区域
-    MOV_RIGHT_LINE,       //标记当前为用户按下矩形的右边界区域
-    MOV_BOTTOM_LINE,      //标记当前为用户按下矩形的下边界区域
-    MOV_RIGHTBOTTOM_RECT, //标记当前为用户按下矩形的右下角
-    MOV_RECT,             //标记当前为鼠标拖动图片移动状态
-
-} M_FLAG;
+// enum STATE_FLAG2
+//{
+//     DEFAULT_FLAG = 0,
+//     MOV_LEFT_LINE,        //标记当前为用户按下矩形的左边界区域
+//     MOV_TOP_LINE,         //标记当前为用户按下矩形的上边界区域
+//     MOV_RIGHT_LINE,       //标记当前为用户按下矩形的右边界区域
+//     MOV_BOTTOM_LINE,      //标记当前为用户按下矩形的下边界区域
+//     MOV_RIGHTBOTTOM_RECT, //标记当前为用户按下矩形的右下角
+//     MOV_RECT,             //标记当前为鼠标拖动图片移动状态
+//
+// } M_FLAG;
 
 MyGraphicsTextItem::MyGraphicsTextItem(const QRectF& rt, QGraphicsItem* parent) : QGraphicsTextItem(parent), m_isMousePress(false), m_isRepeat(true)
 {
@@ -57,6 +57,7 @@ void MyGraphicsTextItem::updateFontInfo()
     //当输入文字长于文本框时
     // if (m_fontWidth > boundingRect().width())
     //{
+    //    // qDebug() << "long";
     //    qreal adjust = metrics.width("中");
     //    this->setRect(QRectF(boundingRect().x(), boundingRect().y(), m_fontWidth + adjust, boundingRect().height()));
     //    // setRect(QRectF(boundingRect().x(), boundingRect().y(), m_fontWidth + adjust, boundingRect().height()));
@@ -68,7 +69,6 @@ void MyGraphicsTextItem::updateFontInfo()
     //    cursor.movePosition(QTextCursor::End, QTextCursor::MoveAnchor, 1);
     //    this->setTextCursor(cursor);
     //}
-    //
 
     //当输入文字高于文本框时
     if (m_fontHeight > boundingRect().height())
@@ -107,10 +107,6 @@ QString MyGraphicsTextItem::getStrText()
 void MyGraphicsTextItem::setRectSize(QRectF rect)
 {
     m_rect = rect;
-    QPointF m_RotateCenter;
-    //当前矩形的中心点
-    m_RotateCenter.setX(m_rect.x() + m_rect.width() / 2);
-    m_RotateCenter.setY(m_rect.y() + m_rect.height() / 2);
 
     m_oldRectPolygon = getRotatePolygonFromRect(m_rect);
     m_topRect = QRectF(m_rect.x() + 8, m_rect.y(), m_rect.width() - 8, 8);
@@ -167,11 +163,11 @@ void MyGraphicsTextItem::focusOutEvent(QFocusEvent* e)
     }
     // setFlag(QGraphicsItem::ItemStopsFocusHandling);
 
-    /*int width = document()->size().width();
+    int width = document()->size().width();
     int height = document()->size().height();
-    setRect(QRectF(boundingRect().x(), boundingRect().y(), width, height));*/
-
-    // setTextInteractionFlags(Qt::NoTextInteraction);
+    setRect(QRectF(boundingRect().x(), boundingRect().y(), width, height));
+    // document()->adjustSize();
+    //  setTextInteractionFlags(Qt::NoTextInteraction);
     setSelected(false);
     // QTextCursor cursor = textCursor();
     // cursor.clearSelection();
@@ -180,6 +176,7 @@ void MyGraphicsTextItem::focusOutEvent(QFocusEvent* e)
 
     setCursor(Qt::ArrowCursor);
     setFlag(QGraphicsItem::ItemStopsFocusHandling);
+
     QGraphicsTextItem::focusOutEvent(e);
 }
 
@@ -247,11 +244,10 @@ int MyGraphicsTextItem::type() const
 
 void MyGraphicsTextItem::mousePressEvent(QGraphicsSceneMouseEvent* event)
 {
-
+    m_startPos = event->pos();
     if (hasFocus())
     {
-        QGraphicsTextItem::mousePressEvent(event);
-        return;
+        return QGraphicsTextItem::mousePressEvent(event);
     }
     else
     {
@@ -265,7 +261,6 @@ void MyGraphicsTextItem::mousePressEvent(QGraphicsSceneMouseEvent* event)
         // QGraphicsTextItem::mousePressEvent(event);
     }
 
-    m_startPos = event->pos();
     if (m_insicsdPoly.containsPoint(m_startPos, Qt::WindingFill))
     {
         // setCursor(Qt::ArrowCursor);
@@ -276,13 +271,14 @@ void MyGraphicsTextItem::mousePressEvent(QGraphicsSceneMouseEvent* event)
     {
         // setFlags(flags() ^ QGraphicsItem::ItemIsMovable);
         // setCursor(Qt::SizeVerCursor);
-
+        m_topOldRect = m_rect;
         M_FLAG = MOV_TOP_LINE;
     }
     else if (m_leftPoly.containsPoint(m_startPos, Qt::WindingFill))
     {
         // setFlags(flags() ^ QGraphicsItem::ItemIsMovable);
         // setCursor(Qt::SizeHorCursor);
+        m_leftOldRect = m_rect;
         M_FLAG = MOV_LEFT_LINE;
     }
     else if (m_rightPoly.containsPoint(m_startPos, Qt::WindingFill))
@@ -317,13 +313,32 @@ void MyGraphicsTextItem::mouseReleaseEvent(QGraphicsSceneMouseEvent* event)
     // qDebug() << "release";
     // killTimer(m_timeId);
     // setZValue(m_zValue);
+
     setCursor(Qt::ArrowCursor);
     if (M_FLAG == MOV_RECT)
     {
         M_FLAG = DEFAULT_FLAG;
     }
+
+    if (M_FLAG == MOV_TOP_LINE)
+    {
+        // M_FLAG = DEFAULT_FLAG;
+        setRect(m_topOldRect);
+
+        scene()->update();
+        // update();
+    }
+
+    if (M_FLAG == MOV_LEFT_LINE)
+    {
+        setRect(m_leftOldRect);
+        scene()->update();
+        // update();
+    }
+    setAcceptHoverEvents(true);
     m_isMousePress = false;
     emit sig_hideRectMouse(true);
+    update();
     QGraphicsTextItem::mouseReleaseEvent(event);
 }
 
@@ -333,12 +348,13 @@ void MyGraphicsTextItem::mouseMoveEvent(QGraphicsSceneMouseEvent* event)
     if (M_FLAG == MOV_RECT)
     {
         QPointF point = (event->pos() - m_startPos);
-        moveBy(point.x(), point.y());
+        moveBy(point.x() * scale(), point.y() * scale());
         setRectSize(m_rect);
         scene()->update();
     }
     else if (M_FLAG == MOV_TOP_LINE)
     {
+
         // pf求出了矩形的中心点
         QPointF pf = QPointF((m_oldRectPolygon.at(2).x() + m_oldRectPolygon.at(3).x()) / 2, ((m_oldRectPolygon.at(2).y() + m_oldRectPolygon.at(3).y()) / 2));
 
@@ -357,13 +373,16 @@ void MyGraphicsTextItem::mouseMoveEvent(QGraphicsSceneMouseEvent* event)
         else
         {
             // qDebug() << "dis: " << dis;
+
             QRectF newRect(m_rect);
             newRect.setTop(m_rect.bottom() - dis);
             newRect.setBottom(m_rect.bottom());
+
             setRectSize(newRect);
-            // m_RotateCenter = QPointF((m_oldRectPolygon.at(0).x() + m_oldRectPolygon.at(2).x()) / 2, (m_oldRectPolygon.at(0).y() + m_oldRectPolygon.at(2).y()) / 2);
-            // m_rect.moveCenter(m_RotateCenter);
-            setRectSize(m_rect);
+            // setPos(m_rect.x(), m_rect.bottom() - dis);
+            //  m_RotateCenter = QPointF((m_oldRectPolygon.at(0).x() + m_oldRectPolygon.at(2).x()) / 2, (m_oldRectPolygon.at(0).y() + m_oldRectPolygon.at(2).y()) / 2);
+            //  m_rect.moveCenter(m_RotateCenter);
+
             scene()->update(); //必须要用scene()->update()，不能用update();否则会出现重影
         }
     }
@@ -387,7 +406,7 @@ void MyGraphicsTextItem::mouseMoveEvent(QGraphicsSceneMouseEvent* event)
             newRect.setRight(m_rect.right());
             setRectSize(newRect);
 
-            setRectSize(m_rect);
+            // setTextWidth(newRect.right());
             scene()->update(); //必须要用scene()->update()，不能用update();否则会出现重影
         }
     }
@@ -406,12 +425,22 @@ void MyGraphicsTextItem::mouseMoveEvent(QGraphicsSceneMouseEvent* event)
         }
         else
         {
+
             QRectF newRect(m_rect);
             newRect.setLeft(m_rect.left());
             newRect.setRight(m_rect.left() + dis);
-            setRectSize(newRect);
 
-            setRectSize(m_rect);
+            setRectSize(newRect);
+            setTextWidth(newRect.right());
+            // setRectSize(m_rect);
+            int width = document()->size().width();
+            int height = document()->size().height();
+
+            // qDebug() << "width: height:" << width << "," << height;
+            // qDebug() << "rect: width ,height" << m_rect.width() << "," << m_rect.height();
+
+            setRect(QRectF(boundingRect().x(), boundingRect().y(), width, height));
+
             scene()->update(); //必须要用scene()->update()，不能用update();否则会出现重影
         }
     }
@@ -434,10 +463,13 @@ void MyGraphicsTextItem::mouseMoveEvent(QGraphicsSceneMouseEvent* event)
             QRectF newRect(m_rect);
             newRect.setTop(m_rect.top());
             newRect.setBottom(m_rect.top() + dis);
+            int height = document()->size().height();
+            if (newRect.bottom() <= height)
+            {
+                return;
+            }
             setRectSize(newRect);
-            // m_RotateCenter = QPointF((m_oldRectPolygon.at(0).x() + m_oldRectPolygon.at(2).x()) / 2, (m_oldRectPolygon.at(0).y() + m_oldRectPolygon.at(2).y()) / 2);
-            // m_oldRect.moveCenter(m_RotateCenter);
-            setRectSize(m_rect);
+
             scene()->update(); //必须要用scene()->update()，不能用update();否则会出现重影
         }
     }
@@ -468,7 +500,7 @@ void MyGraphicsTextItem::mouseMoveEvent(QGraphicsSceneMouseEvent* event)
             newRect.setBottom(m_rect.top() + dis);
             newRect.setRight(m_rect.left() + dis2);
             setRect(newRect);
-
+            setTextWidth(newRect.width());
             scene()->update();
         }
     }
@@ -542,6 +574,7 @@ void MyGraphicsTextItem::mouseMoveEvent(QGraphicsSceneMouseEvent* event)
 
 void MyGraphicsTextItem::hoverMoveEvent(QGraphicsSceneHoverEvent* event)
 {
+    // qDebug() << "hover: " << event->pos();
     if (m_topPoly.containsPoint(event->pos(), Qt::WindingFill))
     {
         // setFlags(flags() ^ QGraphicsItem::ItemIsMovable);
@@ -595,7 +628,8 @@ void MyGraphicsTextItem::mouseDoubleClickEvent(QGraphicsSceneMouseEvent* e)
 
     if (e->button() == Qt::LeftButton)
     {
-        // qDebug() << "double Mouse";
+        // setTextWidth(-1);
+        //  qDebug() << "double Mouse";
         setTextInteractionFlags(Qt::TextEditorInteraction);
         setFocus();
     }

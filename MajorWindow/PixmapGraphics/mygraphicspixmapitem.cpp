@@ -6,17 +6,17 @@
 #include <QPainter>
 #include <QWheelEvent>
 
-enum STATE_FLAG3
-{
-    DEFAULT_FLAG = 0,
-    MOV_LEFT_LINE,        //标记当前为用户按下矩形的左边界区域
-    MOV_TOP_LINE,         //标记当前为用户按下矩形的上边界区域
-    MOV_RIGHT_LINE,       //标记当前为用户按下矩形的右边界区域
-    MOV_BOTTOM_LINE,      //标记当前为用户按下矩形的下边界区域
-    MOV_RIGHTBOTTOM_RECT, //标记当前为用户按下矩形的右下角
-    MOV_RECT,             //标记当前为鼠标拖动图片移动状态
-
-} M_FLAG;
+// enum STATE_FLAG3
+//{
+//     DEFAULT_FLAG = 0,
+//     MOV_LEFT_LINE,        //标记当前为用户按下矩形的左边界区域
+//     MOV_TOP_LINE,         //标记当前为用户按下矩形的上边界区域
+//     MOV_RIGHT_LINE,       //标记当前为用户按下矩形的右边界区域
+//     MOV_BOTTOM_LINE,      //标记当前为用户按下矩形的下边界区域
+//     MOV_RIGHTBOTTOM_RECT, //标记当前为用户按下矩形的右下角
+//     MOV_RECT,             //标记当前为鼠标拖动图片移动状态
+//
+// } M_FLAG;
 MyGraphicsPixmapItem::MyGraphicsPixmapItem(QRectF rect, QGraphicsItem* parent) : QGraphicsPixmapItem(parent), m_isRepeat(true)
 {
     m_rect = rect;
@@ -110,7 +110,7 @@ void MyGraphicsPixmapItem::mouseMoveEvent(QGraphicsSceneMouseEvent* event)
     if (M_FLAG == MOV_RECT)
     {
         QPointF point = event->pos() - m_startPos;
-        moveBy(point.x(), point.y());
+        moveBy(point.x() * scale(), point.y() * scale());
         setRect(m_rect);
         scene()->update();
     }
