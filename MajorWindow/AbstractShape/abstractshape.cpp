@@ -36,6 +36,11 @@ QGraphicsItem* AbstractShape::copy()
         MyTable* tmpItem = new MyTable(item->getRow(), item->getCol(), item->getRect());
         for (MyTableText* item : item->m_tableText)
         {
+            // MyTableText* tmp = new MyTableText(item->getRect());
+            // tmp->setX(item->getX());
+            // tmp->setY(item->getY());
+            // tmp->setIndex(item->getRow(), item->getCol());
+
             tmpItem->m_tableText.push_back(item);
         }
         return tmpItem;

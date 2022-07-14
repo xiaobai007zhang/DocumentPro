@@ -1,7 +1,7 @@
 ﻿#ifndef PLUGIN_H
 #define PLUGIN_H
 
-#define PluginInfo "PluginInfo1.0"
+#define PluginInfo "PluginInfo2.0"
 #include <QObject>
 
 //插件抽象类

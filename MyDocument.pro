@@ -2,6 +2,7 @@ TEMPLATE = subdirs
 
 SUBDIRS += \
     Journal \
-    MajorWindow
+    MajorWindow \
+    ViewCheck
 
 

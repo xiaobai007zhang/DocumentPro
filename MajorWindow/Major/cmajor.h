@@ -1,6 +1,7 @@
 ﻿#ifndef CMAJOR_H
 #define CMAJOR_H
 
+#include "pluginview.h"
 #include <QAbstractGraphicsShapeItem>
 #include <QClipBoard>
 #include <QGraphicsItem>
@@ -24,6 +25,7 @@
 #include "../TextItemGraphics/mygraphicstextitem.h"
 #include "../ViewGraphics/mygraphicsview.h"
 #include "plugin.h"
+#include "viewcheck.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui
@@ -40,7 +42,6 @@ class CMajor : public QMainWindow
 public:
     CMajor(QWidget* parent = nullptr);
     ~CMajor();
-
     //=================测试====================//
 
     //=========================================//
@@ -298,6 +299,8 @@ private:
 private:
     //插件抽象类对象
     Plugin* logFile;
+    PluginView* viewPlugin;
+    ViewCheck* view;
 
 private:
     Ui::CMajor* ui;

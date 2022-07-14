@@ -9,6 +9,7 @@ ManagerTableInfo::ManagerTableInfo(QWidget* parent) : QWidget(parent)
     initConnection();
     setFixedSize(160, 150);
     setWindowTitle(TR("插入表格"));
+    // setWindowTitle(TR("1"));
     setWindowFlags(Qt::WindowCloseButtonHint);
     setWindowModality(Qt::ApplicationModal);
     // setWindowState(Qt::WindowMinimized);
@@ -22,10 +23,14 @@ void ManagerTableInfo::initTableInfo()
 {
     m_rowLabel = new QLabel(TR("行"));
     m_colLabel = new QLabel(TR("列"));
+    // m_rowLabel = new QLabel(TR("hang"));
+    // m_colLabel = new QLabel(TR("lie"));
     m_row = new QSpinBox;
     m_col = new QSpinBox;
     m_okBtn = new QPushButton(TR("确定"));
     m_cancelBtn = new QPushButton(TR("取消"));
+    /* m_okBtn = new QPushButton(TR("ok"));
+     m_cancelBtn = new QPushButton(TR("cancel"));*/
 
     m_row->setMinimum(1);
     m_row->setMaximum(8);

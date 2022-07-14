@@ -5,6 +5,7 @@
 #include <QGraphicsSceneMouseEvent>
 #include <QPainter>
 #include <QWheelEvent>
+#include <qmath.h>
 
 // enum STATE_FLAG3
 //{

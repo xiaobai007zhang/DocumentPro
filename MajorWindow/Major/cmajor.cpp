@@ -91,10 +91,11 @@
 //};
 
 CMajor::CMajor(QWidget* parent) : QMainWindow(parent),m_imageStartPos(QPoint(0,0))
-,ui(new Ui::CMajor), m_textEnable(false),m_isRepeat(true) ,tableInfo(nullptr),m_tableEnable(false){
+,ui(new Ui::CMajor), m_textEnable(false),viewPlugin(nullptr),m_isRepeat(true) ,tableInfo(nullptr),m_tableEnable(false){
 	ui->setupUi(this);
 
 	loadStyleSheet("./Action.qss");
+	loadPlugin();
 	initCMajor();
 	initGraphics();
 	initCenterWidget();
@@ -165,6 +166,8 @@ void CMajor::readJson(const QString & fileName)
 	qreal width = scene.value("width").toDouble();
 	qreal height = scene.value("height").toDouble();
 	m_scene->setSceneRect(0, 0, width, height);
+	this->resize(height+view->width(),height);
+
 	//resizeEvent(nullptr);
 
 	//写一个函数，来加载出不同的元素信息(json对象,type)
@@ -310,10 +313,12 @@ void CMajor::initMenuBar()
 void CMajor::initToolBar()
 {
 	m_toolBar = new QToolBar("title");
-	m_toolBar->setFixedHeight(20);
+	//m_toolBar->setFixedHeight(20);
 	m_toolBar->setMovable(false);
-	
+
+
 	addToolBar(m_toolBar);
+
 
 	QAction* newCreat = new QAction(TR("新建"));
 	QAction* open = new QAction(TR("打开"));
@@ -321,18 +326,27 @@ void CMajor::initToolBar()
 	QAction* copy = new QAction(TR("复制"));
 	QAction* paste = new QAction(TR("粘贴"));
 	//QAction* textFrame = new QAction(TR("文本框"));
-	
+	newCreat->setIcon(QIcon(":/newCreat.png"));
+	open->setIcon(QIcon(":/open.png"));
+	shear->setIcon(QIcon(":/shear.png"));
+	copy->setIcon(QIcon(":/copy.png"));
+	paste->setIcon(QIcon(":/paste.png"));
+
+
+
 
 	m_tool = new QToolButton;
 	m_tool->setText(TR("文本框"));
 	m_tool->setObjectName("tool");
 	m_tool->setCheckable(true);
-
+	m_tool->setIcon(QIcon(":/textFrame.png"));
+	m_tool->setToolTip(TR("文本框"));
 
 	m_tableTool = new QToolButton;
 	m_tableTool->setText(TR("表格框"));
 	//m_tableTool->setCheckable(true);
-
+	m_tableTool->setIcon(QIcon(":/tableFrame.png"));
+	m_tableTool->setToolTip(TR("表格框"));
 	//textFrame->setObjectName("tool");
 
 	//m_toolBar->addWidget(m_tool);
@@ -347,7 +361,7 @@ void CMajor::initToolBar()
 	m_toolBar->addWidget(m_tool);
 	m_toolBar->addWidget(m_tableTool);
 	m_toolBar->addAction(remove);
-
+	remove->setIcon(QIcon(":/delete.png"));
 
 	//对于临时的对象，他们的信号槽连接都是在本地连接的
 	connect(newCreat, SIGNAL(triggered()), this, SLOT(slot_creatDocument()));
@@ -367,7 +381,28 @@ void CMajor::initToolBar()
 
 void CMajor::initCenterWidget()
 {
-	setCentralWidget(m_view);
+	//setCentralWidget(m_view);
+	QHBoxLayout *layout = new QHBoxLayout;
+	QSizePolicy sizePolicy = this->sizePolicy();
+    sizePolicy.setHorizontalPolicy(QSizePolicy::Preferred);
+
+	if (viewPlugin != nullptr) {
+		view = new ViewCheck(this);
+		view->setSizePolicy(sizePolicy);
+		layout->addWidget(view);
+	}
+	
+	
+	
+	m_view->setSizePolicy(sizePolicy);
+	
+	
+	layout->addWidget(m_view);
+
+	//layout->addWidget(view);
+	//view->setStyleSheet("background-color:blue");
+	
+	centralWidget()->setLayout(layout);
 }
 
 //!所有的连接信号槽都在这里
@@ -494,6 +529,8 @@ void CMajor::loadJsonObj(const QJsonObject & obj, const QString & type)
 		connect(myItem, SIGNAL(sig_hideRectMouse(bool)), m_scene, SLOT(slot_hideRectMouse(bool)));
 		connect(this,SIGNAL(sig_repeat(bool)),myItem,SLOT(slot_repeat(bool)));
 		m_scene->addItem(myItem);
+		//resizeEvent(nullptr);
+		//m_scene->update();
 	}
 	else if(type == TR("table")){
 		qreal x = obj.value("x").toDouble();
@@ -520,13 +557,16 @@ void CMajor::loadJsonObj(const QJsonObject & obj, const QString & type)
 			QJsonObject tmpObj = value.toObject();
 			loadTableText(tmpObj,table);
 		}
+
 		m_scene->addItem(table);	
+		
 		//给容器整理元素的排放位置
 		for (QGraphicsItem* tmpItem : table->childItems()) {
 			MyTableText* text = dynamic_cast<MyTableText*>(tmpItem);
 			table->m_tableText.push_back(text);
 		}
-
+		//resizeEvent(nullptr);
+		//m_scene->update();
 	}
 }
 
@@ -572,6 +612,10 @@ void CMajor::loadTableText(QJsonObject obj,MyTable* parent)
 	 text->setIndex(row,col);
 	 text->setPos(x,y);
 	 text->setPlainText(contents);
+
+	 text->setX(x);
+	 text->setY(y);
+	 
 	 //text->setRect(QRectF(50,0,intervalW,intervalH));
 	 connect(text, SIGNAL(sig_hideRectMouse(bool)), m_scene, SLOT(slot_hideRectMouse(bool)));
 	 connect(text->document(),SIGNAL(contentsChanged()),parent,SLOT(slot_contentsChanged()));
@@ -590,9 +634,11 @@ void CMajor::resizeEvent(QResizeEvent * event)
 		m_scene->setSceneRect(QRectF());
 		m_view->setAlignment(Qt::AlignLeft | Qt::AlignTop);
 		this->resize(width(),height());
+		//view->resize(width()/2,height());
+		//m_view->resize(width()/2,height()-80);
+		//m_view->move(width()/2,0);
 		m_scene->update();
-		m_view->update();
-
+		
 
 }
 
@@ -618,9 +664,9 @@ void CMajor::closeEvent(QCloseEvent* event)
 				if (!file.isOpen())
 				{
 					// QMessageBox::critical(nullptr,"Tips","文件保存失败，请重试!");
-#ifdef PLUGIN_SUCCESS
-					logFile->errorLog(TR("文件“%1”保存失败").arg(m_curFileName));
-#endif
+//#ifdef PLUGIN_SUCCESS
+					//logFile->errorLog(TR("文件“%1”保存失败").arg(m_curFileName));
+//#endif
 
 					return;
 				}
@@ -631,6 +677,7 @@ void CMajor::closeEvent(QCloseEvent* event)
 		
 		}else if (standard == QMessageBox::Cancel){
 			
+			event->ignore();
 			return;
 		}
 
@@ -719,14 +766,14 @@ void CMajor::dropEvent(QDropEvent* event)
 	
 	//QPointF point = m_view->mapToScene(cursor().pos().x() - pos().x(),cursor().pos().y() - pos().y());
 	
-	QPoint point = cursor().pos() - pos();
+	//QPoint point = cursor().pos() - pos();
 	//qDebug()<<pos();
 	//qDebug()<<"frame: "<<frameGeometry().topLeft();
 	MyGraphicsPixmapItem* item = new MyGraphicsPixmapItem(QRectF(0,0, pixmap.width(), pixmap.height()));
 	//MyGraphicsPixmapItem* item = new MyGraphicsPixmapItem(QRectF(0,0,pixmap.width(), pixmap.height()));
 	item->setImage(file.absoluteFilePath());
 	m_scene->addItem(item);
-	item->moveBy(point.x(),point.y());
+	item->moveBy(event->pos().x()/2,event->pos().y()/2);
 	//connect(this,SIGNAL(sig_expand(bool)),item,SLOT(slot_expand(bool)));
 	connect(this,SIGNAL(sig_repeat(bool)),item,SLOT(slot_repeat(bool)));
 	connect(item, SIGNAL(sig_hideRectMouse(bool)), m_scene, SLOT(slot_hideRectMouse(bool)));
@@ -762,9 +809,9 @@ void CMajor::slot_creatDocument()
 				if (!file.isOpen())
 				{
 					// QMessageBox::critical(nullptr,"Tips","文件保存失败，请重试!");
-#ifdef PLUGIN_SUCCESS
-					logFile->errorLog(TR("文件“%1”保存失败").arg(m_curFileName));
-#endif
+//#ifdef PLUGIN_SUCCESS
+					//logFile->errorLog(TR("文件“%1”保存失败").arg(m_curFileName));
+//#endif
 
 					return;
 				}
@@ -819,9 +866,9 @@ bool CMajor::slot_openFile()
 	setWindowTitle(m_curFileName);
 
 	//记录日志
-	#ifdef PLUGIN_SUCCESS
-		logFile->PrintLog(TR("打开文件:{文件名:%1,文件路径:%2").arg(m_curFileName).arg(m_curFilePath));
-	#endif
+	//#ifdef PLUGIN_SUCCESS
+		//logFile->PrintLog(TR("打开文件:{文件名:%1,文件路径:%2").arg(m_curFileName).arg(m_curFilePath));
+	//#endif
 	return true;
 }
 
@@ -830,6 +877,9 @@ bool CMajor::slot_otherSave()
 {
 
 	QString fileName = QFileDialog::getSaveFileName(nullptr, "Tips", "./");
+	if (fileName.isEmpty() || fileName.isNull()) {
+		return false;
+	}
 	QFile file(fileName);
 	file.open(QIODevice::WriteOnly);
 
@@ -980,9 +1030,9 @@ bool CMajor::slot_otherSave()
 
 
 	//记录日志
-	#ifdef PLUGIN_SUCCESS
-		logFile->PrintLog(TR("另存为:{文件名:%1,文件路径:%2").arg(m_curFileName).arg(m_curFilePath));
-	#endif // PLUGIN_SUCCESS
+	//#ifdef PLUGIN_SUCCESS
+		//logFile->PrintLog(TR("另存为:{文件名:%1,文件路径:%2").arg(m_curFileName).arg(m_curFilePath));
+	//#endif // PLUGIN_SUCCESS
 
 	
 
@@ -1090,7 +1140,10 @@ void CMajor::slot_paste()
 					}
 					MyTableText* item = new MyTableText(QRectF(0, 0, text->intervalW,text->intervalH), myItem);
 					item->setIndex(text->getRow(),text->getCol());
-					item->setPos(text->x(),text->y());
+					item->setPos(text->getX(),text->getY());
+					qDebug()<<item->getX()<<item->getY();
+					item->setX(text->getX());
+					item->setY(text->getY());
 					//item->setPos(text->getX(),text->getY());
 					connect(item, SIGNAL(sig_hideRectMouse(bool)), m_scene, SLOT(slot_hideRectMouse(bool)));
 					//connect(item->document(),SIGNAL(contentsChanged()),myItem,SLOT(slot_contentsChanged()));
@@ -1099,12 +1152,26 @@ void CMajor::slot_paste()
 					//myItem->m_tableText.push_back(item);
 					tableVec.push_back(item);
 					
-					//item->scene()->update();
+					
 			}
-				myItem->update();
-				myItem->m_tableText = tableVec;
+				//m_scene->update();
+				
+				//myItem->update();
+				myItem->m_tableText.clear();
+				for (MyTableText* text : myItem->m_tableText) {
+					delete text;
+					text = nullptr;
+				}
+
+				for (MyTableText* text : tableVec) {
+					myItem->m_tableText.push_back(text);
+				}
+				
 				tableVec.clear();
-				std::vector<QString> tmpVec;
+				//qDebug()<<myItem->m_tableText;
+
+				//tableVec.clear();
+				//std::vector<QString> tmpVec;
 				
 				//MyTable* parent = qgraphicsitem_cast<MyTable*>(sp);
 				////复制文本信息
@@ -1242,10 +1309,10 @@ void CMajor::slot_save()
 	file.open(QIODevice::WriteOnly);
 
 	if (file.isOpen()) {
-		qDebug()<<TR("打开文件");
+		//qDebug()<<TR("打开文件");
 	}
 	else {
-		qDebug()<<TR("失败");
+		//qDebug()<<TR("失败");
 	}
 	QJsonObject scene;
 	QJsonArray textArr;
@@ -1845,12 +1912,24 @@ bool CMajor::loadPlugin()
 			logFile = qobject_cast<Plugin*>(obj);
 			if (logFile)
 			{
-#ifndef PLUGIN_SUCCESS
-#define PLUGIN_SUCCESS 
-#endif // !PLUGIN_SUCCESS
-				return true;
+//#ifndef PLUGIN_SUCCESS
+//#define PLUGIN_SUCCESS
+//#endif // !PLUGIN_SUCCESS
+				//qDebug()<<"logfile success";
+				continue;
 			}
-		}
+            viewPlugin = qobject_cast<PluginView*>(obj);
+            if(viewPlugin){
+                //qDebug()<<"Success";
+				
+				//viewPlugin->showTime();
+				//viewPlugin->setParent(this);
+				//setParent();
+				//qDebug()<<"viewplugin success";
+                continue;
+            }
+        }
+
 	}
 
 	return false;

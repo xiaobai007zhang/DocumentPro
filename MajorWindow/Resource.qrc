@@ -1,5 +1,13 @@
 <RCC>
     <qresource prefix="/">
         <file>yesExpand.png</file>
+        <file>newCreat.png</file>
+        <file>open.png</file>
+        <file>paste.png</file>
+        <file>shear.png</file>
+        <file>tableFrame.png</file>
+        <file>textFrame.png</file>
+        <file>copy.png</file>
+        <file>delete.png</file>
     </qresource>
 </RCC>

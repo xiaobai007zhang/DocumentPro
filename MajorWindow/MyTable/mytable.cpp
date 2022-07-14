@@ -11,11 +11,13 @@
 #include <QStyleOptionGraphicsItem>
 #include <QTextBlock>
 #include <QTextDocument>
+#include <qmath.h>
 
 void MyTable::paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget)
 {
     Q_UNUSED(option)
     Q_UNUSED(widget)
+    // painter->save();
     painter->drawRect(m_rect);
     // painter->setPen(Qt::red);
     // painter->setRenderHints(QPainter::SmoothPixmapTransform | QPainter::Antialiasing);

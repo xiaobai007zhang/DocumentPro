@@ -4,8 +4,7 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 CONFIG += c++11
 INCLUDEPATH += ../Journal
-INCLUDEPATH += ../ysbase/include
-
+INCLUDEPATH += ../ViewCheck
 #INCLUDEPATH += ../ysbase/include/
 #LIBS += -LD:\QtProject\DocumentPro\ysbase\ -lysbase
 

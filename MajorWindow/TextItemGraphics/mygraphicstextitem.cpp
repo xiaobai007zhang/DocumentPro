@@ -6,6 +6,7 @@
 #include <QKeyEvent>
 #include <QPainter>
 #include <QStyleOptionGraphicsItem>
+#include <qmath.h>
 #include <qtextdocument.h>
 
 // enum STATE_FLAG2

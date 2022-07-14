@@ -9,7 +9,7 @@ int main(int argc, char* argv[])
 
     CMajor window;
 
-    window.isLoadPlugin();
+    // window.isLoadPlugin();
     window.show();
 
     return a.exec();
