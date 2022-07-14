@@ -166,6 +166,7 @@ void CMajor::readJson(const QString & fileName)
 	qreal width = scene.value("width").toDouble();
 	qreal height = scene.value("height").toDouble();
 	m_scene->setSceneRect(0, 0, width, height);
+	
 	this->resize(height+view->width(),height);
 
 	//resizeEvent(nullptr);
@@ -847,16 +848,21 @@ bool CMajor::slot_openFile()
 {
 	//添加功能，在读取json的时候需要固定住大小
 	//=======================================
-	for (QGraphicsItem* item : m_scene->items()) {
-		m_scene->removeItem(item);
-		delete item;
-		item = nullptr;
-	}
+
 
 	//刷新一次
 	//slot_sceneUpdate();
 
 	QString fileName = QFileDialog::getOpenFileName(nullptr, "Tips", ".");
+	if (fileName.isEmpty() || fileName.isNull()) {
+		return false;
+	}
+
+	for (QGraphicsItem* item : m_scene->items()) {
+		m_scene->removeItem(item);
+		delete item;
+		item = nullptr;
+	}
 
 	//从文件路径中获取文件名称,并显示到窗口上
 	setFilePathAName(fileName);
@@ -1812,13 +1818,13 @@ void CMajor::slot_setTableInfo()
 		connect(tableInfo,SIGNAL(sig_cancelClicked()),this,SLOT(slot_cancelClicked()));
 	}
 	
-	if (m_tableEnable == false) {
-		m_tableEnable = true;
+	//if (m_tableEnable == false) {
+	//	m_tableEnable = true;
 
-	}
-	else if (m_tableEnable == true) {
-		m_tableEnable = false;
-	}
+	//}
+	//else if (m_tableEnable == true) {
+	//	m_tableEnable = false;
+	//}
 
 	tableInfo->show();
 	tableInfo->move(pos()+QPoint(width()/2,height()/2));
@@ -1882,6 +1888,7 @@ void CMajor::slot_repeatTime()
 }
 void CMajor::slot_okClicked(int row,int col)
 {	
+	m_tableEnable = true;
 	m_tableCol = col;
 	m_tableRow = row;
 	

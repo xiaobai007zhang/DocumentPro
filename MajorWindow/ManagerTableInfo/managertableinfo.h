@@ -22,7 +22,8 @@ private:
     void initConnection();
 
 protected:
-    // void closeEvent(QCloseEvent* event) override;
+     void closeEvent(QCloseEvent* event) override;
+
 signals:
     void sig_okClicked(int, int);
     void sig_cancelClicked();
