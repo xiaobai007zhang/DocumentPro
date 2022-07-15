@@ -58,3 +58,9 @@ SOURCES += \
     ShapeMimeData/shapemimedata.cpp \
     TextItemGraphics/mygraphicstextitem.cpp \
     ViewGraphics/mygraphicsview.cpp
+
+win32:CONFIG(release, debug|release): LIBS += -L$$OUT_PWD/../ViewCheck/release/ -lViewCheck
+else:win32:CONFIG(debug, debug|release): LIBS += -L$$OUT_PWD/../ViewCheck/debug/ -lViewCheck
+
+INCLUDEPATH += $$PWD/../ViewCheck
+DEPENDPATH += $$PWD/../ViewCheck

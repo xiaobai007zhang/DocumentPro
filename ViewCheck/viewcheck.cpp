@@ -31,11 +31,13 @@ void ViewCheck::showTime()
 void ViewCheck::resizeEvent(QResizeEvent* event)
 {
     Q_UNUSED(event)
+
     loadBtn->move(width() / 2 - 50, height() / 2 - 50);
     m_centerWidget->resize(width(), height());
 
     m_label.resize(m_centerWidget->size());
     m_titleWidget->resize(m_centerWidget->width(), 35);
+    // m_scroll->resize(width(), height());
 
     deleteBtn->move(m_titleWidget->width() - 35, 0);
 
@@ -47,8 +49,9 @@ void ViewCheck::initViewCheck()
     m_centerWidget = new QWidget(this);
     m_centerWidget->resize(width(), height());
     m_titleWidget = new QWidget(this);
-
-    // m_titleWidget->setStyleSheet("background-color: gray");
+    // m_scroll = new MyScrollArea(this);
+    // m_scroll->setWidget(m_centerWidget);
+    //  m_titleWidget->setStyleSheet("background-color: gray");
 
     loadBtn = new QPushButton(TR("载入"), m_centerWidget);
     m_attribute = new QAction(TR("属性"));

@@ -1,14 +1,12 @@
 #pragma once
+#define TABLE_TYPE QGraphicsItem::UserType + 1
 
 #include "ToolDefine.h"
-
 #include <QGraphicsRectItem>
 #include <QObject>
 #include <vector>
 
 #include "ToolDefine.h"
-
-#define TABLE_TYPE QGraphicsItem::UserType + 1
 
 class MyTableText;
 class MyTable : public QObject, public QGraphicsItem
@@ -28,14 +26,12 @@ protected:
 
     int type() const override;
 
-    void focusOutEvent(QFocusEvent* event) override;
-
-    QVariant itemChange(GraphicsItemChange change, const QVariant& value) override;
-
 public:
     qreal getIntervalW();
-    QRectF boundingRect() const override;
     qreal getIntervalH();
+
+    QRectF boundingRect() const override;
+
     void keyPressEvent(QKeyEvent* event) override;
     void mousePressEvent(QGraphicsSceneMouseEvent* event) override;
 
@@ -82,9 +78,8 @@ private:
     int m_row;
     int m_col;
 
-    QRectF m_rect, m_topRect, m_leftRect, m_rightRect, m_bottomRect, m_rbRect, m_insicedRectf;
-    QPolygonF m_topPoly, m_leftPoly, m_rightPoly, m_bottomPoly, m_rbPoly, m_insicedPoly;
-    QPolygonF m_oldRectPolygon;
+    QRectF m_rect, m_topRect, m_leftRect, m_rightRect, m_bottomRect;
+    QPolygonF m_rectPolygon;
 
     QGraphicsTextItem* item;
 
@@ -136,17 +131,13 @@ protected:
 
     void mouseMoveEvent(QGraphicsSceneMouseEvent* event) override;
 
-    void mouseDoubleClickEvent(QGraphicsSceneMouseEvent* event) override;
-
-    void keyPressEvent(QKeyEvent* event) override;
-
     // void keyReleaseEvent(QKeyEvent* event) override;
 
     void focusInEvent(QFocusEvent* event) override;
 
     void focusOutEvent(QFocusEvent* event) override;
 
-    // bool eventFilter(QObject* obj, QEvent* event) override;
+    void hoverMoveEvent(QGraphicsSceneHoverEvent* event) override;
 
     void wheelEvent(QGraphicsSceneWheelEvent* event) override;
 
@@ -156,8 +147,7 @@ private:
     //初始化基本信息
     void initMyTableText();
 
-    QPolygonF getRotatePolygonFromRect(QRectF rectIn);
-    // void updateHeight();
+    QPolygonF getPolygonFromRect(QRectF rectIn);
 
 signals:
     void sig_hideRectMouse(bool);
@@ -166,8 +156,7 @@ private slots:
     void slot_MyTable(QRectF rect);
     void slot_changeSelect();
 
-    //关联的四个槽
-    void slot_updateSize(STATE_FLAG, qreal distance);
+    // void slot_updateSize(STATE_FLAG, qreal distance);
 
 public:
     qreal intervalW;
@@ -188,10 +177,9 @@ public:
     int getY();
 
     QRectF getRect();
-    bool m_isSelect = false;
+    bool m_isSelect;
 
 private:
-    // QGraphicsProxyWidget* m_proxy;
     QRectF m_rect;
 
     //记录当前的行列数，作为属性

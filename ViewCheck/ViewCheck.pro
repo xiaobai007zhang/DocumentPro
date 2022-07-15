@@ -17,11 +17,17 @@ DEFINES += QT_DEPRECATED_WARNINGS
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
+    attribute.cpp \
+    mylabel.cpp \
+    myscrollarea.cpp \
     pluginview.cpp \
     viewcheck.cpp
 
 HEADERS += \
     ViewCheck_global.h \
+    attribute.h \
+    mylabel.h \
+    myscrollarea.h \
     pluginview.h \
     viewcheck.h
 
@@ -32,4 +38,5 @@ unix {
 !isEmpty(target.path): INSTALLS += target
 
 FORMS += \
+    attribute.ui \
     viewcheck.ui

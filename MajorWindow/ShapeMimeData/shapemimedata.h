@@ -13,6 +13,7 @@ public:
 
 public:
     QList<QGraphicsItem*> items() const;
+    void removeItem(QGraphicsItem* item);
 
 private:
     QList<QGraphicsItem*> m_items;

@@ -37,64 +37,12 @@
 // clang-format off
 //#include "ysbase.h"
 //using namespace ys;
-//
-//// json对象1
-//R_STRUCT_BEGIN(CHILD1)
-//R_INTARRAY(intArray)
-//R_FIXSTRING(fixString, 10)
-//R_BOOLARRAY(boolArray)
-//R_STRUCT_END;
-//
-//// json对象2
-//R_STRUCT_BEGIN(CHILD2)
-//R_DOUBLEARRAY(doubleArray)
-//R_FIXDOUBLEARRAY(fixDouble, 10)
-//R_OBJ(obj, CHILD1)
-//R_STRUCT_END;
-//
-//// json对象3
-//R_STRUCT_BEGIN(CHILD3)
-//R_STRING(str)
-//R_STRINGARRAY(strArray)
-//R_STRUCT_END;
-//
-//// json根对象，操作其他json子对象
-//R_STRUCT_BEGIN(PARENT)
-//R_OBJARRAY(objArray1, CHILD1)
-//R_OBJARRAY(objArray2, CHILD2)
-//R_OBJARRAY(objArray3, CHILD3)
-//R_INT(iInt)
-//R_OBJ(obj, CHILD3)
-//R_UTF8STRINGARRAY(utf8StrArray)
-//R_STRUCT_END;
-//
-////测试宏 R_SAX_STRUCT_BEGIN,包括SAX字段的类都是包含着友元类
-//R_SAX_STRUCT_BEGIN(TEST)
-//R_SAX_STRUCT_END;
-//
-////测试宏 R_SAX_FUNC_BEGIN ,定义了TEST的SAX序列化函数，并调用TEST类的普通序列化函数
-//
-//RBoxD box;
-//
-////测试宏 R_STRUCT_DERIVE, 该宏的功能为：让第一个参数的类继承第二个参数的类
-//R_STRUCT_DERIVE(TDERIVE, PARENT)
-//R_STRUCT_END;
-//
-////测试宏 R_STRUCT_BASE， 跟普通的R_STRUCT_BEGIN一样，就是多了一个静态函数New(int type)，需要重写静态函数，否则编译报错
-//R_STRUCT_BASE(BASE)
-//R_STRUCT_END;
-
-//enum enum_num
-//{
-//	CFIND = 1,
-//	JOURNAL = 2
-//};
 
 CMajor::CMajor(QWidget* parent) : QMainWindow(parent),m_imageStartPos(QPoint(0,0))
-,ui(new Ui::CMajor), m_textEnable(false),viewPlugin(nullptr),m_isRepeat(true) ,tableInfo(nullptr),m_tableEnable(false){
+,ui(new Ui::CMajor), m_textEnable(false),viewPlugin(nullptr),view(nullptr),m_isRepeat(true) ,tableInfo(nullptr),m_tableEnable(false){
 	ui->setupUi(this);
 
-	loadStyleSheet("./Action.qss");
+	//loadStyleSheet("./Action.qss");
 	loadPlugin();
 	initCMajor();
 	initGraphics();
@@ -108,9 +56,6 @@ CMajor::CMajor(QWidget* parent) : QMainWindow(parent),m_imageStartPos(QPoint(0,0
 	m_view->setAcceptDrops(false);
 	ui->statusbar->hide();
 
-	//expand->setIcon(QIcon("../yesExpand.png"));
-	//repeat->setIcon(QIcon("../yesExpand.png"));
-	//expand->setIcon(QIcon(":/yesExpand.png"));
 	repeat->setIcon(QIcon(":/yesExpand.png"));
 }
 
@@ -166,8 +111,10 @@ void CMajor::readJson(const QString & fileName)
 	qreal width = scene.value("width").toDouble();
 	qreal height = scene.value("height").toDouble();
 	m_scene->setSceneRect(0, 0, width, height);
+	if (view != nullptr) {
+		this->resize(height+view->width(),height);
+	}
 	
-	this->resize(height+view->width(),height);
 
 	//resizeEvent(nullptr);
 
@@ -248,7 +195,7 @@ void CMajor::initMenuBar()
 	edit->addAction(copy);
 	edit->addAction(paste);
 	edit->addAction(remove);
-	//edit->addAction(find);
+	
 	edit->addAction(typeface);
 	edit->addAction(color);
 
@@ -349,8 +296,6 @@ void CMajor::initToolBar()
 	m_tableTool->setIcon(QIcon(":/tableFrame.png"));
 	m_tableTool->setToolTip(TR("表格框"));
 	//textFrame->setObjectName("tool");
-
-	//m_toolBar->addWidget(m_tool);
 	
 	//m_tempTextFrame = textFrame;
 	m_toolBar->addAction(newCreat);
@@ -388,7 +333,8 @@ void CMajor::initCenterWidget()
     sizePolicy.setHorizontalPolicy(QSizePolicy::Preferred);
 
 	if (viewPlugin != nullptr) {
-		view = new ViewCheck(this);
+		//view = dynamic_cast<ViewCheck*>(viewPlugin);
+		view = new ViewCheck;
 		view->setSizePolicy(sizePolicy);
 		layout->addWidget(view);
 	}
@@ -438,6 +384,7 @@ void CMajor::initGraphics()
 	connect(m_scene, SIGNAL(sig_rectFrame(QSize, QPointF, bool)), this, SLOT(slot_rectFrame(QSize, QPointF, bool)));
 	connect(m_view,SIGNAL(customContextMenuRequested(const QPoint &)),this,SLOT(slot_rightMenu(const QPoint &)));
 
+	m_scene->setItemIndexMethod(QGraphicsScene::NoIndex);
 	m_view->setContextMenuPolicy(Qt::CustomContextMenu);
 	m_view->setScene(m_scene);
 	m_view->setViewportUpdateMode(QGraphicsView::FullViewportUpdate);
@@ -814,7 +761,7 @@ void CMajor::slot_creatDocument()
 					//logFile->errorLog(TR("文件“%1”保存失败").arg(m_curFileName));
 //#endif
 
-					return;
+					//return;
 				}
 			}else{
 				//否则文件是已经打开的，可以直接保存
@@ -828,13 +775,13 @@ void CMajor::slot_creatDocument()
 
 	//新的文档名称
 	
+
+	
+	}
 	setWinTitle(QStringLiteral("新建文件"));
 	m_scene->clear();
 	m_curFileName = "";
 	m_curFilePath = "";
-	
-	}
-
 }
 
 bool CMajor::slot_creatDocumentWindow()
@@ -844,7 +791,7 @@ bool CMajor::slot_creatDocumentWindow()
 	return true;
 }
 
-bool CMajor::slot_openFile()
+void CMajor::slot_openFile()
 {
 	//添加功能，在读取json的时候需要固定住大小
 	//=======================================
@@ -855,9 +802,10 @@ bool CMajor::slot_openFile()
 
 	QString fileName = QFileDialog::getOpenFileName(nullptr, "Tips", ".");
 	if (fileName.isEmpty() || fileName.isNull()) {
-		return false;
+		return;
 	}
 
+	//如果真的成功打开了文件，那么才会清楚当前所有的内容
 	for (QGraphicsItem* item : m_scene->items()) {
 		m_scene->removeItem(item);
 		delete item;
@@ -875,7 +823,7 @@ bool CMajor::slot_openFile()
 	//#ifdef PLUGIN_SUCCESS
 		//logFile->PrintLog(TR("打开文件:{文件名:%1,文件路径:%2").arg(m_curFileName).arg(m_curFilePath));
 	//#endif
-	return true;
+	return;
 }
 
 //!另存为
@@ -943,13 +891,9 @@ bool CMajor::slot_otherSave()
 		else if (item->type() == QGraphicsPixmapItem::Type) {
 			MyGraphicsPixmapItem* myItem = dynamic_cast<MyGraphicsPixmapItem*>(item);
 			//图片：x、y、宽、高、比例、图片路径、
-			//现在用的坐标是场景坐标
-			//qDebug() << "myItem->pos(): " << myItem->pos();
-			//qDebug() << "mapFromScene(myItem->scenePos()): " << m_view->mapFromScene(myItem->scenePos());
-			//QPoint point = m_view->mapFromScene(myItem->pos());
+
 			QPointF point = myItem->pos();
-			//QPoint point(myItem->pos().x(),myItem->pos().y());
-			//QPoint point(myItem->scenePos().toPoint());
+
 			
 			//qDebug()<<TR("========另存为========");
 			//qDebug()<<"pos(): "<<myItem->pos();
@@ -1091,6 +1035,7 @@ void CMajor::slot_copy()
 	
 	ShapeMimeData *data = new ShapeMimeData( m_scene->selectedItems() );
     QApplication::clipboard()->setMimeData(data);
+	
 }
 
 void CMajor::slot_revoke()
@@ -1209,33 +1154,38 @@ void CMajor::slot_paste()
 //如果有选中的就删除选中的，否则删除当前的文本框
 void CMajor::slot_remove()
 {
-	//删除的话分为两种情况，第一种情况是获得了焦点状态，再细分为焦点状态的选中文本
-	QGraphicsTextItem* item = dynamic_cast<QGraphicsTextItem*>(m_scene->focusItem());
-	if (item) {
-		if (item->textCursor().selectedText().isNull() || item->textCursor().selectedText().isEmpty()) {
-			m_scene->removeItem(item);
-			//delete item;
-			item->update();
-			item = nullptr;
-		}
-		else {
-			item->textCursor().removeSelectedText();
-		}
-	}
-	else {
-		//第二种情况就是选中状态，而非焦点状态
+
+
+
+	//
+	//QMimeData* mime  = const_cast<QMimeData*> (QApplication::clipboard()->mimeData());
+ //   ShapeMimeData *data = dynamic_cast<ShapeMimeData*>(mime);
+	//
+	//qDebug()<<"begin: " <<data->items().size();
+
+	//if (data) {
+	//	QList<QGraphicsItem*>list = m_scene->selectedItems();
+	//	for (QGraphicsItem* value : list) {
+	//		for (QGraphicsItem* item : data->items()) {
+	//			if (item == value) {
+	//				data->removeItem(item);
+	//				break;
+	//			}
+	//		}
+	//	}
+	//}	
+	// //QApplication::clipboard()->setMimeData(data);
+	////qDebug()<<"end: " <<data->items().size();
+//第二种情况就是选中状态，而非焦点状态
 		QList<QGraphicsItem*>list = m_scene->selectedItems();
 		for (QGraphicsItem* value : list) {
 			m_scene->removeItem(value);
-			//delete value;
-			value->update();
-			value = nullptr;
-			//delete value;
-			//value = nullptr;
-		}
-	}
+			
+			delete value;
 
-	m_scene->update();
+			value = nullptr;
+		}
+		//m_scene->update();
 }
 
 void CMajor::slot_insertImage()
@@ -1663,7 +1613,7 @@ void CMajor::slot_rectFrame(QSize size, QPointF point, bool flag)
 				for (int j = 0; j < table->getCol(); ++j) {
 					//MyTableText* item = new MyTableText(QRectF(j * table->getIntervalW(), i * table->getIntervalH(), table->getIntervalW(), table->getIntervalH()), table);
 					MyTableText* item = new MyTableText(QRectF(0,0, table->getIntervalW(), table->getIntervalH()), table);
-					//item->moveBy(j * table->getIntervalW(), i * table->getIntervalH());
+					
 					item->setPos(j * table->getIntervalW(), i * table->getIntervalH());
 					item->setX(j * table->getIntervalW());
 					item->setY(i * table->getIntervalH());
@@ -1676,23 +1626,21 @@ void CMajor::slot_rectFrame(QSize size, QPointF point, bool flag)
 					item->setIndex(i,j);
 
 					table->m_tableText.push_back(item);
-					//item->setPlainText(TR("%1").arg(j));
+
 				}
 			}
 		}
 		else if (table->getCol() <= table->getRow()) {
 			for (int i = 0; i < table->getRow(); ++i) {
 				for (int j = 0; j < table->getCol(); ++j) {
-					//MyTableText* item = new MyTableText(QRectF(j * table->getIntervalW(), i * table->getIntervalH(), table->getIntervalW(), table->getIntervalH()), table);
+					
 					MyTableText* item = new MyTableText(QRectF(0, 0, table->getIntervalW(), table->getIntervalH()), table);
-					//MyTableText* item = new MyTableText(table);
+
 					item->setPos(j * table->getIntervalW(), i * table->getIntervalH());
 					
 					item->setX(j * table->getIntervalW());
 					item->setY(i * table->getIntervalH());
-					//item->moveBy(j * table->getIntervalW(), i * table->getIntervalH());
-					//item->setRect(QRectF(j * table->getIntervalW(), i * table->getIntervalH(), item->getRect().width(), item->getRect().height()));
-					//item->setData(Qt::UserRole + 1,i);
+					
 					item->setIndex(i,j);
 					connect(item, SIGNAL(sig_hideRectMouse(bool)), m_scene, SLOT(slot_hideRectMouse(bool)));
 					//connect(item->document(),SIGNAL(contentsChanged()),table,SLOT(slot_contentsChanged()));
@@ -1817,14 +1765,6 @@ void CMajor::slot_setTableInfo()
 		connect(tableInfo,SIGNAL(sig_okClicked(int,int)),this,SLOT(slot_okClicked(int,int)));
 		connect(tableInfo,SIGNAL(sig_cancelClicked()),this,SLOT(slot_cancelClicked()));
 	}
-	
-	//if (m_tableEnable == false) {
-	//	m_tableEnable = true;
-
-	//}
-	//else if (m_tableEnable == true) {
-	//	m_tableEnable = false;
-	//}
 
 	tableInfo->show();
 	tableInfo->move(pos()+QPoint(width()/2,height()/2));
@@ -1904,10 +1844,11 @@ void CMajor::slot_cancelClicked()
 
 bool CMajor::loadPlugin()
 {
-	QDir curPath("../output/windows_x64_bin/");
-	//qDebug() <<curPath.currentPath();
-	
-
+    //QDir curPath("../output/windows_x64_bin/");
+    //QDir curPath("./");
+    QDir curPath("./");
+    //qDebug() <<curPath.currentPath();
+    //qDebug()<<curPath.path();
 	for (const QString& fileName : curPath.entryList(QDir::Files))
 	{
 
@@ -1919,25 +1860,20 @@ bool CMajor::loadPlugin()
 			logFile = qobject_cast<Plugin*>(obj);
 			if (logFile)
 			{
-//#ifndef PLUGIN_SUCCESS
-//#define PLUGIN_SUCCESS
-//#endif // !PLUGIN_SUCCESS
-				//qDebug()<<"logfile success";
+
 				continue;
 			}
             viewPlugin = qobject_cast<PluginView*>(obj);
             if(viewPlugin){
-                //qDebug()<<"Success";
-				
-				//viewPlugin->showTime();
-				//viewPlugin->setParent(this);
-				//setParent();
-				//qDebug()<<"viewplugin success";
+
                 continue;
             }
         }
 
 	}
+	/*if (logFile != nullptr && viewPlugin != nullptr) {
+		return true;
+	}*/
 
 	return false;
 }

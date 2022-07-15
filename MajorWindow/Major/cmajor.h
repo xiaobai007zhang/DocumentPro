@@ -131,7 +131,7 @@ private slots:
     //创建新的窗口和文档
     bool slot_creatDocumentWindow();
     //打开文件
-    bool slot_openFile();
+    void slot_openFile();
     //另存为
     bool slot_otherSave();
     //打印文件

@@ -1,7 +1,6 @@
 #include "managertableinfo.h"
 #include "ToolDefine.h"
 #include <QSizePolicy>
-#include <QCloseEvent>
 
 ManagerTableInfo::ManagerTableInfo(QWidget* parent) : QWidget(parent)
 {
@@ -67,10 +66,4 @@ void ManagerTableInfo::initConnection()
         close();
     });
     connect(m_cancelBtn, SIGNAL(clicked()), this, SIGNAL(sig_cancelClicked()));
-}
-
-void ManagerTableInfo::closeEvent(QCloseEvent* event)
-{
-    event->ignore();
-    QWidget::closeEvent(event);
 }

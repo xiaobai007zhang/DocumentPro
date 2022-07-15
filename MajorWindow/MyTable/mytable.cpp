@@ -17,17 +17,13 @@ void MyTable::paint(QPainter* painter, const QStyleOptionGraphicsItem* option, Q
 {
     Q_UNUSED(option)
     Q_UNUSED(widget)
-    // painter->save();
-    painter->drawRect(m_rect);
-    // painter->setPen(Qt::red);
-    // painter->setRenderHints(QPainter::SmoothPixmapTransform | QPainter::Antialiasing);
-    painter->setBrush(Qt::white);
-    painter->setPen(Qt::gray);
 
-    painter->drawEllipse(m_bottomRect);
-    painter->drawEllipse(m_topRect);
-    painter->drawEllipse(m_rightRect);
-    painter->drawEllipse(m_leftRect);
+    painter->drawRect(m_rect);
+
+    // painter->drawRect(m_topRect);
+    // painter->drawRect(m_leftRect);
+    // painter->drawRect(m_rightRect);
+    // painter->drawRect(m_bottomRect);
 
     painter->setPen(Qt::black);
     for (MyTableText* text : m_tableText)
@@ -45,7 +41,8 @@ QRectF MyTable::boundingRect() const
 {
     // return QRectF(m_rect.x() - 3, m_rect.y() - 3, m_rect.width() + 6, m_rect.height() + 6);
     // return m_rect;
-    return QRectF(m_rect.x() - 4, m_rect.y() - 4, m_rect.width() + 8, m_rect.height() + 8);
+    //解决编辑和移动的冲突
+    return QRectF(m_rect.x() - 5, m_rect.y() - 5, m_rect.width() + 10, m_rect.height() + 10);
 }
 
 QPainterPath MyTable::shape() const
@@ -61,109 +58,33 @@ QPainterPath MyTable::shape() const
 
 void MyTable::mousePressEvent(QGraphicsSceneMouseEvent* event)
 {
-    // qDebug() << "table press";
-    //  emit sig_hideRectMouse(false);
+
     m_startPos = event->pos();
-
-    if (m_insicedPoly.containsPoint(m_startPos, Qt::WindingFill))
-    {
-
-        // M_FLAG = MOV_RECT;
-        // setFlag(QGraphicsItem::ItemIsMovable);
-        M_FLAG = MOV_RECT;
-    }
-    else if (m_topPoly.containsPoint(m_startPos, Qt::WindingFill))
-    {
-        // setFlags(flags() ^ QGraphicsItem::ItemIsMovable);
-        // setCursor(Qt::SizeVerCursor);
-
-        M_FLAG = MOV_TOP_LINE;
-    }
-    else if (m_leftPoly.containsPoint(m_startPos, Qt::WindingFill))
-    {
-        // setFlags(flags() ^ QGraphicsItem::ItemIsMovable);
-        // setCursor(Qt::SizeHorCursor);
-        M_FLAG = MOV_LEFT_LINE;
-    }
-    else if (m_rightPoly.containsPoint(m_startPos, Qt::WindingFill))
-    {
-        // setFlags(flags() ^ QGraphicsItem::ItemIsMovable);
-        // setCursor(Qt::SizeHorCursor);
-        M_FLAG = MOV_RIGHT_LINE;
-    }
-    else if (m_bottomPoly.containsPoint(m_startPos, Qt::WindingFill))
-    {
-        // setFlags(flags() ^ QGraphicsItem::ItemIsMovable);
-        // setCursor(Qt::SizeVerCursor);
-        M_FLAG = MOV_BOTTOM_LINE;
-    }
-    else if (m_rbRect.contains(m_startPos))
-    {
-        // setFlags(flags() ^ QGraphicsItem::ItemIsMovable);
-        // setCursor(Qt::SizeFDiagCursor);
-        M_FLAG = MOV_RIGHTBOTTOM_RECT;
-    }
-    else
-    {
-        // setFlags(flags() ^ QGraphicsItem::ItemIsMovable);
-        // setCursor(Qt::ArrowCursor);
-        M_FLAG = DEFAULT_FLAG;
-    }
     return QGraphicsItem::mousePressEvent(event);
 }
 
 void MyTable::mouseReleaseEvent(QGraphicsSceneMouseEvent* event)
 {
-    // qDebug() << "table release: " << event->pos();
     emit sig_hideRectMouse(true);
+
+    if (M_FLAG == MOV_RECT)
+    {
+        M_FLAG = DEFAULT_FLAG;
+        setCursor(Qt::ArrowCursor);
+    }
+
     return QGraphicsItem::mouseReleaseEvent(event);
 }
 
 void MyTable::hoverMoveEvent(QGraphicsSceneHoverEvent* event)
 {
-
-    if (m_insicedPoly.containsPoint(event->pos(), Qt::WindingFill))
-    {
-        setCursor(Qt::SizeAllCursor);
-    }
-    else if (m_topPoly.containsPoint(event->pos(), Qt::WindingFill))
-    {
-        // setFlags(flags() ^ QGraphicsItem::ItemIsMovable);
-        setCursor(Qt::SizeVerCursor);
-
-        // M_FLAG = MOV_TOP_LINE;
-    }
-    else if (m_leftPoly.containsPoint(event->pos(), Qt::WindingFill))
-    {
-        // setFlags(flags() ^ QGraphicsItem::ItemIsMovable);
-        setCursor(Qt::SizeHorCursor);
-        // M_FLAG = MOV_LEFT_LINE;
-    }
-    else if (m_rightPoly.containsPoint(event->pos(), Qt::WindingFill))
-    {
-        // setFlags(flags() ^ QGraphicsItem::ItemIsMovable);
-        setCursor(Qt::SizeHorCursor);
-        // M_FLAG = MOV_RIGHT_LINE;
-    }
-    else if (m_bottomPoly.containsPoint(event->pos(), Qt::WindingFill))
-    {
-        // setFlags(flags() ^ QGraphicsItem::ItemIsMovable);
-        setCursor(Qt::SizeVerCursor);
-        // M_FLAG = MOV_BOTTOM_LINE;
-    }
-    else if (m_rbRect.contains(event->pos()))
-    {
-        // setFlags(flags() ^ QGraphicsItem::ItemIsMovable);
-        setCursor(Qt::SizeFDiagCursor);
-        // M_FLAG = MOV_RIGHTBOTTOM_RECT;
-    }
-    else
-    {
-        // setFlags(flags() ^ QGraphicsItem::ItemIsMovable);
-        setCursor(Qt::ArrowCursor);
-        // M_FLAG = DEFAULT_FLAG;
-    }
-    QGraphicsItem::hoverEnterEvent(event);
+    // qDebug() << event->pos();
+    //  if (m_topRect.contains(event->pos()) || m_leftRect.contains(event->pos()) || m_rightRect.contains(event->pos()) || m_bottomRect.contains(event->pos()))
+    //{
+    M_FLAG = MOV_RECT;
+    setCursor(Qt::SizeAllCursor);
+    //}
+    return QGraphicsItem::hoverEnterEvent(event);
 }
 
 void MyTable::mouseMoveEvent(QGraphicsSceneMouseEvent* event)
@@ -178,151 +99,6 @@ void MyTable::mouseMoveEvent(QGraphicsSceneMouseEvent* event)
         setRect(m_rect);
         scene()->update();
     }
-    else if (M_FLAG == MOV_TOP_LINE)
-    {
-        // qDebug() << "top";
-        // pf求出了矩形的中心点
-        QPointF pf = QPointF((m_oldRectPolygon.at(2).x() + m_oldRectPolygon.at(3).x()) / 2, ((m_oldRectPolygon.at(2).y() + m_oldRectPolygon.at(3).y()) / 2));
-
-        //最终dis求出来的是，鼠标移动对于矩形中心点的距离
-        qreal dis = sqrt((event->pos().x() - pf.x()) * (event->pos().x() - pf.x()) + (event->pos().y() - pf.y()) * (event->pos().y() - pf.y()));
-        qreal dis2LT = sqrt((event->pos().x() - m_oldRectPolygon.at(0).x()) * (event->pos().x() - m_oldRectPolygon.at(0).x()) +
-                            (event->pos().y() - m_oldRectPolygon.at(0).y()) * (event->pos().y() - m_oldRectPolygon.at(0).y()));
-        qreal dis2LB = sqrt((event->pos().x() - m_oldRectPolygon.at(3).x()) * (event->pos().x() - m_oldRectPolygon.at(3).x()) +
-                            (event->pos().y() - m_oldRectPolygon.at(3).y()) * (event->pos().y() - m_oldRectPolygon.at(3).y()));
-
-        // dis2LT 和dis2LB 左上角大于左下角的话，那么就代表向下拉到极限了
-        if (dis < 20 || dis2LT > dis2LB)
-        {
-            return;
-        }
-        else
-        {
-            // qDebug() << "dis: " << m_rect.bottom() - dis;
-            emit sig_updateSize(MOV_TOP_LINE, m_rect.bottom() - dis);
-            // qDebug() << "bottom: " << m_rect.bottom();
-            QRectF newRect(m_rect);
-            newRect.setTop(m_rect.bottom() - dis);
-            newRect.setBottom(m_rect.bottom());
-            setRect(newRect);
-
-            // m_RotateCenter = QPointF((m_oldRectPolygon.at(0).x() + m_oldRectPolygon.at(2).x()) / 2, (m_oldRectPolygon.at(0).y() + m_oldRectPolygon.at(2).y()) / 2);
-            // m_rect.moveCenter(m_RotateCenter);
-            // setRect(m_rect);
-            scene()->update(); //必须要用scene()->update()，不能用update();否则会出现重影
-
-            //所有的孩子的高度都要变
-            /* for (MyTableText* text : m_tableText)
-             {
-                 text->setRect(QRectF(text->getRect().x(), text->getRect().y(), text->intervalW, text->intervalH));
-             }*/
-        }
-    }
-    else if (M_FLAG == MOV_LEFT_LINE)
-    {
-        QPointF pf = QPointF((m_oldRectPolygon.at(1).x() + m_oldRectPolygon.at(2).x()) / 2, ((m_oldRectPolygon.at(1).y() + m_oldRectPolygon.at(2).y()) / 2));
-        //计算到右侧边中点的距离
-        qreal dis = sqrt((event->pos().x() - pf.x()) * (event->pos().x() - pf.x()) + (event->pos().y() - pf.y()) * (event->pos().y() - pf.y()));
-        qreal dis2LT = sqrt((event->pos().x() - m_oldRectPolygon.at(0).x()) * (event->pos().x() - m_oldRectPolygon.at(0).x()) +
-                            (event->pos().y() - m_oldRectPolygon.at(0).y()) * (event->pos().y() - m_oldRectPolygon.at(0).y()));
-        qreal dis2RT = sqrt((event->pos().x() - m_oldRectPolygon.at(1).x()) * (event->pos().x() - m_oldRectPolygon.at(1).x()) +
-                            (event->pos().y() - m_oldRectPolygon.at(1).y()) * (event->pos().y() - m_oldRectPolygon.at(1).y()));
-        if (dis < 20 || dis2LT > dis2RT)
-        {
-            return;
-        }
-        else
-        {
-            QRectF newRect(m_rect);
-            newRect.setLeft(m_rect.right() - dis);
-            newRect.setRight(m_rect.right());
-            setRect(newRect);
-
-            // setRect(m_rect);
-            scene()->update(); //必须要用scene()->update()，不能用update();否则会出现重影
-        }
-    }
-    else if (M_FLAG == MOV_RIGHT_LINE)
-    {
-        QPointF pf = QPointF((m_oldRectPolygon.at(0).x() + m_oldRectPolygon.at(3).x()) / 2, ((m_oldRectPolygon.at(0).y() + m_oldRectPolygon.at(3).y()) / 2));
-        //计算到左侧边中点的距离
-        qreal dis = sqrt((event->pos().x() - pf.x()) * (event->pos().x() - pf.x()) + (event->pos().y() - pf.y()) * (event->pos().y() - pf.y()));
-        qreal dis2LT = sqrt((event->pos().x() - m_oldRectPolygon.at(0).x()) * (event->pos().x() - m_oldRectPolygon.at(0).x()) +
-                            (event->pos().y() - m_oldRectPolygon.at(0).y()) * (event->pos().y() - m_oldRectPolygon.at(0).y()));
-        qreal dis2RT = sqrt((event->pos().x() - m_oldRectPolygon.at(1).x()) * (event->pos().x() - m_oldRectPolygon.at(1).x()) +
-                            (event->pos().y() - m_oldRectPolygon.at(1).y()) * (event->pos().y() - m_oldRectPolygon.at(1).y()));
-        if (dis < 20 || dis2LT < dis2RT)
-        {
-            return;
-        }
-        else
-        {
-            QRectF newRect(m_rect);
-            newRect.setLeft(m_rect.left());
-            newRect.setRight(m_rect.left() + dis);
-            setRect(newRect);
-
-            // setRect(m_rect);
-            scene()->update(); //必须要用scene()->update()，不能用update();否则会出现重影
-        }
-    }
-    else if (M_FLAG == MOV_BOTTOM_LINE)
-    {
-        //顶边中点
-        QPointF pf = QPointF((m_oldRectPolygon.at(0).x() + m_oldRectPolygon.at(1).x()) / 2, ((m_oldRectPolygon.at(0).y() + m_oldRectPolygon.at(1).y()) / 2));
-        //计算到底边中点的距离
-        qreal dis = sqrt((event->pos().x() - pf.x()) * (event->pos().x() - pf.x()) + (event->pos().y() - pf.y()) * (event->pos().y() - pf.y()));
-        qreal dis2LT = sqrt((event->pos().x() - m_oldRectPolygon.at(0).x()) * (event->pos().x() - m_oldRectPolygon.at(0).x()) +
-                            (event->pos().y() - m_oldRectPolygon.at(0).y()) * (event->pos().y() - m_oldRectPolygon.at(0).y()));
-        qreal dis2LB = sqrt((event->pos().x() - m_oldRectPolygon.at(3).x()) * (event->pos().x() - m_oldRectPolygon.at(3).x()) +
-                            (event->pos().y() - m_oldRectPolygon.at(3).y()) * (event->pos().y() - m_oldRectPolygon.at(3).y()));
-        if (dis < 20 || dis2LT < dis2LB)
-        {
-            return;
-        }
-        else
-        {
-            QRectF newRect(m_rect);
-            newRect.setTop(m_rect.top());
-            newRect.setBottom(m_rect.top() + dis);
-            setRect(newRect);
-            // m_RotateCenter = QPointF((m_oldRectPolygon.at(0).x() + m_oldRectPolygon.at(2).x()) / 2, (m_oldRectPolygon.at(0).y() + m_oldRectPolygon.at(2).y()) / 2);
-            // m_oldRect.moveCenter(m_RotateCenter);
-            // setRect(m_rect);
-            scene()->update(); //必须要用scene()->update()，不能用update();否则会出现重影
-        }
-    }
-    else if (M_FLAG == MOV_RIGHTBOTTOM_RECT)
-    {
-        //中心坐标点
-        QPointF pf = QPointF((m_oldRectPolygon.at(0).x() + m_oldRectPolygon.at(1).x()) / 2, ((m_oldRectPolygon.at(0).y() + m_oldRectPolygon.at(1).y()) / 2));
-
-        qreal dis = sqrt((event->pos().x() - pf.x()) * (event->pos().x() - pf.x()) + (event->pos().y() - pf.y()) * (event->pos().y() - pf.y()));
-        qreal dis2LT = sqrt((event->pos().x() - m_oldRectPolygon.at(0).x()) * (event->pos().x() - m_oldRectPolygon.at(0).x()) +
-                            (event->pos().y() - m_oldRectPolygon.at(0).y()) * (event->pos().y() - m_oldRectPolygon.at(0).y()));
-        qreal dis2RB = sqrt((event->pos().x() - m_oldRectPolygon.at(3).x()) * (event->pos().x() - m_oldRectPolygon.at(2).x()) +
-                            (event->pos().y() - m_oldRectPolygon.at(3).y()) * (event->pos().y() - m_oldRectPolygon.at(2).y()));
-
-        QPointF pf2 = QPointF((m_oldRectPolygon.at(0).x() + m_oldRectPolygon.at(3).x()) / 2, ((m_oldRectPolygon.at(0).y() + m_oldRectPolygon.at(3).y()) / 2));
-        qreal dis2 = sqrt((event->pos().x() - pf2.x()) * (event->pos().x() - pf2.x()) + (event->pos().y() - pf2.y()) * (event->pos().y() - pf2.y()));
-
-        if (dis < 20 || dis2LT < dis2RB)
-        {
-            return;
-        }
-        else
-        {
-            // qDebug() << "m_rect: bottom: " << m_rect.bottom() << ", right: " << m_rect.right();
-            QRectF newRect(m_rect);
-            // qDebug() << "dis1: " << dis;
-            // qDebug() << "dis2: " << dis2;
-            newRect.setBottom(m_rect.top() + dis);
-            newRect.setRight(m_rect.left() + dis2);
-            setRect(newRect);
-
-            scene()->update();
-        }
-    }
 
     return QGraphicsItem::mouseMoveEvent(event);
 }
@@ -335,18 +111,6 @@ void MyTable::mouseDoubleClickEvent(QGraphicsSceneMouseEvent* event)
 int MyTable::type() const
 {
     return TABLE_TYPE;
-}
-
-void MyTable::focusOutEvent(QFocusEvent* event)
-{
-    Q_UNUSED(event)
-    // qDebug() << TR("table less focus");
-}
-
-QVariant MyTable::itemChange(GraphicsItemChange change, const QVariant& value)
-{
-
-    return QGraphicsItem::itemChange(change, value);
 }
 
 qreal MyTable::getIntervalW()
@@ -504,15 +268,12 @@ void MyTable::slot_joinTable()
     qreal maxH = 0;
     qreal maxW = 0;
 
-    // MyTableText* minItem = *sg_vecJoin.begin();
     MyTableText* minItem = sg_vecJoin.at(0);
-    // MyTableText* minItem = new MyTableText(QRectF(0, 0, 0, 0));
 
     std::vector<MyTableText*> tmpVec;
     //求出最小的x
     for (MyTableText* item : sg_vecJoin)
     {
-
         if (minItem->x() > item->x())
         {
             minItem = item;
@@ -600,24 +361,16 @@ void MyTable::slot_repeat(bool flag)
 void MyTable::setRect(QRectF rect)
 {
     m_rect = rect;
-    m_oldRectPolygon = getRotatePolygonFromRect(m_rect);
+    m_rectPolygon = getRotatePolygonFromRect(m_rect);
 
     // m_topRect = QRectF(m_rect.x() + m_rect.width() / 2 - 5, m_rect.y() - 7, 10, 10);
-    m_topRect = QRectF(m_rect.x() + m_rect.width() / 2 - 5, m_rect.y() - 10, 10, 10);
-    m_topPoly = getRotatePolygonFromRect(m_topRect);
+    m_topRect = QRectF(m_rect.x(), m_rect.y(), m_rect.width(), 10);
 
-    m_leftRect = QRectF(m_rect.x() - 10, m_rect.y() + m_rect.height() / 2 - 5, 10, 10);
-    m_leftPoly = getRotatePolygonFromRect(m_leftRect);
+    m_leftRect = QRectF(m_rect.x(), m_rect.y(), 10, m_rect.height());
 
-    m_rightRect = QRectF(m_rect.right(), m_rect.y() + m_rect.height() / 2 - 5, 10, 10);
-    m_rightPoly = getRotatePolygonFromRect(m_rightRect);
+    m_rightRect = QRectF(m_rect.right(), m_rect.y(), 10, m_rect.height());
 
-    m_bottomRect = QRectF(m_rect.x() + m_rect.width() / 2 - 5, m_rect.bottom(), 10, 10);
-    m_bottomPoly = getRotatePolygonFromRect(m_bottomRect);
-
-    m_insicedRectf = QRectF(m_rect.x() - 2, m_rect.y() - 2, m_rect.width() + 4, m_rect.height() + 4);
-    // m_insicedRectf = QRectF(m_rect.x(), m_rect.y(), m_rect.width(), m_rect.height());
-    m_insicedPoly = getRotatePolygonFromRect(m_insicedRectf);
+    m_bottomRect = QRectF(m_rect.x(), m_rect.bottom(), m_rect.width(), 10);
 }
 
 MyTable::MyTable(int row, int col, QRectF rect) : intervalW(0), intervalH(0)
@@ -727,26 +480,11 @@ MyTableText::~MyTableText()
 
 void MyTableText::paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget)
 {
-    // painter->drawText(0, 0, "123");
-    // Q_UNUSED(option)
-    // QPen pen;
-    // pen.setColor(Qt::red);
-    // painter->setPen(pen);
-    // painter->drawRect(m_rect);
-    //// painter->setRenderHint(QPainter::Antialiasing);
-    // painter->setRenderHint(QPainter::SmoothPixmapTransform);
-    // painter->save();
-    //// painter->drawRect(m_rect);
-    ////  painter->setBrush(Qt::gray);
-    ////  painter->drawEllipse(m_rect.x() + m_rect.width() / 2, m_rect.y() - 5, 10, 10);
+    Q_UNUSED(option);
     if (m_isSelect == true)
     {
         painter->setBrush(Qt::gray);
         painter->drawRect(m_rect);
-    }
-    else
-    {
-        painter->setBrush(Qt::black);
     }
     //// 原来什么属性就要什么属性,只不过去掉多余的选中状态
     QStyleOptionGraphicsItem op;
@@ -758,13 +496,14 @@ void MyTableText::paint(QPainter* painter, const QStyleOptionGraphicsItem* optio
 
 QRectF MyTableText::boundingRect() const
 {
-    return m_rect;
+
+    return QRectF(m_rect.x(), m_rect.y(), m_rect.width(), m_rect.height());
 }
 
 QPainterPath MyTableText::shape() const
 {
     QPainterPath path;
-    path.addRect(boundingRect());
+    path.addRect(m_rect);
     return path;
 }
 
@@ -775,9 +514,7 @@ void MyTableText::mousePressEvent(QGraphicsSceneMouseEvent* event)
     {
         m_isSelect = false;
     }
-    // m_isSelect = true;
-    //  setTextInteractionFlags(Qt::TextEditorInteraction);
-    //   setFocus();
+
     return QGraphicsTextItem::mousePressEvent(event);
 }
 
@@ -792,146 +529,13 @@ void MyTableText::slot_changeSelect()
     m_isSelect = false;
 }
 
-void MyTableText::slot_updateSize(STATE_FLAG flags, qreal distance)
-{
-    M_FLAG = flags;
-    if (M_FLAG == MOV_TOP_LINE)
-    {
-        // qDebug() << "distance" << distance;
-        //  pf求出了矩形的中心点
-        QPointF pf = QPointF((m_oldRectPolygon.at(2).x() + m_oldRectPolygon.at(3).x()) / 2, ((m_oldRectPolygon.at(2).y() + m_oldRectPolygon.at(3).y()) / 2));
-
-        //最终dis求出来的是，鼠标移动对于矩形中心点的距离
-        qreal dis = distance;
-
-        // qDebug() << "dis: " << dis;
-        //  qDebug() << "bottom: " << m_rect.bottom();
-        QRectF newRect(m_rect);
-        newRect.setTop(m_rect.top() + dis);
-        newRect.setBottom(m_rect.bottom());
-        //// qDebug() << "y: " << getY();
-        // setPos(getX(), getY());
-        //  setRect(newRect);
-
-        // m_RotateCenter = QPointF((m_oldRectPolygon.at(0).x() + m_oldRectPolygon.at(2).x()) / 2, (m_oldRectPolygon.at(0).y() + m_oldRectPolygon.at(2).y()) / 2);
-        // m_rect.moveCenter(m_RotateCenter);
-        // setRect(m_rect);
-        scene()->update(); //必须要用scene()->update()，不能用update();否则会出现重影
-    }
-    // else if (M_FLAG == MOV_LEFT_LINE)
-    //{
-    //     QPointF pf = QPointF((m_oldRectPolygon.at(1).x() + m_oldRectPolygon.at(2).x()) / 2, ((m_oldRectPolygon.at(1).y() + m_oldRectPolygon.at(2).y()) / 2));
-    //     //计算到右侧边中点的距离
-    //     qreal dis = sqrt((event->pos().x() - pf.x()) * (event->pos().x() - pf.x()) + (event->pos().y() - pf.y()) * (event->pos().y() - pf.y()));
-    //     qreal dis2LT = sqrt((event->pos().x() - m_oldRectPolygon.at(0).x()) * (event->pos().x() - m_oldRectPolygon.at(0).x()) +
-    //                         (event->pos().y() - m_oldRectPolygon.at(0).y()) * (event->pos().y() - m_oldRectPolygon.at(0).y()));
-    //     qreal dis2RT = sqrt((event->pos().x() - m_oldRectPolygon.at(1).x()) * (event->pos().x() - m_oldRectPolygon.at(1).x()) +
-    //                         (event->pos().y() - m_oldRectPolygon.at(1).y()) * (event->pos().y() - m_oldRectPolygon.at(1).y()));
-    //     if (dis < 20 || dis2LT > dis2RT)
-    //     {
-    //         return;
-    //     }
-    //     else
-    //     {
-    //         QRectF newRect(m_rect);
-    //         newRect.setLeft(m_rect.right() - dis);
-    //         newRect.setRight(m_rect.right());
-    //         setRect(newRect);
-
-    //        // setRect(m_rect);
-    //        scene()->update(); //必须要用scene()->update()，不能用update();否则会出现重影
-    //    }
-    //}
-    // else if (M_FLAG == MOV_RIGHT_LINE)
-    //{
-    //    QPointF pf = QPointF((m_oldRectPolygon.at(0).x() + m_oldRectPolygon.at(3).x()) / 2, ((m_oldRectPolygon.at(0).y() + m_oldRectPolygon.at(3).y()) / 2));
-    //    //计算到左侧边中点的距离
-    //    qreal dis = sqrt((event->pos().x() - pf.x()) * (event->pos().x() - pf.x()) + (event->pos().y() - pf.y()) * (event->pos().y() - pf.y()));
-    //    qreal dis2LT = sqrt((event->pos().x() - m_oldRectPolygon.at(0).x()) * (event->pos().x() - m_oldRectPolygon.at(0).x()) +
-    //                        (event->pos().y() - m_oldRectPolygon.at(0).y()) * (event->pos().y() - m_oldRectPolygon.at(0).y()));
-    //    qreal dis2RT = sqrt((event->pos().x() - m_oldRectPolygon.at(1).x()) * (event->pos().x() - m_oldRectPolygon.at(1).x()) +
-    //                        (event->pos().y() - m_oldRectPolygon.at(1).y()) * (event->pos().y() - m_oldRectPolygon.at(1).y()));
-    //    if (dis < 20 || dis2LT < dis2RT)
-    //    {
-    //        return;
-    //    }
-    //    else
-    //    {
-    //        QRectF newRect(m_rect);
-    //        newRect.setLeft(m_rect.left());
-    //        newRect.setRight(m_rect.left() + dis);
-    //        setRect(newRect);
-
-    //        // setRect(m_rect);
-    //        scene()->update(); //必须要用scene()->update()，不能用update();否则会出现重影
-    //    }
-    //}
-    // else if (M_FLAG == MOV_BOTTOM_LINE)
-    //{
-    //    //顶边中点
-    //    QPointF pf = QPointF((m_oldRectPolygon.at(0).x() + m_oldRectPolygon.at(1).x()) / 2, ((m_oldRectPolygon.at(0).y() + m_oldRectPolygon.at(1).y()) / 2));
-    //    //计算到底边中点的距离
-    //    qreal dis = sqrt((event->pos().x() - pf.x()) * (event->pos().x() - pf.x()) + (event->pos().y() - pf.y()) * (event->pos().y() - pf.y()));
-    //    qreal dis2LT = sqrt((event->pos().x() - m_oldRectPolygon.at(0).x()) * (event->pos().x() - m_oldRectPolygon.at(0).x()) +
-    //                        (event->pos().y() - m_oldRectPolygon.at(0).y()) * (event->pos().y() - m_oldRectPolygon.at(0).y()));
-    //    qreal dis2LB = sqrt((event->pos().x() - m_oldRectPolygon.at(3).x()) * (event->pos().x() - m_oldRectPolygon.at(3).x()) +
-    //                        (event->pos().y() - m_oldRectPolygon.at(3).y()) * (event->pos().y() - m_oldRectPolygon.at(3).y()));
-    //    if (dis < 20 || dis2LT < dis2LB)
-    //    {
-    //        return;
-    //    }
-    //    else
-    //    {
-    //        QRectF newRect(m_rect);
-    //        newRect.setTop(m_rect.top());
-    //        newRect.setBottom(m_rect.top() + dis);
-    //        setRect(newRect);
-    //        // m_RotateCenter = QPointF((m_oldRectPolygon.at(0).x() + m_oldRectPolygon.at(2).x()) / 2, (m_oldRectPolygon.at(0).y() + m_oldRectPolygon.at(2).y()) / 2);
-    //        // m_oldRect.moveCenter(m_RotateCenter);
-    //        // setRect(m_rect);
-    //        scene()->update(); //必须要用scene()->update()，不能用update();否则会出现重影
-    //    }
-    //}
-    // else if (M_FLAG == MOV_RIGHTBOTTOM_RECT)
-    //{
-    //    //中心坐标点
-    //    QPointF pf = QPointF((m_oldRectPolygon.at(0).x() + m_oldRectPolygon.at(1).x()) / 2, ((m_oldRectPolygon.at(0).y() + m_oldRectPolygon.at(1).y()) / 2));
-
-    //    qreal dis = sqrt((event->pos().x() - pf.x()) * (event->pos().x() - pf.x()) + (event->pos().y() - pf.y()) * (event->pos().y() - pf.y()));
-    //    qreal dis2LT = sqrt((event->pos().x() - m_oldRectPolygon.at(0).x()) * (event->pos().x() - m_oldRectPolygon.at(0).x()) +
-    //                        (event->pos().y() - m_oldRectPolygon.at(0).y()) * (event->pos().y() - m_oldRectPolygon.at(0).y()));
-    //    qreal dis2RB = sqrt((event->pos().x() - m_oldRectPolygon.at(3).x()) * (event->pos().x() - m_oldRectPolygon.at(2).x()) +
-    //                        (event->pos().y() - m_oldRectPolygon.at(3).y()) * (event->pos().y() - m_oldRectPolygon.at(2).y()));
-
-    //    QPointF pf2 = QPointF((m_oldRectPolygon.at(0).x() + m_oldRectPolygon.at(3).x()) / 2, ((m_oldRectPolygon.at(0).y() + m_oldRectPolygon.at(3).y()) / 2));
-    //    qreal dis2 = sqrt((event->pos().x() - pf2.x()) * (event->pos().x() - pf2.x()) + (event->pos().y() - pf2.y()) * (event->pos().y() - pf2.y()));
-
-    //    if (dis < 20 || dis2LT < dis2RB)
-    //    {
-    //        return;
-    //    }
-    //    else
-    //    {
-    //        // qDebug() << "m_rect: bottom: " << m_rect.bottom() << ", right: " << m_rect.right();
-    //        QRectF newRect(m_rect);
-    //        // qDebug() << "dis1: " << dis;
-    //        // qDebug() << "dis2: " << dis2;
-    //        newRect.setBottom(m_rect.top() + dis);
-    //        newRect.setRight(m_rect.left() + dis2);
-    //        setRect(newRect);
-
-    //        scene()->update();
-    //    }
-    //}
-}
-
 void MyTableText::setRect(QRectF rect)
 {
     m_rect = rect;
     intervalH = m_rect.height();
     intervalW = m_rect.width();
 
-    m_oldRectPolygon = getRotatePolygonFromRect(m_rect);
+    m_oldRectPolygon = getPolygonFromRect(m_rect);
 }
 
 void MyTableText::setIndex(int row, int col)
@@ -975,36 +579,25 @@ QRectF MyTableText::getRect()
     return m_rect;
 }
 
-void MyTableText::mouseDoubleClickEvent(QGraphicsSceneMouseEvent* event)
-{
-    return QGraphicsTextItem::mouseDoubleClickEvent(event);
-}
-
-void MyTableText::keyPressEvent(QKeyEvent* event)
-{
-
-    // qDebug() << "child keyPress";
-    //  MyTable* table = dynamic_cast<MyTable*>(parentItem());
-    //  table->keyPressEvent(event);
-
-    return QGraphicsTextItem::keyPressEvent(event);
-}
-
 void MyTableText::focusInEvent(QFocusEvent* event)
 {
-    // qDebug() << "text focusIn event";
-    setCursor(Qt::IBeamCursor);
+
+    // setCursor(Qt::IBeamCursor);
     return QGraphicsTextItem::focusInEvent(event);
 }
 
 void MyTableText::focusOutEvent(QFocusEvent* event)
 {
-    // qDebug() << "text focusOut event";
-    //   setSelected(false);
+
     setCursor(Qt::ArrowCursor);
 
-    // setTextInteractionFlags(Qt::NoTextInteraction);
     return QGraphicsTextItem::focusOutEvent(event);
+}
+
+void MyTableText::hoverMoveEvent(QGraphicsSceneHoverEvent* event)
+{
+    setCursor(Qt::ArrowCursor);
+    // return QGraphicsTextItem::hoverMoveEvent(event);
 }
 
 void MyTableText::wheelEvent(QGraphicsSceneWheelEvent* event)
@@ -1024,9 +617,10 @@ void MyTableText::initMyTableText()
     setTextInteractionFlags(Qt::TextEditorInteraction);
     document()->setTextWidth(intervalW);
     setRect(m_rect);
+    setAcceptHoverEvents(true);
 }
 
-QPolygonF MyTableText::getRotatePolygonFromRect(QRectF rectIn)
+QPolygonF MyTableText::getPolygonFromRect(QRectF rectIn)
 {
     QVector<QPointF> vpt;
     QPointF pf = rectIn.topLeft();
@@ -1047,8 +641,6 @@ void MyTableText::slot_MyTable(QRectF rect)
     QGraphicsItem* parentTmp = parentItem();
     MyTable* parent = dynamic_cast<MyTable*>(parentTmp);
 
-    // qDebug() << "rect: " << rect;
-    // m_isSelect = false;
     QPointF point = this->mapFromScene(rect.x(), rect.y());
 
     QPainterPath path;
