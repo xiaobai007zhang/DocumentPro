@@ -1,8 +1,8 @@
 
 #ifndef __TOOLDEFINE_H
 #define __TOOLDEFINE_H
-#define TR(str) QStringLiteral(str)
 
+#define TR(str) QStringLiteral(str)
 enum STATE_FLAG
 {
     DEFAULT_FLAG = 0,

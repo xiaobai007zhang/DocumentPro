@@ -20,9 +20,6 @@ private:
     void initTableInfo();
 
     void initConnection();
-
-protected:
-    // void closeEvent(QCloseEvent* event) override;
 signals:
     void sig_okClicked(int, int);
     void sig_cancelClicked();

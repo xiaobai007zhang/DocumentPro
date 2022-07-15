@@ -5,6 +5,7 @@
 #include "mylabel.h"
 #include "pluginview.h"
 
+#include "myscrollarea.h"
 #include <QFile>
 #include <QLabel>
 #include <QMenu>
@@ -65,7 +66,7 @@ private:
     //自定义控件，显示图片
     MyLabel m_label;
 
-    QScrollArea* m_scroll;
+    MyScrollArea* m_scroll;
     QImage m_image;
     QPixmap m_pixmap;
 

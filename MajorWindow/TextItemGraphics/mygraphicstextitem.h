@@ -8,7 +8,6 @@
 #include <QPen>
 #include <QTextCursor>
 #include <QTimer>
-#define M_PI 3.14
 
 class MyGraphicsTextItem : public QGraphicsTextItem
 {
@@ -20,8 +19,6 @@ public:
 
 public:
     void initGraphicsTextItem();
-
-    void setRect(const QRectF& rect);
 
     void updateFontInfo();
 
@@ -38,13 +35,18 @@ public:
 
     void setRectSize(QRectF rect);
 
-    QPolygonF getRotatePolygonFromRect(QRectF rectIn);
+private:
+    QPolygonF getPolygonFromRect(QRectF rectIn);
+
+    //处理各个方向的拉伸,需要传入五个参数，关心的两条边，和底边的中心点
+    void handle(int pos1, int pos2, int pos3, int pos4, QPointF eventPos, STATE_FLAG FLAGS);
+
+    void updateWidHei();
 
 protected:
     // void hoverEnterEvent(QGraphicsSceneHoverEvent* event) override;
     void focusInEvent(QFocusEvent* e) override;
     void focusOutEvent(QFocusEvent* e) override;
-    QVariant itemChange(GraphicsItemChange change, const QVariant& value) override;
 
     void paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget) override;
     QRectF boundingRect() const override;
@@ -79,26 +81,18 @@ private:
 
     QRectF m_insicedRectf;
 
-    QPolygonF m_oldRectPolygon;
+    // QRectF m_topOldRect, m_leftOldRect;
+    QPolygonF m_rectPolygon;
 
     QString m_text;
 
-    qreal m_fontWidth;
-
-    qreal m_fontHeight;
-    // QFont m_font;
-
-    bool m_isMousePress = false;
+    bool m_isMousePress;
+    bool m_isRepeat;
 
     QPointF m_startPos;
 
-    bool m_isRepeat;
-
     short m_zValue;
 
-    QPolygonF m_topPoly, m_leftPoly, m_rightPoly, m_bottomPoly, m_insicsdPoly;
-
-    QRectF m_topOldRect, m_leftOldRect;
-
+    //记录操作的枚举
     STATE_FLAG M_FLAG;
 };

@@ -15,7 +15,8 @@ QGraphicsItem* AbstractShape::copy()
         //±£´æÎÄ±¾
         tmpItem->setPlainText(item->getStrText());
         tmpItem->setPos(item->pos());
-
+        tmpItem->setDefaultTextColor(item->defaultTextColor());
+        tmpItem->setFont(item->font());
         return tmpItem;
         // return qgraphicsitem_cast<QGraphicsItem*>(tmpItem);
     }
