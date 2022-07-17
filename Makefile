@@ -36,59 +36,85 @@ SED           = $(QMAKE) -install sed
 MOVE          = move
 SUBTARGETS    =  \
 		sub-Journal \
-		sub-MajorWindow
+		sub-MajorWindow \
+		sub-ViewCheck
 
 
 sub-Journal-qmake_all:  FORCE
 	@if not exist Journal\ mkdir Journal\ & if not exist Journal\ exit 1
-	cd Journal\ && $(QMAKE) -o Makefile I:\QTCreator\MyDocument\Journal\Journal.pro -spec win32-g++ "CONFIG+=debug" "CONFIG+=qml_debug"
+	cd Journal\ && $(QMAKE) -o Makefile I:\git\DocumentPro\Journal\Journal.pro -spec win32-g++ "CONFIG+=debug" "CONFIG+=qml_debug"
 	cd Journal\ && $(MAKE) -f Makefile qmake_all
 sub-Journal: FORCE
 	@if not exist Journal\ mkdir Journal\ & if not exist Journal\ exit 1
-	cd Journal\ && ( if not exist Makefile $(QMAKE) -o Makefile I:\QTCreator\MyDocument\Journal\Journal.pro -spec win32-g++ "CONFIG+=debug" "CONFIG+=qml_debug" ) && $(MAKE) -f Makefile
+	cd Journal\ && ( if not exist Makefile $(QMAKE) -o Makefile I:\git\DocumentPro\Journal\Journal.pro -spec win32-g++ "CONFIG+=debug" "CONFIG+=qml_debug" ) && $(MAKE) -f Makefile
 sub-Journal-make_first: FORCE
 	@if not exist Journal\ mkdir Journal\ & if not exist Journal\ exit 1
-	cd Journal\ && ( if not exist Makefile $(QMAKE) -o Makefile I:\QTCreator\MyDocument\Journal\Journal.pro -spec win32-g++ "CONFIG+=debug" "CONFIG+=qml_debug" ) && $(MAKE) -f Makefile 
+	cd Journal\ && ( if not exist Makefile $(QMAKE) -o Makefile I:\git\DocumentPro\Journal\Journal.pro -spec win32-g++ "CONFIG+=debug" "CONFIG+=qml_debug" ) && $(MAKE) -f Makefile 
 sub-Journal-all: FORCE
 	@if not exist Journal\ mkdir Journal\ & if not exist Journal\ exit 1
-	cd Journal\ && ( if not exist Makefile $(QMAKE) -o Makefile I:\QTCreator\MyDocument\Journal\Journal.pro -spec win32-g++ "CONFIG+=debug" "CONFIG+=qml_debug" ) && $(MAKE) -f Makefile all
+	cd Journal\ && ( if not exist Makefile $(QMAKE) -o Makefile I:\git\DocumentPro\Journal\Journal.pro -spec win32-g++ "CONFIG+=debug" "CONFIG+=qml_debug" ) && $(MAKE) -f Makefile all
 sub-Journal-clean: FORCE
 	@if not exist Journal\ mkdir Journal\ & if not exist Journal\ exit 1
-	cd Journal\ && ( if not exist Makefile $(QMAKE) -o Makefile I:\QTCreator\MyDocument\Journal\Journal.pro -spec win32-g++ "CONFIG+=debug" "CONFIG+=qml_debug" ) && $(MAKE) -f Makefile clean
+	cd Journal\ && ( if not exist Makefile $(QMAKE) -o Makefile I:\git\DocumentPro\Journal\Journal.pro -spec win32-g++ "CONFIG+=debug" "CONFIG+=qml_debug" ) && $(MAKE) -f Makefile clean
 sub-Journal-distclean: FORCE
 	@if not exist Journal\ mkdir Journal\ & if not exist Journal\ exit 1
-	cd Journal\ && ( if not exist Makefile $(QMAKE) -o Makefile I:\QTCreator\MyDocument\Journal\Journal.pro -spec win32-g++ "CONFIG+=debug" "CONFIG+=qml_debug" ) && $(MAKE) -f Makefile distclean
+	cd Journal\ && ( if not exist Makefile $(QMAKE) -o Makefile I:\git\DocumentPro\Journal\Journal.pro -spec win32-g++ "CONFIG+=debug" "CONFIG+=qml_debug" ) && $(MAKE) -f Makefile distclean
 sub-Journal-install_subtargets: FORCE
 	@if not exist Journal\ mkdir Journal\ & if not exist Journal\ exit 1
-	cd Journal\ && ( if not exist Makefile $(QMAKE) -o Makefile I:\QTCreator\MyDocument\Journal\Journal.pro -spec win32-g++ "CONFIG+=debug" "CONFIG+=qml_debug" ) && $(MAKE) -f Makefile install
+	cd Journal\ && ( if not exist Makefile $(QMAKE) -o Makefile I:\git\DocumentPro\Journal\Journal.pro -spec win32-g++ "CONFIG+=debug" "CONFIG+=qml_debug" ) && $(MAKE) -f Makefile install
 sub-Journal-uninstall_subtargets: FORCE
 	@if not exist Journal\ mkdir Journal\ & if not exist Journal\ exit 1
-	cd Journal\ && ( if not exist Makefile $(QMAKE) -o Makefile I:\QTCreator\MyDocument\Journal\Journal.pro -spec win32-g++ "CONFIG+=debug" "CONFIG+=qml_debug" ) && $(MAKE) -f Makefile uninstall
+	cd Journal\ && ( if not exist Makefile $(QMAKE) -o Makefile I:\git\DocumentPro\Journal\Journal.pro -spec win32-g++ "CONFIG+=debug" "CONFIG+=qml_debug" ) && $(MAKE) -f Makefile uninstall
 sub-MajorWindow-qmake_all:  FORCE
 	@if not exist MajorWindow\ mkdir MajorWindow\ & if not exist MajorWindow\ exit 1
-	cd MajorWindow\ && $(QMAKE) -o Makefile I:\QTCreator\MyDocument\MajorWindow\MajorWindow.pro -spec win32-g++ "CONFIG+=debug" "CONFIG+=qml_debug"
+	cd MajorWindow\ && $(QMAKE) -o Makefile I:\git\DocumentPro\MajorWindow\MajorWindow.pro -spec win32-g++ "CONFIG+=debug" "CONFIG+=qml_debug"
 	cd MajorWindow\ && $(MAKE) -f Makefile qmake_all
 sub-MajorWindow: FORCE
 	@if not exist MajorWindow\ mkdir MajorWindow\ & if not exist MajorWindow\ exit 1
-	cd MajorWindow\ && ( if not exist Makefile $(QMAKE) -o Makefile I:\QTCreator\MyDocument\MajorWindow\MajorWindow.pro -spec win32-g++ "CONFIG+=debug" "CONFIG+=qml_debug" ) && $(MAKE) -f Makefile
+	cd MajorWindow\ && ( if not exist Makefile $(QMAKE) -o Makefile I:\git\DocumentPro\MajorWindow\MajorWindow.pro -spec win32-g++ "CONFIG+=debug" "CONFIG+=qml_debug" ) && $(MAKE) -f Makefile
 sub-MajorWindow-make_first: FORCE
 	@if not exist MajorWindow\ mkdir MajorWindow\ & if not exist MajorWindow\ exit 1
-	cd MajorWindow\ && ( if not exist Makefile $(QMAKE) -o Makefile I:\QTCreator\MyDocument\MajorWindow\MajorWindow.pro -spec win32-g++ "CONFIG+=debug" "CONFIG+=qml_debug" ) && $(MAKE) -f Makefile 
+	cd MajorWindow\ && ( if not exist Makefile $(QMAKE) -o Makefile I:\git\DocumentPro\MajorWindow\MajorWindow.pro -spec win32-g++ "CONFIG+=debug" "CONFIG+=qml_debug" ) && $(MAKE) -f Makefile 
 sub-MajorWindow-all: FORCE
 	@if not exist MajorWindow\ mkdir MajorWindow\ & if not exist MajorWindow\ exit 1
-	cd MajorWindow\ && ( if not exist Makefile $(QMAKE) -o Makefile I:\QTCreator\MyDocument\MajorWindow\MajorWindow.pro -spec win32-g++ "CONFIG+=debug" "CONFIG+=qml_debug" ) && $(MAKE) -f Makefile all
+	cd MajorWindow\ && ( if not exist Makefile $(QMAKE) -o Makefile I:\git\DocumentPro\MajorWindow\MajorWindow.pro -spec win32-g++ "CONFIG+=debug" "CONFIG+=qml_debug" ) && $(MAKE) -f Makefile all
 sub-MajorWindow-clean: FORCE
 	@if not exist MajorWindow\ mkdir MajorWindow\ & if not exist MajorWindow\ exit 1
-	cd MajorWindow\ && ( if not exist Makefile $(QMAKE) -o Makefile I:\QTCreator\MyDocument\MajorWindow\MajorWindow.pro -spec win32-g++ "CONFIG+=debug" "CONFIG+=qml_debug" ) && $(MAKE) -f Makefile clean
+	cd MajorWindow\ && ( if not exist Makefile $(QMAKE) -o Makefile I:\git\DocumentPro\MajorWindow\MajorWindow.pro -spec win32-g++ "CONFIG+=debug" "CONFIG+=qml_debug" ) && $(MAKE) -f Makefile clean
 sub-MajorWindow-distclean: FORCE
 	@if not exist MajorWindow\ mkdir MajorWindow\ & if not exist MajorWindow\ exit 1
-	cd MajorWindow\ && ( if not exist Makefile $(QMAKE) -o Makefile I:\QTCreator\MyDocument\MajorWindow\MajorWindow.pro -spec win32-g++ "CONFIG+=debug" "CONFIG+=qml_debug" ) && $(MAKE) -f Makefile distclean
+	cd MajorWindow\ && ( if not exist Makefile $(QMAKE) -o Makefile I:\git\DocumentPro\MajorWindow\MajorWindow.pro -spec win32-g++ "CONFIG+=debug" "CONFIG+=qml_debug" ) && $(MAKE) -f Makefile distclean
 sub-MajorWindow-install_subtargets: FORCE
 	@if not exist MajorWindow\ mkdir MajorWindow\ & if not exist MajorWindow\ exit 1
-	cd MajorWindow\ && ( if not exist Makefile $(QMAKE) -o Makefile I:\QTCreator\MyDocument\MajorWindow\MajorWindow.pro -spec win32-g++ "CONFIG+=debug" "CONFIG+=qml_debug" ) && $(MAKE) -f Makefile install
+	cd MajorWindow\ && ( if not exist Makefile $(QMAKE) -o Makefile I:\git\DocumentPro\MajorWindow\MajorWindow.pro -spec win32-g++ "CONFIG+=debug" "CONFIG+=qml_debug" ) && $(MAKE) -f Makefile install
 sub-MajorWindow-uninstall_subtargets: FORCE
 	@if not exist MajorWindow\ mkdir MajorWindow\ & if not exist MajorWindow\ exit 1
-	cd MajorWindow\ && ( if not exist Makefile $(QMAKE) -o Makefile I:\QTCreator\MyDocument\MajorWindow\MajorWindow.pro -spec win32-g++ "CONFIG+=debug" "CONFIG+=qml_debug" ) && $(MAKE) -f Makefile uninstall
+	cd MajorWindow\ && ( if not exist Makefile $(QMAKE) -o Makefile I:\git\DocumentPro\MajorWindow\MajorWindow.pro -spec win32-g++ "CONFIG+=debug" "CONFIG+=qml_debug" ) && $(MAKE) -f Makefile uninstall
+sub-ViewCheck-qmake_all:  FORCE
+	@if not exist ViewCheck\ mkdir ViewCheck\ & if not exist ViewCheck\ exit 1
+	cd ViewCheck\ && $(QMAKE) -o Makefile I:\git\DocumentPro\ViewCheck\ViewCheck.pro -spec win32-g++ "CONFIG+=debug" "CONFIG+=qml_debug"
+	cd ViewCheck\ && $(MAKE) -f Makefile qmake_all
+sub-ViewCheck: FORCE
+	@if not exist ViewCheck\ mkdir ViewCheck\ & if not exist ViewCheck\ exit 1
+	cd ViewCheck\ && ( if not exist Makefile $(QMAKE) -o Makefile I:\git\DocumentPro\ViewCheck\ViewCheck.pro -spec win32-g++ "CONFIG+=debug" "CONFIG+=qml_debug" ) && $(MAKE) -f Makefile
+sub-ViewCheck-make_first: FORCE
+	@if not exist ViewCheck\ mkdir ViewCheck\ & if not exist ViewCheck\ exit 1
+	cd ViewCheck\ && ( if not exist Makefile $(QMAKE) -o Makefile I:\git\DocumentPro\ViewCheck\ViewCheck.pro -spec win32-g++ "CONFIG+=debug" "CONFIG+=qml_debug" ) && $(MAKE) -f Makefile 
+sub-ViewCheck-all: FORCE
+	@if not exist ViewCheck\ mkdir ViewCheck\ & if not exist ViewCheck\ exit 1
+	cd ViewCheck\ && ( if not exist Makefile $(QMAKE) -o Makefile I:\git\DocumentPro\ViewCheck\ViewCheck.pro -spec win32-g++ "CONFIG+=debug" "CONFIG+=qml_debug" ) && $(MAKE) -f Makefile all
+sub-ViewCheck-clean: FORCE
+	@if not exist ViewCheck\ mkdir ViewCheck\ & if not exist ViewCheck\ exit 1
+	cd ViewCheck\ && ( if not exist Makefile $(QMAKE) -o Makefile I:\git\DocumentPro\ViewCheck\ViewCheck.pro -spec win32-g++ "CONFIG+=debug" "CONFIG+=qml_debug" ) && $(MAKE) -f Makefile clean
+sub-ViewCheck-distclean: FORCE
+	@if not exist ViewCheck\ mkdir ViewCheck\ & if not exist ViewCheck\ exit 1
+	cd ViewCheck\ && ( if not exist Makefile $(QMAKE) -o Makefile I:\git\DocumentPro\ViewCheck\ViewCheck.pro -spec win32-g++ "CONFIG+=debug" "CONFIG+=qml_debug" ) && $(MAKE) -f Makefile distclean
+sub-ViewCheck-install_subtargets: FORCE
+	@if not exist ViewCheck\ mkdir ViewCheck\ & if not exist ViewCheck\ exit 1
+	cd ViewCheck\ && ( if not exist Makefile $(QMAKE) -o Makefile I:\git\DocumentPro\ViewCheck\ViewCheck.pro -spec win32-g++ "CONFIG+=debug" "CONFIG+=qml_debug" ) && $(MAKE) -f Makefile install
+sub-ViewCheck-uninstall_subtargets: FORCE
+	@if not exist ViewCheck\ mkdir ViewCheck\ & if not exist ViewCheck\ exit 1
+	cd ViewCheck\ && ( if not exist Makefile $(QMAKE) -o Makefile I:\git\DocumentPro\ViewCheck\ViewCheck.pro -spec win32-g++ "CONFIG+=debug" "CONFIG+=qml_debug" ) && $(MAKE) -f Makefile uninstall
 
 Makefile: MyDocument.pro C:/Qt/Qt5.14.2/5.14.2/mingw73_32/mkspecs/win32-g++/qmake.conf C:/Qt/Qt5.14.2/5.14.2/mingw73_32/mkspecs/features/spec_pre.prf \
 		C:/Qt/Qt5.14.2/5.14.2/mingw73_32/mkspecs/qdevice.pri \
@@ -478,48 +504,60 @@ MyDocument.pro:
 qmake: FORCE
 	@$(QMAKE) -o Makefile MyDocument.pro -spec win32-g++ "CONFIG+=debug" "CONFIG+=qml_debug"
 
-qmake_all: sub-Journal-qmake_all sub-MajorWindow-qmake_all FORCE
+qmake_all: sub-Journal-qmake_all sub-MajorWindow-qmake_all sub-ViewCheck-qmake_all FORCE
 
-make_first: sub-Journal-make_first sub-MajorWindow-make_first  FORCE
-all: sub-Journal-all sub-MajorWindow-all  FORCE
-clean: sub-Journal-clean sub-MajorWindow-clean  FORCE
-distclean: sub-Journal-distclean sub-MajorWindow-distclean  FORCE
+make_first: sub-Journal-make_first sub-MajorWindow-make_first sub-ViewCheck-make_first  FORCE
+all: sub-Journal-all sub-MajorWindow-all sub-ViewCheck-all  FORCE
+clean: sub-Journal-clean sub-MajorWindow-clean sub-ViewCheck-clean  FORCE
+distclean: sub-Journal-distclean sub-MajorWindow-distclean sub-ViewCheck-distclean  FORCE
 	-$(DEL_FILE) Makefile
 	-$(DEL_FILE) .qmake.stash
-install_subtargets: sub-Journal-install_subtargets sub-MajorWindow-install_subtargets FORCE
-uninstall_subtargets: sub-Journal-uninstall_subtargets sub-MajorWindow-uninstall_subtargets FORCE
+install_subtargets: sub-Journal-install_subtargets sub-MajorWindow-install_subtargets sub-ViewCheck-install_subtargets FORCE
+uninstall_subtargets: sub-Journal-uninstall_subtargets sub-MajorWindow-uninstall_subtargets sub-ViewCheck-uninstall_subtargets FORCE
 
 sub-Journal-debug:
 	@if not exist Journal\ mkdir Journal\ & if not exist Journal\ exit 1
-	cd Journal\ && ( if not exist Makefile $(QMAKE) -o Makefile I:\QTCreator\MyDocument\Journal\Journal.pro -spec win32-g++ "CONFIG+=debug" "CONFIG+=qml_debug" ) && $(MAKE) -f Makefile debug
+	cd Journal\ && ( if not exist Makefile $(QMAKE) -o Makefile I:\git\DocumentPro\Journal\Journal.pro -spec win32-g++ "CONFIG+=debug" "CONFIG+=qml_debug" ) && $(MAKE) -f Makefile debug
 sub-MajorWindow-debug:
 	@if not exist MajorWindow\ mkdir MajorWindow\ & if not exist MajorWindow\ exit 1
-	cd MajorWindow\ && ( if not exist Makefile $(QMAKE) -o Makefile I:\QTCreator\MyDocument\MajorWindow\MajorWindow.pro -spec win32-g++ "CONFIG+=debug" "CONFIG+=qml_debug" ) && $(MAKE) -f Makefile debug
-debug: sub-Journal-debug sub-MajorWindow-debug
+	cd MajorWindow\ && ( if not exist Makefile $(QMAKE) -o Makefile I:\git\DocumentPro\MajorWindow\MajorWindow.pro -spec win32-g++ "CONFIG+=debug" "CONFIG+=qml_debug" ) && $(MAKE) -f Makefile debug
+sub-ViewCheck-debug:
+	@if not exist ViewCheck\ mkdir ViewCheck\ & if not exist ViewCheck\ exit 1
+	cd ViewCheck\ && ( if not exist Makefile $(QMAKE) -o Makefile I:\git\DocumentPro\ViewCheck\ViewCheck.pro -spec win32-g++ "CONFIG+=debug" "CONFIG+=qml_debug" ) && $(MAKE) -f Makefile debug
+debug: sub-Journal-debug sub-MajorWindow-debug sub-ViewCheck-debug
 
 sub-Journal-release:
 	@if not exist Journal\ mkdir Journal\ & if not exist Journal\ exit 1
-	cd Journal\ && ( if not exist Makefile $(QMAKE) -o Makefile I:\QTCreator\MyDocument\Journal\Journal.pro -spec win32-g++ "CONFIG+=debug" "CONFIG+=qml_debug" ) && $(MAKE) -f Makefile release
+	cd Journal\ && ( if not exist Makefile $(QMAKE) -o Makefile I:\git\DocumentPro\Journal\Journal.pro -spec win32-g++ "CONFIG+=debug" "CONFIG+=qml_debug" ) && $(MAKE) -f Makefile release
 sub-MajorWindow-release:
 	@if not exist MajorWindow\ mkdir MajorWindow\ & if not exist MajorWindow\ exit 1
-	cd MajorWindow\ && ( if not exist Makefile $(QMAKE) -o Makefile I:\QTCreator\MyDocument\MajorWindow\MajorWindow.pro -spec win32-g++ "CONFIG+=debug" "CONFIG+=qml_debug" ) && $(MAKE) -f Makefile release
-release: sub-Journal-release sub-MajorWindow-release
+	cd MajorWindow\ && ( if not exist Makefile $(QMAKE) -o Makefile I:\git\DocumentPro\MajorWindow\MajorWindow.pro -spec win32-g++ "CONFIG+=debug" "CONFIG+=qml_debug" ) && $(MAKE) -f Makefile release
+sub-ViewCheck-release:
+	@if not exist ViewCheck\ mkdir ViewCheck\ & if not exist ViewCheck\ exit 1
+	cd ViewCheck\ && ( if not exist Makefile $(QMAKE) -o Makefile I:\git\DocumentPro\ViewCheck\ViewCheck.pro -spec win32-g++ "CONFIG+=debug" "CONFIG+=qml_debug" ) && $(MAKE) -f Makefile release
+release: sub-Journal-release sub-MajorWindow-release sub-ViewCheck-release
 
 sub-Journal-check:
 	@if not exist Journal\ mkdir Journal\ & if not exist Journal\ exit 1
-	cd Journal\ && ( if not exist Makefile $(QMAKE) -o Makefile I:\QTCreator\MyDocument\Journal\Journal.pro -spec win32-g++ "CONFIG+=debug" "CONFIG+=qml_debug" ) && $(MAKE) -f Makefile check
+	cd Journal\ && ( if not exist Makefile $(QMAKE) -o Makefile I:\git\DocumentPro\Journal\Journal.pro -spec win32-g++ "CONFIG+=debug" "CONFIG+=qml_debug" ) && $(MAKE) -f Makefile check
 sub-MajorWindow-check:
 	@if not exist MajorWindow\ mkdir MajorWindow\ & if not exist MajorWindow\ exit 1
-	cd MajorWindow\ && ( if not exist Makefile $(QMAKE) -o Makefile I:\QTCreator\MyDocument\MajorWindow\MajorWindow.pro -spec win32-g++ "CONFIG+=debug" "CONFIG+=qml_debug" ) && $(MAKE) -f Makefile check
-check: sub-Journal-check sub-MajorWindow-check
+	cd MajorWindow\ && ( if not exist Makefile $(QMAKE) -o Makefile I:\git\DocumentPro\MajorWindow\MajorWindow.pro -spec win32-g++ "CONFIG+=debug" "CONFIG+=qml_debug" ) && $(MAKE) -f Makefile check
+sub-ViewCheck-check:
+	@if not exist ViewCheck\ mkdir ViewCheck\ & if not exist ViewCheck\ exit 1
+	cd ViewCheck\ && ( if not exist Makefile $(QMAKE) -o Makefile I:\git\DocumentPro\ViewCheck\ViewCheck.pro -spec win32-g++ "CONFIG+=debug" "CONFIG+=qml_debug" ) && $(MAKE) -f Makefile check
+check: sub-Journal-check sub-MajorWindow-check sub-ViewCheck-check
 
 sub-Journal-benchmark:
 	@if not exist Journal\ mkdir Journal\ & if not exist Journal\ exit 1
-	cd Journal\ && ( if not exist Makefile $(QMAKE) -o Makefile I:\QTCreator\MyDocument\Journal\Journal.pro -spec win32-g++ "CONFIG+=debug" "CONFIG+=qml_debug" ) && $(MAKE) -f Makefile benchmark
+	cd Journal\ && ( if not exist Makefile $(QMAKE) -o Makefile I:\git\DocumentPro\Journal\Journal.pro -spec win32-g++ "CONFIG+=debug" "CONFIG+=qml_debug" ) && $(MAKE) -f Makefile benchmark
 sub-MajorWindow-benchmark:
 	@if not exist MajorWindow\ mkdir MajorWindow\ & if not exist MajorWindow\ exit 1
-	cd MajorWindow\ && ( if not exist Makefile $(QMAKE) -o Makefile I:\QTCreator\MyDocument\MajorWindow\MajorWindow.pro -spec win32-g++ "CONFIG+=debug" "CONFIG+=qml_debug" ) && $(MAKE) -f Makefile benchmark
-benchmark: sub-Journal-benchmark sub-MajorWindow-benchmark
+	cd MajorWindow\ && ( if not exist Makefile $(QMAKE) -o Makefile I:\git\DocumentPro\MajorWindow\MajorWindow.pro -spec win32-g++ "CONFIG+=debug" "CONFIG+=qml_debug" ) && $(MAKE) -f Makefile benchmark
+sub-ViewCheck-benchmark:
+	@if not exist ViewCheck\ mkdir ViewCheck\ & if not exist ViewCheck\ exit 1
+	cd ViewCheck\ && ( if not exist Makefile $(QMAKE) -o Makefile I:\git\DocumentPro\ViewCheck\ViewCheck.pro -spec win32-g++ "CONFIG+=debug" "CONFIG+=qml_debug" ) && $(MAKE) -f Makefile benchmark
+benchmark: sub-Journal-benchmark sub-MajorWindow-benchmark sub-ViewCheck-benchmark
 install:install_subtargets  FORCE
 
 uninstall: uninstall_subtargets FORCE

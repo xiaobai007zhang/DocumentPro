@@ -2,10 +2,11 @@
 #define VIEWCHECK_H
 
 #include "ViewCheck_global.h"
-#include "mylabel.h"
+
 #include "pluginview.h"
 
-#include "myscrollarea.h"
+
+#include "drawingpapereditor.h"
 #include <QFile>
 #include <QLabel>
 #include <QMenu>
@@ -49,31 +50,24 @@ private:
 private slots:
     void slot_loadImage();
     void slot_attribute();
-    void slot_deleteBtnClicked();
-    void slot_resetBtnClicked();
+    void slot_uploadBtnClicked();
+    void slot_resetPosBtnClicked();
 
 private:
     //加载按钮
     QPushButton* loadBtn;
 
-    QString m_curFilePth;
-
     QWidget* m_centerWidget;
+
+    QtDrawingPaperEditor* center;
 
     //头部简单功能窗体
     QWidget* m_titleWidget;
-
     //自定义控件，显示图片
-    MyLabel m_label;
+    QString m_curFilePth;
 
-    MyScrollArea* m_scroll;
-    QImage m_image;
-    QPixmap m_pixmap;
-
-    QAction* m_attribute;
-
-    QPushButton* deleteBtn;
-    QPushButton* resetBtn;
+    QPushButton *uploadBtn;
+    QPushButton *resetPosBtn;
 
 private:
     Ui::ViewCheck* ui;
