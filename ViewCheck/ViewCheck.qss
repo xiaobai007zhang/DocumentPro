@@ -47,31 +47,32 @@ background-repeat: no-repeat;
 QPushButton#deleteBtn:disabled{
 	background-position: center;
 	background-color:transparent;
-background-image: url(":/upNEnble.png");
-background-repeat: no-repeat;
+	background-image: url(":/upNEnble.png");
+	background-repeat: no-repeat;
 }
-
-
 
 
 
 QPushButton#resetBtn{
 	background-position: center;
-background-color:transparent;
-background-image: url(":/position.png");
-background-repeat: no-repeat;
+	background-color:transparent;
+	background-image: url(":/position.png");
+	background-repeat: no-repeat;
 }
 
 QPushButton#resetBtn:pressed{
 	background-position:  center;
 	background-color:transparent;
-background-image: url(":/position.png");
-background-repeat: no-repeat;
+	background-image: url(":/position.png");
+	background-repeat: no-repeat;
 }
 
 QPushButton#resetBtn:hover{
 	background-position:  center;
 	background-color:transparent;
-background-image: url(":/position.png");
-background-repeat: no-repeat;
+	background-image: url(":/position.png");
+	background-repeat: no-repeat;
 }
+
+
+Q

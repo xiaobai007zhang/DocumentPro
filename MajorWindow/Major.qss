@@ -1,0 +1,34 @@
+QAction#newCreat{
+    background-image:url(":/Images/newCreat.png");
+    background-repeat: no-repeat;
+}
+
+QAction#open{
+    background-position: center;
+    background-image:url(":/Images/open.png");
+    background-repeat: no-repeat;
+}
+
+QAction#shear{
+    background-position: center;
+    background-image:url(":/Images/shear.png");
+    background-repeat: no-repeat;
+}
+
+QAction#copy{
+    background-position: center;
+    background-image:url(":/Images/copy.png");
+    background-repeat: no-repeat;
+}
+
+QAction#paste{
+    background-position: center;
+    background-image:url(":/Images/paste.png");
+    background-repeat: no-repeat;
+}
+
+QToolButton#m_tool{
+    background-position: center;
+    background-image:url(":/Images/tableFrame.png");
+    background-repeat: no-repeat;
+}

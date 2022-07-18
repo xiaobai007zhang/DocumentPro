@@ -168,9 +168,6 @@ private slots:
     //改变光标形状,改变标志位
     void slot_textFrame();
 
-    //删除文本框
-    void slot_eraseTextFrame(QGraphicsTextItem*);
-
     void slot_rectFrame(QSize size, QPointF point, bool flag);
 
     void slot_rightMenu(const QPoint&);

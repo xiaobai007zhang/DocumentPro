@@ -1,13 +1,14 @@
 <RCC>
     <qresource prefix="/">
-        <file>yesExpand.png</file>
-        <file>newCreat.png</file>
-        <file>open.png</file>
-        <file>paste.png</file>
-        <file>shear.png</file>
-        <file>tableFrame.png</file>
-        <file>textFrame.png</file>
-        <file>copy.png</file>
-        <file>delete.png</file>
+        <file>Images/copy.png</file>
+        <file>Images/delete.png</file>
+        <file>Images/newCreat.png</file>
+        <file>Images/open.png</file>
+        <file>Images/paste.png</file>
+        <file>Images/shear.png</file>
+        <file>Images/tableFrame.png</file>
+        <file>Images/textFrame.png</file>
+        <file>Images/yesExpand.png</file>
+        <file>Major.qss</file>
     </qresource>
 </RCC>

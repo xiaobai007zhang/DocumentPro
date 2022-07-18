@@ -42,7 +42,7 @@ CMajor::CMajor(QWidget* parent) : QMainWindow(parent),m_imageStartPos(QPoint(0,0
 ,ui(new Ui::CMajor), m_textEnable(false),viewPlugin(nullptr),view(nullptr),m_isRepeat(true) ,tableInfo(nullptr),m_tableEnable(false){
 	ui->setupUi(this);
 
-	//loadStyleSheet("./Action.qss");
+	loadStyleSheet("Major.qss");
 	loadPlugin();
 	initCMajor();
 	initGraphics();
@@ -110,9 +110,11 @@ void CMajor::readJson(const QString & fileName)
 	//先设置好场景的大小
 	qreal width = scene.value("width").toDouble();
 	qreal height = scene.value("height").toDouble();
-	m_scene->setSceneRect(0, 0, width, height);
-	if (view != nullptr) {
+	if (width >= m_view->viewport()->width() && height >= m_view->viewport()->width()) {
+		m_scene->setSceneRect(0, 0, width, height);
+		if (view != nullptr) {
 		this->resize(height+view->width(),height);
+	}
 	}
 	
 
@@ -274,11 +276,18 @@ void CMajor::initToolBar()
 	QAction* copy = new QAction(TR("复制"));
 	QAction* paste = new QAction(TR("粘贴"));
 	//QAction* textFrame = new QAction(TR("文本框"));
-	newCreat->setIcon(QIcon(":/newCreat.png"));
-	open->setIcon(QIcon(":/open.png"));
-	shear->setIcon(QIcon(":/shear.png"));
-	copy->setIcon(QIcon(":/copy.png"));
-	paste->setIcon(QIcon(":/paste.png"));
+
+	newCreat->setObjectName("newCreat");
+	open->setObjectName("open");
+	shear->setObjectName("shear");
+	copy->setObjectName("copy");
+	paste->setObjectName("paste");
+
+	newCreat->setIcon(QIcon(":/Images/newCreat.png"));
+	open->setIcon(QIcon(":/Images/open.png"));
+	shear->setIcon(QIcon(":/Images/shear.png"));
+	copy->setIcon(QIcon(":/Images/copy.png"));
+	paste->setIcon(QIcon(":/Images/paste.png"));
 
 
 
@@ -287,13 +296,14 @@ void CMajor::initToolBar()
 	m_tool->setText(TR("文本框"));
 	m_tool->setObjectName("tool");
 	m_tool->setCheckable(true);
-	m_tool->setIcon(QIcon(":/textFrame.png"));
+	m_tool->setIcon(QIcon(":/Images/textFrame.png"));
 	m_tool->setToolTip(TR("文本框"));
+	//m_tool->setObjectName("m_tool");
 
 	m_tableTool = new QToolButton;
 	m_tableTool->setText(TR("表格框"));
 	//m_tableTool->setCheckable(true);
-	m_tableTool->setIcon(QIcon(":/tableFrame.png"));
+	m_tableTool->setIcon(QIcon(":/Images/tableFrame.png"));
 	m_tableTool->setToolTip(TR("表格框"));
 	//textFrame->setObjectName("tool");
 	
@@ -307,7 +317,7 @@ void CMajor::initToolBar()
 	m_toolBar->addWidget(m_tool);
 	m_toolBar->addWidget(m_tableTool);
 	m_toolBar->addAction(remove);
-	remove->setIcon(QIcon(":/delete.png"));
+	remove->setIcon(QIcon(":/Images/delete.png"));
 
 	//对于临时的对象，他们的信号槽连接都是在本地连接的
 	connect(newCreat, SIGNAL(triggered()), this, SLOT(slot_creatDocument()));
@@ -333,8 +343,8 @@ void CMajor::initCenterWidget()
     sizePolicy.setHorizontalPolicy(QSizePolicy::Preferred);
 
 	if (viewPlugin != nullptr) {
-		//view = dynamic_cast<ViewCheck*>(viewPlugin);
-		view = new ViewCheck;
+		view = dynamic_cast<ViewCheck*>(viewPlugin);
+		//view = new ViewCheck;
 		view->setSizePolicy(sizePolicy);
 		layout->addWidget(view);
 	}
@@ -445,6 +455,7 @@ void CMajor::loadJsonObj(const QJsonObject & obj, const QString & type)
 	myItem->setSelected(true);
 	//connect(myItem, SIGNAL(sig_deleteKey()), this, SLOT(slot_remove()));
 	myItem->setTextInteractionFlags(Qt::NoTextInteraction);
+	myItem->setSelected(false);
 	m_scene->addItem(myItem);
 
 	}
@@ -721,7 +732,7 @@ void CMajor::dropEvent(QDropEvent* event)
 	//MyGraphicsPixmapItem* item = new MyGraphicsPixmapItem(QRectF(0,0,pixmap.width(), pixmap.height()));
 	item->setImage(file.absoluteFilePath());
 	m_scene->addItem(item);
-	item->moveBy(event->pos().x()/2,event->pos().y()/2);
+	item->moveBy(round(event->pos().x()/2),round(event->pos().y()/2));
 	//connect(this,SIGNAL(sig_expand(bool)),item,SLOT(slot_expand(bool)));
 	connect(this,SIGNAL(sig_repeat(bool)),item,SLOT(slot_repeat(bool)));
 	connect(item, SIGNAL(sig_hideRectMouse(bool)), m_scene, SLOT(slot_hideRectMouse(bool)));
@@ -1622,7 +1633,7 @@ void CMajor::slot_rectFrame(QSize size, QPointF point, bool flag)
 					//connect(item->document(),SIGNAL(contentsChanged()),table,SLOT(slot_contentsChanged()));
 					connect(this,SIGNAL(sig_MyTable(QRectF)),item,SLOT(slot_MyTable(QRectF)));
 					connect(table,SIGNAL(sig_changeSelect()),item,SLOT(slot_changeSelect()));
-					connect(table,SIGNAL(sig_updateSize(STATE_FLAG, qreal)),item,SLOT(slot_updateSize(STATE_FLAG, qreal)));
+					//connect(table,SIGNAL(sig_updateSize(STATE_FLAG, qreal)),item,SLOT(slot_updateSize(STATE_FLAG, qreal)));
 					item->setIndex(i,j);
 
 					table->m_tableText.push_back(item);
@@ -1646,7 +1657,7 @@ void CMajor::slot_rectFrame(QSize size, QPointF point, bool flag)
 					//connect(item->document(),SIGNAL(contentsChanged()),table,SLOT(slot_contentsChanged()));
 					connect(this,SIGNAL(sig_MyTable(QRectF)),item,SLOT(slot_MyTable(QRectF)));
 					connect(table,SIGNAL(sig_changeSelect()),item,SLOT(slot_changeSelect()));
-					connect(table,SIGNAL(sig_updateSize(STATE_FLAG, qreal)),item,SLOT(slot_updateSize(STATE_FLAG, qreal)));
+					//connect(table,SIGNAL(sig_updateSize(STATE_FLAG, qreal)),item,SLOT(slot_updateSize(STATE_FLAG, qreal)));
 					table->m_tableText.push_back(item);
 				}
 			}
@@ -1846,11 +1857,8 @@ bool CMajor::loadPlugin()
 {
 
     //QDir curPath("../output/windows_x64_bin/");
-    //QDir curPath("./");
-
-    QDir curPath("../output/windows_x64_bin/");
     
-    //QDir curPath("./");
+    QDir curPath("./");
 
     //qDebug() <<curPath.currentPath();
     //qDebug()<<curPath.path();
@@ -1893,6 +1901,7 @@ void CMajor::loadStyleSheet(const QString & fileName)
 	//logFile->errorLog(TR("加载 ”%1“ 样式表失败！").arg(fileName));
 	}
 	QTextStream stream(&file);
-	QString styleCons = file.readAll();
+	QString styleCons = stream.readAll();
 	setStyleSheet(styleCons);
+	
 }

@@ -1,13 +1,13 @@
-#ifndef VIEWCHECK_H
+﻿#ifndef VIEWCHECK_H
 #define VIEWCHECK_H
 
 #include "ViewCheck_global.h"
 
 #include "pluginview.h"
 
-
-
+#include "attribute.h"
 #include "drawingpapereditor.h"
+
 #include <QFile>
 #include <QLabel>
 #include <QMenu>
@@ -55,22 +55,20 @@ private slots:
     void slot_resetPosBtnClicked();
 
 private:
-    //���ذ�ť
     QPushButton* loadBtn;
 
+    //中心窗体和头部窗体
     QWidget* m_centerWidget;
+    QWidget* m_titleWidget;
 
     QtDrawingPaperEditor* center;
 
-    //ͷ���򵥹��ܴ���
-    QWidget* m_titleWidget;
-    //�Զ���ؼ�����ʾͼƬ
-    QString m_curFilePth;
+    QPushButton* uploadBtn;
+    QPushButton* resetPosBtn;
 
+    Attribute* attribute;
 
-
-    QPushButton *uploadBtn;
-    QPushButton *resetPosBtn;
+    PixStatus M_FLAG;
 
 private:
     Ui::ViewCheck* ui;
