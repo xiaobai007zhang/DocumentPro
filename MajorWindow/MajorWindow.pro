@@ -25,13 +25,6 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
 
 
-LIBS += -LC:/Users/13030/Desktop/ -lysbase
-
-win32: LIBS += -L$$PWD/../ysbase/lib/ -lysbase
-
-INCLUDEPATH += $$PWD/../ysbase/lib
-DEPENDPATH += $$PWD/../ysbase/lib
-
 FORMS += \
     Major/cmajor.ui \
     ManagerTableInfo/managertableinfo.ui

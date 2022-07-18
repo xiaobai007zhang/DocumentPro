@@ -3,7 +3,7 @@
 #include "ui_viewcheck.h"
 
 #include "attribute.h"
-
+#include <QDebug>
 #include <QFileDialog>
 #include <QMessageBox>
 #include <QMouseEvent>
@@ -35,13 +35,14 @@ void ViewCheck::resizeEvent(QResizeEvent* event)
     loadBtn->move(width() / 2 - 50, height() / 2 - 50);
     m_centerWidget->resize(width(), height());
 
-    m_label.resize(m_centerWidget->size());
+    //m_label->resize(m_centerWidget->size());
     m_titleWidget->resize(m_centerWidget->width(), 35);
-    // m_scroll->resize(width(), height());
+    //m_scroll->resize(width(), height());
+    center->resize(width(), height());
+    uploadBtn->move(m_titleWidget->width() - 35, 0);
 
-    deleteBtn->move(m_titleWidget->width() - 35, 0);
 
-    resetBtn->move(m_titleWidget->width() - 75, 0);
+    resetPosBtn->move(m_titleWidget->width() - 75, 0);
 }
 
 void ViewCheck::initViewCheck()
@@ -49,12 +50,16 @@ void ViewCheck::initViewCheck()
     m_centerWidget = new QWidget(this);
     m_centerWidget->resize(width(), height());
     m_titleWidget = new QWidget(this);
-    // m_scroll = new MyScrollArea(this);
-    // m_scroll->setWidget(m_centerWidget);
-    //  m_titleWidget->setStyleSheet("background-color: gray");
+
+    //m_scroll = new MyScrollArea(m_centerWidget);
+    //m_label = m_scroll->getLabel();
+    uploadBtn = new QPushButton(m_titleWidget);
+    resetPosBtn = new QPushButton(m_titleWidget);
+
+    center = new QtDrawingPaperEditor(m_centerWidget,m_centerWidget->width(),m_centerWidget->height());
 
     loadBtn = new QPushButton(TR("载入"), m_centerWidget);
-    m_attribute = new QAction(TR("属性"));
+    
 
     //设置按钮的字体大小
     QFont font = loadBtn->font();
@@ -80,10 +85,10 @@ void ViewCheck::loadStyleSheet(const QString& fileName)
 void ViewCheck::initConnection()
 {
     connect(loadBtn, SIGNAL(clicked()), this, SLOT(slot_loadImage()));
-    connect(m_attribute, SIGNAL(triggered()), SLOT(slot_attribute()));
+    
 
-    connect(deleteBtn, SIGNAL(clicked()), this, SLOT(slot_deleteBtnClicked()));
-    connect(resetBtn, SIGNAL(clicked()), this, SLOT(slot_resetBtnClicked()));
+    connect(uploadBtn, SIGNAL(clicked()), this, SLOT(slot_uploadBtnClicked()));
+    connect(resetPosBtn, SIGNAL(clicked()), this, SLOT(slot_resetPosBtnClicked()));
 }
 
 void ViewCheck::initTitleWidget()
@@ -91,16 +96,17 @@ void ViewCheck::initTitleWidget()
     m_titleWidget->resize(m_centerWidget->width(), 35);
     //背景透明
     m_titleWidget->setAttribute(Qt::WA_TranslucentBackground);
-
+    
     //删除和复原按钮
-    deleteBtn = new QPushButton(m_titleWidget);
-    resetBtn = new QPushButton(m_titleWidget);
-    deleteBtn->setObjectName("deleteBtn");
-    resetBtn->setObjectName("resetBtn");
 
-    deleteBtn->resize(30, 30);
-    resetBtn->resize(30, 30);
-    deleteBtn->setEnabled(false);
+    uploadBtn->setParent(m_titleWidget);
+    resetPosBtn->setParent(m_titleWidget);
+    uploadBtn->setObjectName("deleteBtn");
+    resetPosBtn->setObjectName("resetBtn");
+    
+    uploadBtn->resize(30, 30);
+    resetPosBtn->resize(30, 30);
+    uploadBtn->setEnabled(false);
     // deleteBtn->show();
     // resetBtn->show();
 }
@@ -108,18 +114,23 @@ void ViewCheck::initTitleWidget()
 void ViewCheck::contextMenuEvent(QContextMenuEvent* event)
 {
     Q_UNUSED(event)
-    QMenu* menu = new QMenu();
-    menu->addAction(m_attribute);
-    menu->exec(cursor().pos());
+    QMenu menu;
+    QAction *action = menu.addAction(TR("属性"));
+
+    connect(action, SIGNAL(triggered()), this,SLOT(slot_attribute()));
+    menu.exec(cursor().pos());
+    
+    //disconnect(action, SIGNAL(triggered()), this,SLOT(slot_attribute()));
 }
 
 void ViewCheck::slot_attribute()
 {
+    qDebug() << "slot";
     Attribute* attribute = new Attribute;
     attribute->show();
 }
 
-void ViewCheck::slot_deleteBtnClicked()
+void ViewCheck::slot_uploadBtnClicked()
 {
     QMessageBox::StandardButton standardBtn;
 
@@ -127,8 +138,10 @@ void ViewCheck::slot_deleteBtnClicked()
     if (standardBtn == QMessageBox::Yes)
     {
         loadBtn->show();
-        m_label.hide();
-        deleteBtn->setEnabled(false);
+        //m_label->hide();
+        QPixmap* pix = center->getPixmap();
+        pix->load("");
+        uploadBtn->setEnabled(false);
     }
     else if (standardBtn == QMessageBox::No)
     {
@@ -136,32 +149,31 @@ void ViewCheck::slot_deleteBtnClicked()
     }
 }
 
-void ViewCheck::slot_resetBtnClicked()
+void ViewCheck::slot_resetPosBtnClicked()
 {
-    m_label.move(QPoint(0, 0));
+    //*pix = pix->scaled(m_centerWidget->size(), Qt::KeepAspectRatio);
+    center->resizeEvent(nullptr);
+    //center->setPaperWH(m_centerWidget->width(), m_centerWidget->height());
+    //*pix = pix->scaled(m_centerWidget->size(), Qt::IgnoreAspectRatio);
+    //pix->scaledToHeight(m_centerWidget->height());
+    center->update();
 }
 
 void ViewCheck::slot_loadImage()
 {
 
-    m_curFilePth = QFileDialog::getOpenFileName(nullptr, TR("选择图片"), "./", "*.png;;*.jpg");
-    if (m_curFilePth.isEmpty() || m_curFilePth.isNull())
+    QString fileName = QFileDialog::getOpenFileName(nullptr, TR("选择图片"), "./", "*.png;;*.jpg");
+    if (fileName.isEmpty() || fileName.isNull())
     {
         return;
     }
-
-    m_image.load(m_curFilePth);
-    m_pixmap = QPixmap::fromImage(m_image);
-
-    // Qt::KeepAspectRatioByExpanding左右全部填充,保持比例填充
-    m_pixmap = m_pixmap.scaled(m_centerWidget->size(), Qt::KeepAspectRatio);
-
-    m_label.setPixmap(m_pixmap);
-    // printf("%d,%d\n", m_pixmap.width(), m_pixmap.height());
-    m_label.setParent(m_centerWidget);
-
-    m_label.resize(m_pixmap.size());
-    m_label.show();
+    
+    QPixmap tmpPix(fileName);
+    QPixmap * pix = center->getPixmap();
+    //*pix = tmpPix.scaled(200,700, Qt::KeepAspectRatioByExpanding,Qt::SmoothTransformation);
+    pix->load(fileName);
+    
+    //*pix = pix->scaled(center->size(), Qt::KeepAspectRatio);
     loadBtn->hide();
-    deleteBtn->setEnabled(true);
+    uploadBtn->setEnabled(true);
 }

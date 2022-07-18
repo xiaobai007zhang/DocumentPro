@@ -1844,9 +1844,14 @@ void CMajor::slot_cancelClicked()
 
 bool CMajor::loadPlugin()
 {
+
     //QDir curPath("../output/windows_x64_bin/");
     //QDir curPath("./");
-    QDir curPath("./");
+
+    QDir curPath("../output/windows_x64_bin/");
+    
+    //QDir curPath("./");
+
     //qDebug() <<curPath.currentPath();
     //qDebug()<<curPath.path();
 	for (const QString& fileName : curPath.entryList(QDir::Files))
