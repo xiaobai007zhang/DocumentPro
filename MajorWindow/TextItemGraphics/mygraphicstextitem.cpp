@@ -214,6 +214,7 @@ void MyGraphicsTextItem::focusInEvent(QFocusEvent* e)
 {
     // qDebug() << "focus in";
     setCursor(Qt::IBeamCursor);
+    setAcceptHoverEvents(false);
     QGraphicsTextItem::focusInEvent(e);
 }
 
@@ -251,21 +252,8 @@ void MyGraphicsTextItem::paint(QPainter* painter, const QStyleOptionGraphicsItem
     // painter->drawRect(m_bottomRect);
     // painter->drawRect(m_rbRect);
 
-    // if (hasFocus())
-    //{
-    //     painter->drawRect(boundingRect());
-    //     painter->setRenderHints(QPainter::SmoothPixmapTransform | QPainter::Antialiasing);
-    //     QString text = toPlainText();
-    //     setText(text);
-    // }
-
     QString text = toPlainText();
     setText(text);
-    if (hasFocus())
-    {
-        painter->setRenderHints(QPainter::SmoothPixmapTransform | QPainter::Antialiasing);
-        painter->drawRect(boundingRect());
-    }
 
     return QGraphicsTextItem::paint(painter, option, widget);
 }

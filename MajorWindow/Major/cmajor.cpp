@@ -1560,13 +1560,6 @@ void CMajor::slot_textFrame()
 	}
 }
 
-void CMajor::slot_eraseTextFrame(QGraphicsTextItem* item)
-{
-	m_scene->removeItem(item);
-	delete item;
-	item = nullptr;
-}
-
 void CMajor::slot_rectFrame(QSize size, QPointF point, bool flag)
 {
 	//Q_UNUSED(flag);
